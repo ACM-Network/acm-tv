@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" width="100%" height="100%">
+  <defs>
+    <!-- Cinematic Gold/Amber Gradient with transparency -->
+    <linearGradient id="gold-bug" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#B45309" stop-opacity="0.8" />
+    </linearGradient>
+    <linearGradient id="red-bug" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#EF4444" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#F97316" stop-opacity="0.8" />
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(5, 5)">
+    <!-- Small Shield -->
+    <path d="M 8 13 L 26 5 L 44 13 L 44 37 L 26 45 L 8 37 Z" 
+          fill="none" 
+          stroke="url(#gold-bug)" 
+          stroke-width="3" 
+          stroke-linejoin="round" />
+    
+    <!-- A-shape in the icon -->
+    <path d="M 26 15 L 34 32 M 26 15 L 18 32 M 21 27 L 31 27" 
+          stroke="#FFFFFF" 
+          stroke-opacity="0.8"
+          stroke-width="3" 
+          stroke-linecap="round" 
+          stroke-linejoin="round" />
+
+    <!-- Text: ACM -->
+    <text x="54" y="32" 
+          font-family="system-ui, -apple-system, 'SF Pro Display', Roboto, sans-serif" 
+          font-size="26" 
+          font-weight="900" 
+          letter-spacing="2" 
+          fill="#FFFFFF"
+          fill-opacity="0.8">
+      ACM
+    </text>
+
+    <!-- TV Capsule -->
+    <rect x="122" y="14" width="45" height="24" rx="4" 
+          fill="url(#red-bug)" />
+          
+    <text x="144" y="31" 
+          font-family="system-ui, -apple-system, 'SF Pro Display', Roboto, sans-serif" 
+          font-size="14" 
+          font-weight="900" 
+          letter-spacing="0.5" 
+          text-anchor="middle"
+          fill="#FFFFFF"
+          fill-opacity="0.9">
+      TV
+    </text>
+  </g>
+</svg>

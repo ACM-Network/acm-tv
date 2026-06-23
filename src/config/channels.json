@@ -1,0 +1,441 @@
+{
+  "channels": [
+    {
+      "id": "acm-tv",
+      "name": "ACM TV",
+      "tagline": "Entertainment Without Limits",
+      "logoUrl": "/branding/acm-tv-logo.svg",
+      "bugUrl": "/branding/acm-tv-bug.svg",
+      "weaving": {
+        "insertIdentEveryNPrograms": 1,
+        "insertPromoEveryNPrograms": 2
+      },
+      "programs": [
+        {
+          "id": "neno-butterfly",
+          "title": "Neno Butterfly Lyric Video",
+          "description": "The official lyric video presentation. An elegant musical visualizer experience.",
+          "duration": 245,
+          "videoUrl": "/media/acm-music/neno-butterfly.mp4",
+          "type": "song",
+          "category": "SONG",
+          "thumbnail": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=400",
+          "metadataUrl": "/media/acm-music/neno-butterfly.metadata.json",
+          "audioTracks": [
+            {
+              "language": "English",
+              "code": "eng",
+              "codec": "aac",
+              "default": true,
+              "url": "/media/acm-music/neno-butterfly_eng.m4a"
+            }
+          ],
+          "subtitles": []
+        },
+        {
+          "id": "x-men-6",
+          "title": "X-Men 6",
+          "description": "X-Men Movie",
+          "duration": 8285,
+          "videoUrl": "/media/acm-movies/x-men-6.mp4",
+          "type": "content",
+          "category": "Movie",
+          "audioTracks": [
+            {
+              "language": "Tamil",
+              "code": "tam",
+              "codec": "aac",
+              "default": true,
+              "url": "/media/acm-movies/x-men-6_tam.m4a"
+            },
+            {
+              "language": "Telugu",
+              "code": "tel",
+              "codec": "aac",
+              "default": false,
+              "url": "/media/acm-movies/x-men-6_tel.m4a"
+            },
+            {
+              "language": "Hindi",
+              "code": "hin",
+              "codec": "aac",
+              "default": false,
+              "url": "/media/acm-movies/x-men-6_hin.m4a"
+            },
+            {
+              "language": "English",
+              "code": "eng",
+              "codec": "aac",
+              "default": false,
+              "url": "/media/acm-movies/x-men-6_eng.m4a"
+            }
+          ],
+          "subtitles": [],
+          "metadataUrl": "/media/acm-movies/x-men-6.metadata.json"
+        },
+        {
+          "id": "prog-sintel-trailer",
+          "title": "Sintel - Cinematic Story",
+          "description": "The epic narrative of Sintel searching for her baby dragon. An emotional fantasy journey with rich styling and premium orchestration.",
+          "duration": 652,
+          "videoUrl": "/media/acm-movies/sintel-trailer.mp4",
+          "type": "content",
+          "category": "Fantasy Block",
+          "thumbnail": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=400"
+        },
+        {
+          "id": "prog-showcase",
+          "title": "ACM Network Showcase",
+          "description": "A demonstration of ACM TV's network distribution capability. Showing the power of virtual real-time broadcasting and local media playback.",
+          "duration": 596,
+          "videoUrl": "/media/acm-tv/acm-showcase.mp4",
+          "type": "trailer",
+          "category": "Special Showcase",
+          "thumbnail": "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=400"
+        }
+      ],
+      "idents": [
+        {
+          "id": "ident-acm-classic",
+          "title": "ACM TV Classic Ident",
+          "description": "Station identification bumper celebrating the heritage of ACM TV. Entertainment without limits.",
+          "duration": 15,
+          "videoUrl": "/media/acm-tv/ident-classic.mp4",
+          "type": "ident",
+          "category": "Idents",
+          "thumbnail": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=400"
+        },
+        {
+          "id": "ident-acm-gold",
+          "title": "ACM TV Golden Hour Ident",
+          "description": "Visual presentation of ACM TV signature golden logo. Broadcast channel bug.",
+          "duration": 15,
+          "videoUrl": "/media/acm-tv/ident-gold.mp4",
+          "type": "ident",
+          "category": "Idents",
+          "thumbnail": "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=400"
+        }
+      ],
+      "promos": [
+        {
+          "id": "promo-acm-action",
+          "title": "ACM Action Block Promo",
+          "description": "Teaser for the high-octane blockbusters arriving this weekend on ACM TV.",
+          "duration": 15,
+          "videoUrl": "/media/acm-tv/promo-action.mp4",
+          "type": "promo",
+          "category": "Promos",
+          "thumbnail": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400"
+        },
+        {
+          "id": "promo-acm-late",
+          "title": "ACM Late Night Teaser",
+          "description": "Tune in for late-night features. Only on ACM TV.",
+          "duration": 15,
+          "videoUrl": "/media/acm-tv/promo-late.mp4",
+          "type": "promo",
+          "category": "Promos",
+          "thumbnail": "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=400"
+        }
+      ]
+    },
+    {
+      "id": "acm-movies",
+      "name": "ACM Movies",
+      "tagline": "Your Premium Cinema Experience",
+      "logoUrl": "/branding/acm-movies-logo.svg",
+      "bugUrl": "/branding/acm-tv-bug.svg",
+      "weaving": {
+        "insertIdentEveryNPrograms": 1,
+        "insertPromoEveryNPrograms": 1
+      },
+      "programs": [
+        {
+          "id": "prog-bunny-movie",
+          "title": "Big Buck Bunny - Animated Feature",
+          "description": "The giant, lovable forest rabbit Big Buck Bunny takes revenge on three pesky rodents who bully him and destroy his beloved butterflies.",
+          "duration": 596,
+          "videoUrl": "/media/acm-movies/bunny-movie.mp4",
+          "type": "content",
+          "category": "Comedy Animation",
+          "thumbnail": "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=400"
+        },
+        {
+          "id": "prog-tears-movie",
+          "title": "Tears of Steel - Remastered Cut",
+          "description": "A cinematic science-fiction action short showcasing dystopian robotics and deep neural overlays.",
+          "duration": 734,
+          "videoUrl": "/media/acm-movies/tears-movie.mp4",
+          "type": "content",
+          "category": "Sci-Fi",
+          "thumbnail": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400"
+        }
+      ],
+      "idents": [
+        {
+          "id": "ident-movies-1",
+          "title": "ACM Movies Bumper",
+          "description": "Branded cinematic intro for ACM Movies.",
+          "duration": 15,
+          "videoUrl": "/media/acm-movies/ident-movies.mp4",
+          "type": "ident",
+          "category": "Idents",
+          "thumbnail": "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=400"
+        }
+      ],
+      "promos": [
+        {
+          "id": "promo-movies-1",
+          "title": "ACM Movies Weekend Blockbuster Promo",
+          "description": "Get ready for the biggest blockbusters on ACM Movies.",
+          "duration": 15,
+          "videoUrl": "/media/acm-movies/promo-movies.mp4",
+          "type": "promo",
+          "category": "Promos",
+          "thumbnail": "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=400"
+        }
+      ]
+    },
+    {
+      "id": "acm-music",
+      "name": "ACM Music",
+      "tagline": "Non-Stop Hits & Anthems",
+      "logoUrl": "/branding/acm-music-logo.svg",
+      "bugUrl": "/branding/acm-tv-bug.svg",
+      "weaving": {
+        "insertIdentEveryNPrograms": 2,
+        "insertPromoEveryNPrograms": 2
+      },
+      "programs": [
+        {
+          "id": "prog-music-bunny",
+          "title": "Bunnies & Beats - Visual Symphony",
+          "description": "An upbeat visual symphony featuring forest soundscapes and cinematic pacing.",
+          "duration": 596,
+          "videoUrl": "/media/acm-music/music-bunny.mp4",
+          "type": "song",
+          "category": "Pop Beats",
+          "thumbnail": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=400"
+        },
+        {
+          "id": "prog-music-steel",
+          "title": "Electronic Steel Beats",
+          "description": "Industrial retro-wave synth beats synced to futuristic robotic fight scenes.",
+          "duration": 734,
+          "videoUrl": "/media/acm-music/music-steel.mp4",
+          "type": "song",
+          "category": "Synthwave",
+          "thumbnail": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=400"
+        },
+        {
+          "id": "test-song",
+          "title": "Test Song",
+          "description": "Automatically prepared and registered media content.",
+          "duration": 7200,
+          "videoUrl": "/media/acm-music/test-song.mp4",
+          "type": "content",
+          "category": "Music",
+          "metadataUrl": "/media/acm-music/test-song.metadata.json",
+          "audioTracks": [],
+          "subtitles": [
+            {
+              "language": "English",
+              "code": "eng",
+              "format": "vtt",
+              "default": false,
+              "url": "/media/acm-music/test-song_eng.vtt"
+            }
+          ]
+        }
+      ],
+      "idents": [
+        {
+          "id": "ident-music-1",
+          "title": "ACM Music Station Bumper",
+          "description": "ACM Music identification bumper.",
+          "duration": 15,
+          "videoUrl": "/media/acm-music/ident-music.mp4",
+          "type": "ident",
+          "category": "Idents",
+          "thumbnail": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=400"
+        }
+      ],
+      "promos": [
+        {
+          "id": "promo-music-1",
+          "title": "Top 40 Countdown Promo",
+          "description": "Tune in this Friday for the ACM Top 40 countdown.",
+          "duration": 15,
+          "videoUrl": "/media/acm-music/promo-music.mp4",
+          "type": "promo",
+          "category": "Promos",
+          "thumbnail": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=400"
+        }
+      ]
+    },
+    {
+      "id": "acm-trailers",
+      "name": "ACM Trailers",
+      "tagline": "Sneak Peeks & First Looks",
+      "logoUrl": "/branding/acm-trailers-logo.svg",
+      "bugUrl": "/branding/acm-tv-bug.svg",
+      "weaving": {
+        "insertIdentEveryNPrograms": 1,
+        "insertPromoEveryNPrograms": 3
+      },
+      "programs": [
+        {
+          "id": "prog-trailer-sintel",
+          "title": "Sintel - Official Cinematic Trailer",
+          "description": "First look at Sintel, the open-source cinematic short story.",
+          "duration": 652,
+          "videoUrl": "/media/acm-trailers/trailer-sintel.mp4",
+          "type": "trailer",
+          "category": "Trailers",
+          "thumbnail": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400"
+        },
+        {
+          "id": "prog-trailer-steel",
+          "title": "Tears of Steel - FX Reel",
+          "description": "Visual effects breakdown and official theatrical trailer for Tears of Steel.",
+          "duration": 734,
+          "videoUrl": "/media/acm-trailers/trailer-steel.mp4",
+          "type": "trailer",
+          "category": "Trailers",
+          "thumbnail": "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=400"
+        },
+        {
+          "id": "spiderman-brand-new-day-trailer-1",
+          "title": "Spiderman Brand New Day Trailer 1",
+          "description": "Automatically prepared and registered media content.",
+          "duration": 153,
+          "videoUrl": "/media/acm-trailers/spiderman-brand-new-day-trailer-1.mp4",
+          "type": "content",
+          "category": "Trailer",
+          "metadataUrl": "/media/acm-trailers/spiderman-brand-new-day-trailer-1.metadata.json",
+          "audioTracks": [
+            {
+              "language": "English",
+              "code": "eng",
+              "codec": "aac",
+              "default": true,
+              "url": "/media/acm-trailers/spiderman-brand-new-day-trailer-1_eng.m4a"
+            }
+          ],
+          "subtitles": []
+        },
+        {
+          "id": "spiderman-brand-new-day-trailer-2",
+          "title": "Spiderman Brand New Day Trailer 2",
+          "description": "Automatically prepared and registered media content.",
+          "duration": 165,
+          "videoUrl": "/media/acm-trailers/spiderman-brand-new-day-trailer-2.mp4",
+          "type": "content",
+          "category": "Trailer",
+          "metadataUrl": "/media/acm-trailers/spiderman-brand-new-day-trailer-2.metadata.json",
+          "audioTracks": [
+            {
+              "language": "English",
+              "code": "eng",
+              "codec": "aac",
+              "default": true,
+              "url": "/media/acm-trailers/spiderman-brand-new-day-trailer-2_eng.m4a"
+            }
+          ],
+          "subtitles": []
+        }
+      ],
+      "idents": [
+        {
+          "id": "ident-trailers-1",
+          "title": "ACM Trailers Stamp Bumper",
+          "description": "ACM Trailers logo stamp bumper.",
+          "duration": 15,
+          "videoUrl": "/media/acm-trailers/ident-trailers.mp4",
+          "type": "ident",
+          "category": "Idents",
+          "thumbnail": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400"
+        }
+      ],
+      "promos": [
+        {
+          "id": "promo-trailers-1",
+          "title": "Upcoming Teaser Alert",
+          "description": "Stay tuned for new exclusive cinematic trailers.",
+          "duration": 15,
+          "videoUrl": "/media/acm-trailers/promo-trailers.mp4",
+          "type": "promo",
+          "category": "Promos",
+          "thumbnail": "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=400"
+        }
+      ]
+    },
+    {
+      "id": "acm-rcu",
+      "name": "ACM RCU",
+      "tagline": "Realm Cinematic Universe Network",
+      "logoUrl": "/branding/acm-rcu-logo.svg",
+      "bugUrl": "/branding/acm-tv-bug.svg",
+      "weaving": {
+        "insertIdentEveryNPrograms": 1,
+        "insertPromoEveryNPrograms": 1
+      },
+      "programs": [
+        {
+          "id": "prog-rcu-blazes",
+          "title": "Realm Core: The Blazes Threat",
+          "description": "A cinematic breakdown of the upcoming primary threat in the Realm Cinematic Universe phase 5.",
+          "duration": 15,
+          "videoUrl": "/media/acm-rcu/rcu-blazes.mp4",
+          "type": "promo",
+          "category": "RCU Promos",
+          "thumbnail": "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=400"
+        },
+        {
+          "id": "prog-rcu-escapes",
+          "title": "Realm Chronicles: Cosmic Escapes",
+          "description": "Promotional featurette exploring the cosmic dimensions and spatial gateways of the Realm.",
+          "duration": 15,
+          "videoUrl": "/media/acm-rcu/rcu-escapes.mp4",
+          "type": "promo",
+          "category": "RCU Promos",
+          "thumbnail": "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=400"
+        },
+        {
+          "id": "prog-rcu-meltdown",
+          "title": "Realm Ultimatum: Dark Melt",
+          "description": "First teaser trailer for Realm Ultimatum, the epic conclusion of the multiverse saga.",
+          "duration": 15,
+          "videoUrl": "/media/acm-rcu/rcu-meltdown.mp4",
+          "type": "trailer",
+          "category": "RCU Trailiers",
+          "thumbnail": "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=400"
+        }
+      ],
+      "idents": [
+        {
+          "id": "ident-rcu-logo",
+          "title": "ACM RCU Marvel-style Logo Ident",
+          "description": "Pulsing red cosmic logo reveal for the Realm Cinematic Universe network.",
+          "duration": 15,
+          "videoUrl": "/media/acm-rcu/ident-rcu-logo.mp4",
+          "type": "ident",
+          "category": "Idents",
+          "thumbnail": "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=400"
+        }
+      ],
+      "promos": [
+        {
+          "id": "promo-rcu-phase5",
+          "title": "Phase 5 Launch Special Bumper",
+          "description": "Realm Cinematic Universe Phase 5 launch event bumper.",
+          "duration": 15,
+          "videoUrl": "/media/acm-rcu/promo-rcu-phase5.mp4",
+          "type": "promo",
+          "category": "Promos",
+          "thumbnail": "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=400"
+        }
+      ]
+    }
+  ]
+}
