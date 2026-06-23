@@ -1,6 +1,7 @@
 import { Channel, Program, ProgramInstance, BroadcastState, ProgramType } from '../types';
 import channelsData from '../config/channels.json';
 import scheduleData from '../config/schedule.json';
+import { PRODUCTION_SINGLE_CHANNEL_MODE } from '../config/mode';
 
 interface ScheduleEntry {
   startTime: string; // "HH:MM" format
@@ -9,6 +10,66 @@ interface ScheduleEntry {
 
 // Strong type cast for the schedule JSON
 const typedSchedule = scheduleData as Record<string, Record<string, ScheduleEntry[]>>;
+
+export function getRuntimeChannels(): Channel[] {
+  const allChannels = channelsData.channels as Channel[];
+  if (!PRODUCTION_SINGLE_CHANNEL_MODE) {
+    return allChannels;
+  }
+
+  // Filter to keep only ACM TV
+  const masterChannel = allChannels.find(c => c.id === 'acm-tv');
+  if (!masterChannel) return allChannels;
+
+  // Filter program catalog inside ACM TV to keep only the four real assets
+  const realProgramIds = ['x-men-6', 'spiderman-brand-new-day-trailer-1', 'spiderman-brand-new-day-trailer-2', 'neno-butterfly'];
+  const filteredPrograms = masterChannel.programs.filter(p => realProgramIds.includes(p.id));
+
+  return [{
+    ...masterChannel,
+    programs: filteredPrograms,
+    idents: [],
+    promos: []
+  }];
+}
+
+export function getProductionScheduleForDay(): ScheduleEntry[] {
+  const entries: ScheduleEntry[] = [];
+  const cycleMinutes = 155;
+  const numCycles = 9; // 9 * 155 = 1395 minutes (23h 15m)
+
+  const items = [
+    { offset: 0, programId: 'neno-butterfly' },
+    { offset: 5, programId: 'spiderman-brand-new-day-trailer-1' },
+    { offset: 8, programId: 'spiderman-brand-new-day-trailer-2' },
+    { offset: 11, programId: 'neno-butterfly' },
+    { offset: 16, programId: 'x-men-6' }
+  ];
+
+  for (let c = 0; c < numCycles; c++) {
+    const cycleStartMin = c * cycleMinutes;
+    for (const item of items) {
+      const totalMin = cycleStartMin + item.offset;
+      const hours = Math.floor(totalMin / 60);
+      const minutes = totalMin % 60;
+      const startTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+      entries.push({ startTime, programId: item.programId });
+    }
+  }
+
+  // Add the last partial cycle to fill up to midnight (starts at 23:15, i.e. 1395 mins)
+  const lastCycleStartMin = numCycles * cycleMinutes;
+  for (const item of items) {
+    const totalMin = lastCycleStartMin + item.offset;
+    if (totalMin >= 1440) break;
+    const hours = Math.floor(totalMin / 60);
+    const minutes = totalMin % 60;
+    const startTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    entries.push({ startTime, programId: item.programId });
+  }
+
+  return entries;
+}
 
 /**
  * Finds program metadata by ID inside the channels database
@@ -22,7 +83,7 @@ export function findProgramById(programId: string, activeChannel: Channel): Prog
   if (found) return found;
 
   // 2. Fallback: Search all other channels in the database
-  const allChannels = channelsData.channels as Channel[];
+  const allChannels = getRuntimeChannels();
   for (const ch of allChannels) {
     found = ch.programs.find(p => p.id === programId) ||
             (ch.idents && ch.idents.find(p => p.id === programId)) ||
@@ -94,9 +155,16 @@ export function getBroadcastState(channel: Channel, localTimestampMs: number): B
   // Current local time in seconds since midnight
   const currentSeconds = Math.floor((localTimestampMs - startOfTodayMs) / 1000);
 
-  // Get daily schedule
-  const channelSchedule = typedSchedule[channel.id] || {};
-  let dailyEntries = channelSchedule[dayOfWeek] || [];
+  // Helper to get daily schedule entries
+  const getEntriesForDay = (dayName: string): ScheduleEntry[] => {
+    if (PRODUCTION_SINGLE_CHANNEL_MODE && channel.id === 'acm-tv') {
+      return getProductionScheduleForDay();
+    }
+    const channelSchedule = typedSchedule[channel.id] || {};
+    return channelSchedule[dayName] || [];
+  };
+
+  const dailyEntries = getEntriesForDay(dayOfWeek);
 
   if (dailyEntries.length === 0) {
     throw new Error(`No scheduled programs for channel ${channel.name} on ${dayOfWeek}`);
@@ -170,7 +238,7 @@ export function getBroadcastState(channel: Channel, localTimestampMs: number): B
     // Next entry is the first program of tomorrow
     const tomorrowIndex = (date.getDay() + 1) % 7;
     const tomorrowDay = days[tomorrowIndex];
-    const tomorrowEntries = channelSchedule[tomorrowDay] || [];
+    const tomorrowEntries = getEntriesForDay(tomorrowDay);
     const tomorrowSorted = [...tomorrowEntries].sort((a, b) => 
       timeStringToSeconds(a.startTime) - timeStringToSeconds(b.startTime)
     );
@@ -212,7 +280,7 @@ export function getBroadcastState(channel: Channel, localTimestampMs: number): B
 
     const currentDayIndex = (date.getDay() + runningDayOffsetDays) % 7;
     const currentDay = days[currentDayIndex];
-    const entries = channelSchedule[currentDay] || [];
+    const entries = getEntriesForDay(currentDay);
     const sorted = [...entries].sort((a, b) => 
       timeStringToSeconds(a.startTime) - timeStringToSeconds(b.startTime)
     );
@@ -238,7 +306,7 @@ export function getBroadcastState(channel: Channel, localTimestampMs: number): B
       
       const nextDayIndex = (date.getDay() + runningDayOffsetDays) % 7;
       const nextDay = days[nextDayIndex];
-      const nextEntries = channelSchedule[nextDay] || [];
+      const nextEntries = getEntriesForDay(nextDay);
       const nextSorted = [...nextEntries].sort((a, b) => 
         timeStringToSeconds(a.startTime) - timeStringToSeconds(b.startTime)
       );
@@ -293,8 +361,13 @@ export function getDailyTimeline(channel: Channel, dayTimestampMs: number): Prog
   startOfDay.setHours(0, 0, 0, 0);
   const startOfDayMs = startOfDay.getTime();
 
-  const channelSchedule = typedSchedule[channel.id] || {};
-  const dailyEntries = channelSchedule[dayOfWeek] || [];
+  let dailyEntries: ScheduleEntry[] = [];
+  if (PRODUCTION_SINGLE_CHANNEL_MODE && channel.id === 'acm-tv') {
+    dailyEntries = getProductionScheduleForDay();
+  } else {
+    const channelSchedule = typedSchedule[channel.id] || {};
+    dailyEntries = channelSchedule[dayOfWeek] || [];
+  }
 
   if (dailyEntries.length === 0) return [];
 

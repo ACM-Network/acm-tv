@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Search, Film, Calendar, Clock, Tv, ArrowUpRight, ShieldAlert } from 'lucide-react';
-import channelsData from '@/config/channels.json';
+import { getRuntimeChannels } from '@/utils/scheduleEngine';
 import { Channel, Program } from '@/types';
 
 interface ProgramWithChannel extends Program {
@@ -15,7 +15,7 @@ export default function ProgramsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<string>('all');
 
-  const channels: Channel[] = channelsData.channels as Channel[];
+  const channels: Channel[] = getRuntimeChannels();
 
   // Flatten programs from all channels and attach channel metadata
   const allPrograms = useMemo(() => {

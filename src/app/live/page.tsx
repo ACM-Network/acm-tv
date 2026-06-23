@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Radio, Tv, Info, ExternalLink, CalendarDays, Share2, Flame } from 'lucide-react';
-import channelsData from '@/config/channels.json';
+import { getRuntimeChannels } from '@/utils/scheduleEngine';
 import { Channel, BroadcastState } from '@/types';
 import TVPlayer from '@/components/TVPlayer';
 import ProgramGuide from '@/components/ProgramGuide';
@@ -12,7 +12,7 @@ function LiveTVClientContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const channels: Channel[] = channelsData.channels as Channel[];
+  const channels: Channel[] = getRuntimeChannels();
   
   // Find current channel based on search params, default to acm-tv
   const channelIdParam = searchParams.get('channel') || 'acm-tv';

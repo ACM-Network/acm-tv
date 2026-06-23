@@ -3,9 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Tv, Play, Radio, Calendar, Flame, Library, Activity, Sparkles } from 'lucide-react';
-import channelsData from '@/config/channels.json';
 import { Channel, BroadcastState } from '@/types';
-import { getBroadcastState } from '@/utils/scheduleEngine';
+import { getBroadcastState, getRuntimeChannels } from '@/utils/scheduleEngine';
 import LiveNowCard from '@/components/LiveNowCard';
 
 export default function Home() {
@@ -13,7 +12,7 @@ export default function Home() {
   const [networkStates, setNetworkStates] = useState<{ [key: string]: BroadcastState }>({});
   const [isMounted, setIsMounted] = useState(false);
 
-  const channels: Channel[] = channelsData.channels as Channel[];
+  const channels: Channel[] = getRuntimeChannels();
   const flagshipChannel = channels.find(c => c.id === 'acm-tv') || channels[0];
 
   useEffect(() => {

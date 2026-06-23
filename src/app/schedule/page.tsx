@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Calendar, Tv, Clock, Radio, Info } from 'lucide-react';
-import channelsData from '@/config/channels.json';
+import { getRuntimeChannels } from '@/utils/scheduleEngine';
 import { Channel } from '@/types';
 import TimelineGuide from '@/components/TimelineGuide';
 
@@ -11,7 +11,7 @@ function ScheduleClientContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const channels: Channel[] = channelsData.channels as Channel[];
+  const channels: Channel[] = getRuntimeChannels();
   
   // Find current channel based on search params, default to acm-tv
   const channelIdParam = searchParams.get('channel') || 'acm-tv';

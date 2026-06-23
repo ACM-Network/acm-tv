@@ -47,6 +47,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   // Diagnostics and caching
   const [showDiagnostics, setShowDiagnostics] = useState(false);
   const [metadataLoaded, setMetadataLoaded] = useState(false);
+  const [validationResult, setValidationResult] = useState<string>('Pending');
   
   // Ref to track the current active instance ID to avoid unnecessary src changes
   const activeInstanceIdRef = useRef<string>('');
@@ -59,6 +60,11 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const metadataCacheRef = useRef<Record<string, any>>({});
   const fileExistenceCacheRef = useRef<Record<string, boolean>>({});
+
+  const lastTimeRef = useRef<number>(-1);
+  const stallCountRef = useRef<number>(0);
+  const isStalledState = useRef<boolean>(false);
+  const recoveryCountRef = useRef<Record<string, number>>({});
 
   // Helper to check if file exists (returns 404 safety check with caching)
   const verifyFileExists = async (url: string): Promise<boolean> => {
@@ -234,6 +240,59 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
             `  Seeking:      ${video.seeking}\n` +
             `  Buffering:    ${isBuffering}`
           );
+
+          // STALL DETECTION LOGIC
+          // Check if playhead is stuck while not paused, seeking, or loading
+          const isActuallyPlaying = !video.paused && !video.seeking && !isBuffering && !isLoading;
+          if (isActuallyPlaying) {
+            if (actualPos === lastTimeRef.current) {
+              stallCountRef.current += 1;
+              if (stallCountRef.current >= 2) {
+                isStalledState.current = true;
+                console.warn(`[ACM TV][STALL] Playback stalled at position ${actualPos.toFixed(2)}s for over 5 seconds.`);
+                
+                // STALL RECOVERY: Only one attempt per instance ID
+                const instanceId = currentInst.instanceId;
+                const recoveryCount = recoveryCountRef.current[instanceId] || 0;
+                if (recoveryCount < 1) {
+                  recoveryCountRef.current[instanceId] = recoveryCount + 1;
+                  console.log(`[ACM TV][STALL RECOVERY] Attempting recovery (Attempt 1) for instance ${instanceId}. Reloading source...`);
+                  
+                  try {
+                    video.load();
+                    // Modulo clamp using actual video duration
+                    const duration = video.duration || currentInst.program.duration || 1;
+                    video.currentTime = targetPos % duration;
+                    video.play()
+                      .then(() => {
+                        console.log(`[ACM TV][STALL RECOVERY] Recovery play success.`);
+                        isStalledState.current = false;
+                        stallCountRef.current = 0;
+                      })
+                      .catch((err) => {
+                        console.error(`[ACM TV][STALL RECOVERY] Playback play failed during recovery:`, err);
+                        setMediaError("Playback stalled (recovery failed)");
+                        setMissingFilePath(video.src || videoSrc);
+                      });
+                  } catch (err) {
+                    console.error(`[ACM TV][STALL RECOVERY] Reload failed during recovery:`, err);
+                    setMediaError("Playback stalled (recovery failed)");
+                    setMissingFilePath(video.src || videoSrc);
+                  }
+                } else {
+                  console.error(`[ACM TV][STALL RECOVERY] Recovery already attempted for instance ${instanceId}. Halting to prevent infinite loop.`);
+                  setMediaError("Playback stalled (recovery failed)");
+                  setMissingFilePath(video.src || videoSrc);
+                }
+              }
+            } else {
+              stallCountRef.current = 0;
+              isStalledState.current = false;
+              lastTimeRef.current = actualPos;
+            }
+          } else {
+            stallCountRef.current = 0;
+          }
 
           const skipDrift = video.seeking || isBuffering || video.readyState < 3 || video.paused;
           if (skipDrift) {
@@ -455,16 +514,84 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     }
 
     const loadMetadataAndSetup = async () => {
+      const videoUrl = currentInst.program.videoUrl;
+      const lastDotIndex = videoUrl.lastIndexOf('.');
+      const base = lastDotIndex !== -1 ? videoUrl.substring(0, lastDotIndex) : videoUrl;
+      const metadataUrl = base + '.metadata.json';
+      
       const targetSrc = isFallbackActive 
         ? STANDBY_FALLBACK_VIDEO_URL 
-        : getDirectVideoUrl(currentInst.program.videoUrl);
+        : getDirectVideoUrl(videoUrl);
 
       setIsLoading(true);
-      const metadata = await fetchAndCacheMetadata(currentInst.program.videoUrl);
+      setValidationResult('Validating...');
+
+      // 1. Verify metadata file exists (only if not fallback)
+      if (!isFallbackActive) {
+        const metadataExists = await verifyFileExists(metadataUrl);
+        if (!metadataExists) {
+          const reason = `Metadata file does not exist: ${metadataUrl}`;
+          setValidationResult(`Failed: ${reason}`);
+          setMediaError(reason);
+          setMissingFilePath(metadataUrl);
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      // 2. Verify video file exists & resolves (currentSrc resolves)
+      const videoExists = await verifyFileExists(targetSrc);
+      if (!videoExists) {
+        const reason = `Video file does not exist or fails to resolve: ${targetSrc}`;
+        setValidationResult(`Failed: ${reason}`);
+        setMediaError(reason);
+        setMissingFilePath(targetSrc);
+        setIsLoading(false);
+        return;
+      }
+
+      // 3. Verify browser supports source natively
+      const video = videoRef.current;
+      if (video) {
+        let mimeType = '';
+        if (targetSrc.endsWith('.mp4')) mimeType = 'video/mp4';
+        else if (targetSrc.endsWith('.m3u8')) mimeType = 'application/x-mpegURL';
+        else if (targetSrc.endsWith('.webm')) mimeType = 'video/webm';
+        else if (targetSrc.endsWith('.m4a')) mimeType = 'audio/mp4';
+        else if (targetSrc.endsWith('.mkv')) mimeType = 'video/x-matroska';
+        
+        if (mimeType) {
+          const canPlay = video.canPlayType(mimeType);
+          if (canPlay === '' && targetSrc.endsWith('.mkv')) {
+            const reason = `Browser does not support source format: .mkv natively unsupported by Chromium`;
+            setValidationResult(`Failed: ${reason}`);
+            setMediaError(reason);
+            setMissingFilePath(targetSrc);
+            setIsLoading(false);
+            return;
+          }
+        }
+      }
+
+      const metadata = await fetchAndCacheMetadata(videoUrl);
 
       if (!active) return;
 
       const videoSource = metadata ? (metadata.hls || metadata.video || targetSrc) : targetSrc;
+
+      // 4. Verify duration > 0
+      const duration = metadata?.duration || currentInst.program.duration;
+      if (!(duration > 0)) {
+        const reason = `Invalid duration: ${duration}s (must be > 0)`;
+        setValidationResult(`Failed: ${reason}`);
+        setMediaError(reason);
+        setMissingFilePath(targetSrc);
+        setIsLoading(false);
+        return;
+      }
+
+      // 5. Validation passed
+      setValidationResult('Passed');
 
       // Setup audio tracks
       if (metadata && Array.isArray(metadata.audioTracks) && metadata.audioTracks.length > 0) {
@@ -810,56 +937,36 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       return;
     }
 
-    consecutiveErrorsRef.current += 1;
-    const stage = consecutiveErrorsRef.current;
-    console.error(`[ACM TV][PLAYBACK ERROR] Context: ${errorContext} | Stage: ${stage} | Details:`, errorDetail || '');
+    const currentInst = broadcastState?.currentProgram;
+    if (!currentInst) return;
 
-    if (stage === 1) {
-      console.log(`[ACM TV][RECOVERY] Stage 1: Retrying play()...`);
-      video.play()
-        .then(() => {
-          consecutiveErrorsRef.current = 0;
-          console.log(`[ACM TV][RECOVERY] Stage 1 Success: Playback resumed.`);
-        })
-        .catch((err) => {
-          handlePlaybackError('Stage 1 play retry failed', err);
-        });
-    } else if (stage === 2) {
-      console.log(`[ACM TV][RECOVERY] Stage 2: Reloading and restoring scheduled position...`);
+    const instanceId = currentInst.instanceId;
+    const recoveryCount = recoveryCountRef.current[instanceId] || 0;
+    console.error(`[ACM TV][PLAYBACK ERROR] Context: ${errorContext} | Recovery Count: ${recoveryCount} | Details:`, errorDetail || '');
+
+    if (recoveryCount < 1) {
+      recoveryCountRef.current[instanceId] = recoveryCount + 1;
+      console.log(`[ACM TV][RECOVERY] Attempting controlled recovery for instance: ${instanceId}`);
       try {
         video.load();
         const targetPos = broadcastState?.playbackPosition || 0;
-        const duration = video.duration || broadcastState?.currentProgram?.program.duration || 1;
-        video.currentTime = Math.max(0, targetPos) % duration;
+        const duration = video.duration || currentInst.program.duration || 1;
+        video.currentTime = targetPos % duration;
         video.play()
           .then(() => {
-            consecutiveErrorsRef.current = 0;
-            console.log(`[ACM TV][RECOVERY] Stage 2 Success: Playback resumed.`);
+            console.log(`[ACM TV][RECOVERY] Recovery attempt succeeded.`);
           })
           .catch((err) => {
-            handlePlaybackError('Stage 2 play retry failed', err);
+            if (err.name !== 'AbortError' && err.name !== 'NotAllowedError') {
+              handlePlaybackError('Recovery play failed', err);
+            }
           });
       } catch (err) {
-        handlePlaybackError('Stage 2 load/seek failed', err);
+        handlePlaybackError('Recovery reload/seek failed', err);
       }
-    } else if (stage === 3) {
-      console.log(`[ACM TV][RECOVERY] Stage 3: Full source reload...`);
-      activeInstanceIdRef.current = ''; // Reset identifier to force reload in updateBroadcastState
-      updateBroadcastState();
-      
-      setTimeout(() => {
-        video.play()
-          .then(() => {
-            consecutiveErrorsRef.current = 0;
-            console.log(`[ACM TV][RECOVERY] Stage 3 Success: Playback resumed.`);
-          })
-          .catch((err) => {
-            handlePlaybackError('Stage 3 play retry failed', err);
-          });
-      }, 500);
     } else {
-      console.error(`[ACM TV][RECOVERY] All recovery stages failed. Escalating to Broadcast Outage.`);
-      setMediaError(errorDetail?.message || "Video playback failed");
+      console.error(`[ACM TV][RECOVERY] Recovery already attempted for instance ${instanceId}. Escalating to Broadcast Outage.`);
+      setMediaError(errorDetail?.message || "Video playback failed (recovery exhausted)");
       setMissingFilePath(video.src || videoSrc);
       setIsLoading(false);
       if (!isFallbackActive) {
@@ -1278,20 +1385,22 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
             </button>
           </div>
           <div className="space-y-1">
-            <div><span className="text-zinc-500 font-bold">Program ID:</span> <span className="text-white font-bold">{broadcastState?.currentProgram?.program.id || 'N/A'}</span></div>
-            <div><span className="text-zinc-500 font-bold">Active Slot:</span> <span className="text-white font-bold">{broadcastState?.currentProgram ? `${broadcastState.currentProgram.startTimeFormatted} - ${broadcastState.currentProgram.endTimeFormatted}` : 'N/A'}</span></div>
-            <div><span className="text-zinc-500 font-bold">Video Src:</span> <span className="text-zinc-400 break-all select-all font-bold">{videoSrc || 'N/A'}</span></div>
-            <div><span className="text-zinc-500 font-bold">Audio Src:</span> <span className="text-zinc-400 break-all select-all font-bold">{audioTracks.find(t => t.enabled)?.url || 'Embedded / Native'}</span></div>
-            <div><span className="text-zinc-500 font-bold">Language:</span> <span className="text-white font-bold">{audioTracks.find(t => t.enabled)?.label || 'Default'}</span></div>
-            <div><span className="text-zinc-500 font-bold">Active Sub:</span> <span className="text-white font-bold">{subtitles.find(t => t.enabled)?.label || 'None / Off'}</span></div>
-            <div><span className="text-zinc-500 font-bold">Duration:</span> <span className="text-white font-bold">{videoRef.current ? `${videoRef.current.currentTime.toFixed(1)}s / ${videoRef.current.duration.toFixed(1)}s` : 'N/A'}</span></div>
-            <div><span className="text-zinc-500 font-bold">Current Drift:</span> <span className="text-amber-500 font-bold">{videoRef.current && broadcastState ? `${Math.abs(videoRef.current.currentTime - broadcastState.playbackPosition).toFixed(2)}s` : '0.00s'}</span></div>
-            <div><span className="text-zinc-500 font-bold">Ready State:</span> <span className="text-white font-bold">{videoRef.current?.readyState ?? 0}</span></div>
-            <div><span className="text-zinc-500 font-bold">Network State:</span> <span className="text-white font-bold">{videoRef.current?.networkState ?? 0}</span></div>
-            <div><span className="text-zinc-500 font-bold">Buffered:</span> <span className="text-zinc-400 font-bold">{getBufferedRangesString()}</span></div>
-            <div><span className="text-zinc-500 font-bold">Metadata Loaded:</span> <span className="text-white font-bold">{metadataLoaded ? 'YES' : 'NO'}</span></div>
-            <div><span className="text-zinc-500 font-bold">Metadata Cache:</span> <span className="text-white font-bold">{Object.keys(metadataCacheRef.current).length} files cached</span></div>
-            <div><span className="text-zinc-500 font-bold">FFmpeg Status:</span> <span className="text-white font-bold">FFmpeg=Detected, FFprobe=Detected</span></div>
+            <div><span className="text-zinc-500 font-bold">Current Program:</span> <span className="text-white font-bold">{broadcastState?.currentProgram?.program.title || 'N/A'} ({broadcastState?.currentProgram?.program.id || 'N/A'})</span></div>
+            <div><span className="text-zinc-500 font-bold">Schedule Slot:</span> <span className="text-white font-bold">{broadcastState?.currentProgram ? `${broadcastState.currentProgram.startTimeFormatted} - ${broadcastState.currentProgram.endTimeFormatted}` : 'N/A'}</span></div>
+            <div><span className="text-zinc-500 font-bold">Active Video URL:</span> <span className="text-zinc-400 break-all select-all font-bold">{videoSrc || 'N/A'}</span></div>
+            <div><span className="text-zinc-500 font-bold">Active Audio URL:</span> <span className="text-zinc-400 break-all select-all font-bold">{audioTracks.find(t => t.enabled)?.url || 'Embedded / Native'}</span></div>
+            <div><span className="text-zinc-500 font-bold">Metadata URL:</span> <span className="text-zinc-400 break-all select-all font-bold">{broadcastState?.currentProgram ? (broadcastState.currentProgram.program.videoUrl.substring(0, broadcastState.currentProgram.program.videoUrl.lastIndexOf('.')) + '.metadata.json') : 'N/A'}</span></div>
+            <div><span className="text-zinc-500 font-bold">Metadata Status:</span> <span className="text-white font-bold">{metadataLoaded ? 'Valid' : 'Missing / Invalid'}</span></div>
+            <div><span className="text-zinc-500 font-bold">Validation Result:</span> <span className={`font-bold ${validationResult.startsWith('Failed') ? 'text-red-500' : 'text-emerald-500'}`}>{validationResult}</span></div>
+            <div><span className="text-zinc-500 font-bold">video.readyState:</span> <span className="text-white font-bold">{videoRef.current?.readyState ?? 0}</span></div>
+            <div><span className="text-zinc-500 font-bold">video.networkState:</span> <span className="text-white font-bold">{videoRef.current?.networkState ?? 0}</span></div>
+            <div><span className="text-zinc-500 font-bold">video.currentSrc:</span> <span className="text-zinc-400 break-all select-all font-bold">{videoRef.current?.currentSrc || 'N/A'}</span></div>
+            <div><span className="text-zinc-500 font-bold">Playhead (Time/Dur):</span> <span className="text-white font-bold">{videoRef.current ? `${videoRef.current.currentTime.toFixed(2)}s / ${videoRef.current.duration.toFixed(2)}s` : 'N/A'}</span></div>
+            <div><span className="text-zinc-500 font-bold">Buffered Ranges:</span> <span className="text-zinc-400 font-bold">{getBufferedRangesString()}</span></div>
+            <div><span className="text-zinc-500 font-bold">Playback Rate:</span> <span className="text-white font-bold">{videoRef.current?.playbackRate ?? 1}</span></div>
+            <div><span className="text-zinc-500 font-bold">Stalled State:</span> <span className={`font-bold ${isStalledState.current ? 'text-red-500' : 'text-zinc-400'}`}>{isStalledState.current ? 'STALLED (True)' : 'Normal (False)'}</span></div>
+            <div><span className="text-zinc-500 font-bold">Stall Count (Ticks):</span> <span className="text-white font-bold">{stallCountRef.current}</span></div>
+            <div><span className="text-zinc-500 font-bold">Recovery Count:</span> <span className="text-amber-500 font-bold">{broadcastState?.currentProgram ? (recoveryCountRef.current[broadcastState.currentProgram.instanceId] || 0) : 0}</span></div>
           </div>
         </div>
       )}
