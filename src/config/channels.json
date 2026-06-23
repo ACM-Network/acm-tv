@@ -13,131 +13,47 @@
       "programs": [
         {
           "id": "neno-butterfly",
-          "title": "Neno Butterfly Lyric Video",
-          "description": "The official lyric video presentation. An elegant musical visualizer experience.",
+          "title": "Neno Butterfly Video Song",
+          "description": "Neno Butterfly Lyric Video.",
           "duration": 245,
-          "videoUrl": "/media/acm-music/neno-butterfly.mp4",
+          "videoUrl": "https://hv-cartoons.online:8443/62028/6224194d.mp4?hash=AgAD8p&stream=true",
           "type": "song",
           "category": "SONG",
-          "thumbnail": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=400",
-          "metadataUrl": "/media/acm-music/neno-butterfly.metadata.json",
-          "audioTracks": [
-            {
-              "language": "English",
-              "code": "eng",
-              "codec": "aac",
-              "default": true,
-              "url": "/media/acm-music/neno-butterfly_eng.m4a"
-            }
-          ],
-          "subtitles": []
+          "thumbnail": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=400"
         },
         {
-          "id": "x-men-6",
-          "title": "X-Men 6",
-          "description": "X-Men Movie",
-          "duration": 8285,
-          "videoUrl": "/media/acm-movies/x-men-6.mp4",
-          "type": "content",
-          "category": "Movie",
-          "audioTracks": [
-            {
-              "language": "Tamil",
-              "code": "tam",
-              "codec": "aac",
-              "default": true,
-              "url": "/media/acm-movies/x-men-6_tam.m4a"
-            },
-            {
-              "language": "Telugu",
-              "code": "tel",
-              "codec": "aac",
-              "default": false,
-              "url": "/media/acm-movies/x-men-6_tel.m4a"
-            },
-            {
-              "language": "Hindi",
-              "code": "hin",
-              "codec": "aac",
-              "default": false,
-              "url": "/media/acm-movies/x-men-6_hin.m4a"
-            },
-            {
-              "language": "English",
-              "code": "eng",
-              "codec": "aac",
-              "default": false,
-              "url": "/media/acm-movies/x-men-6_eng.m4a"
-            }
-          ],
-          "subtitles": [],
-          "metadataUrl": "/media/acm-movies/x-men-6.metadata.json"
-        },
-        {
-          "id": "prog-sintel-trailer",
-          "title": "Sintel - Cinematic Story",
-          "description": "The epic narrative of Sintel searching for her baby dragon. An emotional fantasy journey with rich styling and premium orchestration.",
-          "duration": 652,
-          "videoUrl": "/media/acm-movies/sintel-trailer.mp4",
-          "type": "content",
-          "category": "Fantasy Block",
-          "thumbnail": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=400"
-        },
-        {
-          "id": "prog-showcase",
-          "title": "ACM Network Showcase",
-          "description": "A demonstration of ACM TV's network distribution capability. Showing the power of virtual real-time broadcasting and local media playback.",
-          "duration": 596,
-          "videoUrl": "/media/acm-tv/acm-showcase.mp4",
+          "id": "spiderman-brand-new-day-trailer-1",
+          "title": "Spider-Man Brand New Day Trailer 1",
+          "description": "Trailer 1 of Spider-Man: Brand New Day.",
+          "duration": 153,
+          "videoUrl": "https://hv-cartoons.online:8443/62022/7dc7ead3.mp4?hash=AgADFp&stream=true",
           "type": "trailer",
-          "category": "Special Showcase",
-          "thumbnail": "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=400"
-        }
-      ],
-      "idents": [
-        {
-          "id": "ident-acm-classic",
-          "title": "ACM TV Classic Ident",
-          "description": "Station identification bumper celebrating the heritage of ACM TV. Entertainment without limits.",
-          "duration": 15,
-          "videoUrl": "/media/acm-tv/ident-classic.mp4",
-          "type": "ident",
-          "category": "Idents",
-          "thumbnail": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=400"
-        },
-        {
-          "id": "ident-acm-gold",
-          "title": "ACM TV Golden Hour Ident",
-          "description": "Visual presentation of ACM TV signature golden logo. Broadcast channel bug.",
-          "duration": 15,
-          "videoUrl": "/media/acm-tv/ident-gold.mp4",
-          "type": "ident",
-          "category": "Idents",
-          "thumbnail": "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=400"
-        }
-      ],
-      "promos": [
-        {
-          "id": "promo-acm-action",
-          "title": "ACM Action Block Promo",
-          "description": "Teaser for the high-octane blockbusters arriving this weekend on ACM TV.",
-          "duration": 15,
-          "videoUrl": "/media/acm-tv/promo-action.mp4",
-          "type": "promo",
-          "category": "Promos",
+          "category": "Trailer",
           "thumbnail": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400"
         },
         {
-          "id": "promo-acm-late",
-          "title": "ACM Late Night Teaser",
-          "description": "Tune in for late-night features. Only on ACM TV.",
-          "duration": 15,
-          "videoUrl": "/media/acm-tv/promo-late.mp4",
-          "type": "promo",
-          "category": "Promos",
-          "thumbnail": "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=400"
+          "id": "spiderman-brand-new-day-trailer-2",
+          "title": "Spider-Man Brand New Day Trailer 2",
+          "description": "Trailer 2 of Spider-Man: Brand New Day.",
+          "duration": 165,
+          "videoUrl": "https://hv-cartoons.online:8443/62024/33c6ae4d.mp4?hash=AgADEp&stream=true",
+          "type": "trailer",
+          "category": "Trailer",
+          "thumbnail": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400"
+        },
+        {
+          "id": "x-men-6",
+          "title": "Dheema Video Song",
+          "description": "Dheema Video Song.",
+          "duration": 228,
+          "videoUrl": "https://hv-cartoons.online:8443/62030/f6536583.mp4?hash=AgAD-Z&stream=true",
+          "type": "song",
+          "category": "SONG",
+          "thumbnail": "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=400"
         }
-      ]
+      ],
+      "idents": [],
+      "promos": []
     },
     {
       "id": "acm-movies",

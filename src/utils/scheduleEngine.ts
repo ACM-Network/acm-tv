@@ -51,15 +51,14 @@ export function getRuntimeChannels(): Channel[] {
 
 export function getProductionScheduleForDay(): ScheduleEntry[] {
   const entries: ScheduleEntry[] = [];
-  const cycleMinutes = 155;
-  const numCycles = 9; // 9 * 155 = 1395 minutes (23h 15m)
+  const cycleMinutes = 15;
+  const numCycles = 96; // 96 * 15 = 1440 minutes (24 hours)
 
   const items = [
     { offset: 0, programId: 'neno-butterfly' },
     { offset: 5, programId: 'spiderman-brand-new-day-trailer-1' },
     { offset: 8, programId: 'spiderman-brand-new-day-trailer-2' },
-    { offset: 11, programId: 'neno-butterfly' },
-    { offset: 16, programId: 'x-men-6' }
+    { offset: 11, programId: 'x-men-6' }
   ];
 
   for (let c = 0; c < numCycles; c++) {
@@ -71,17 +70,6 @@ export function getProductionScheduleForDay(): ScheduleEntry[] {
       const startTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
       entries.push({ startTime, programId: item.programId });
     }
-  }
-
-  // Add the last partial cycle to fill up to midnight (starts at 23:15, i.e. 1395 mins)
-  const lastCycleStartMin = numCycles * cycleMinutes;
-  for (const item of items) {
-    const totalMin = lastCycleStartMin + item.offset;
-    if (totalMin >= 1440) break;
-    const hours = Math.floor(totalMin / 60);
-    const minutes = totalMin % 60;
-    const startTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-    entries.push({ startTime, programId: item.programId });
   }
 
   return entries;
@@ -113,7 +101,7 @@ export function findProgramById(programId: string, activeChannel: Channel): Prog
     title: `Scheduled Program (${programId})`,
     description: "Broadcast details are being loaded from the library.",
     duration: 300,
-    videoUrl: "/media/acm-tv/standby.mp4",
+    videoUrl: "https://hv-cartoons.online:8443/62028/6224194d.mp4?hash=AgAD8p&stream=true",
     type: "content",
     category: "General Block",
     thumbnail: "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=400"
@@ -173,7 +161,7 @@ export function getBroadcastState(channel: Channel, localTimestampMs: number): B
 
   // Helper to get daily schedule entries
   const getEntriesForDay = (dayName: string): ScheduleEntry[] => {
-    if (PRODUCTION_SINGLE_CHANNEL_MODE && channel.id === 'acm-tv') {
+    if (channel.id === 'acm-tv') {
       return getProductionScheduleForDay();
     }
     const channelSchedule = typedSchedule[channel.id] || {};
@@ -378,7 +366,7 @@ export function getDailyTimeline(channel: Channel, dayTimestampMs: number): Prog
   const startOfDayMs = startOfDay.getTime();
 
   let dailyEntries: ScheduleEntry[] = [];
-  if (PRODUCTION_SINGLE_CHANNEL_MODE && channel.id === 'acm-tv') {
+  if (channel.id === 'acm-tv') {
     dailyEntries = getProductionScheduleForDay();
   } else {
     const channelSchedule = typedSchedule[channel.id] || {};

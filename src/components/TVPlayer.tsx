@@ -14,6 +14,35 @@ interface ExtendedAudioTrack extends AudioTrack {
   url?: string;
 }
 
+const validateRemoteUrl = async (url: string): Promise<{ success: boolean; reason?: string }> => {
+  try {
+    const res = await fetch(url, { method: 'HEAD' });
+    if (res.ok) {
+      const contentType = res.headers.get('content-type');
+      if (contentType && !contentType.startsWith('video/') && !contentType.startsWith('application/x-mpegURL') && !contentType.startsWith('application/vnd.apple.mpegurl')) {
+        if (contentType !== 'application/octet-stream') {
+          return { success: false, reason: `Invalid content-type: ${contentType}` };
+        }
+      }
+      return { success: true };
+    } else if (res.status === 404) {
+      return { success: false, reason: `URL returned 404 Not Found` };
+    } else {
+      return { success: false, reason: `URL returned status code: ${res.status}` };
+    }
+  } catch (err: any) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      await fetch(url, { method: 'GET', mode: 'no-cors', signal: controller.signal });
+      clearTimeout(timeoutId);
+      return { success: true };
+    } catch (e: any) {
+      return { success: false, reason: `Host unreachable or connection failed: ${e.message || e}` };
+    }
+  }
+};
+
 interface TVPlayerProps {
   channel: Channel;
   onStateChange?: (state: BroadcastState) => void;
@@ -43,6 +72,15 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   const [isFallbackActive, setIsFallbackActive] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
   const [videoSrc, setVideoSrc] = useState<string>('');
+
+  const [failedPrograms, setFailedPrograms] = useState<Record<string, boolean>>({});
+  const failedProgramsRef = useRef<Record<string, boolean>>({});
+  const updateFailedProgram = (instanceId: string) => {
+    failedProgramsRef.current = { ...failedProgramsRef.current, [instanceId]: true };
+    setFailedPrograms({ ...failedProgramsRef.current });
+    updateBroadcastState();
+  };
+  const [lastMediaEvent, setLastMediaEvent] = useState<string>('None');
 
   // Diagnostics and caching
   const [showDiagnostics, setShowDiagnostics] = useState(false);
@@ -81,10 +119,14 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     }
   };
 
-  const fetchAndCacheMetadata = async (videoUrl: string) => {
-    const lastDotIndex = videoUrl.lastIndexOf('.');
-    const base = lastDotIndex !== -1 ? videoUrl.substring(0, lastDotIndex) : videoUrl;
-    const metadataUrl = base + '.metadata.json';
+  const fetchAndCacheMetadata = async (videoUrl: string, programMetadataUrl?: string) => {
+    let metadataUrl = programMetadataUrl;
+    if (!metadataUrl) {
+      const urlWithoutQuery = videoUrl.split('?')[0];
+      const lastDotIndex = urlWithoutQuery.lastIndexOf('.');
+      const base = lastDotIndex !== -1 ? urlWithoutQuery.substring(0, lastDotIndex) : urlWithoutQuery;
+      metadataUrl = base + '.metadata.json';
+    }
 
     if (metadataCacheRef.current[metadataUrl]) {
       setMetadataLoaded(true);
@@ -202,10 +244,42 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       const now = Date.now();
       const state = getBroadcastState(channel, now);
       
-      setBroadcastState(state);
-      if (onStateChange) onStateChange(state);
+      let currentInst: ProgramInstance | null = state.currentProgram;
+      let playbackPos = state.playbackPosition;
+      let fallbackDepth = 0;
 
-      const currentInst = state.currentProgram;
+      while (currentInst && failedProgramsRef.current[currentInst.instanceId] && fallbackDepth < 5) {
+        fallbackDepth++;
+        console.warn(`[ACM TV][VALIDATION] Skip failed program instance: ${currentInst.program.id} (Instance: ${currentInst.instanceId})`);
+        if (fallbackDepth === 1) {
+          currentInst = state.upNext;
+          playbackPos = 0;
+        } else {
+          const laterIdx = fallbackDepth - 2;
+          if (state.laterTonight && state.laterTonight[laterIdx]) {
+            currentInst = state.laterTonight[laterIdx];
+            playbackPos = 0;
+          } else {
+            currentInst = null;
+            break;
+          }
+        }
+      }
+
+      if (!currentInst) {
+        console.error("[ACM TV][VALIDATION] All fallback programs failed validation! Triggering Standby.");
+        setIsFallbackActive(true);
+        return;
+      }
+
+      const adjustedState = {
+        ...state,
+        currentProgram: currentInst,
+        playbackPosition: playbackPos
+      };
+
+      setBroadcastState(adjustedState);
+      if (onStateChange) onStateChange(adjustedState);
 
       // Program Switch Check
       if (activeInstanceIdRef.current !== currentInst.instanceId) {
@@ -214,7 +288,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         const video = videoRef.current;
         if (video && !mediaError) {
           const actualPos = video.currentTime;
-          const targetPos = state.playbackPosition;
+          const targetPos = playbackPos;
           const drift = Math.abs(targetPos - actualPos);
 
           // Get buffered ranges
@@ -399,7 +473,10 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   }, [showDiagnostics]);
 
   const fallbackToDefaultAudio = () => {
-    console.warn("[ACM TV][AUDIO FALLBACK] Falling back to default native/embedded audio.");
+    const isRemote = videoSrc.startsWith('http://') || videoSrc.startsWith('https://');
+    if (!isRemote) {
+      console.warn("[ACM TV][AUDIO FALLBACK] Falling back to default native/embedded audio.");
+    }
     setAudioTracks(prev => {
       const active = prev.find(t => t.enabled);
       if (active && active.url) {
@@ -496,6 +573,36 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     }
   }, [videoSrc]);
 
+  // Listen to video element events for diagnostics
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const events = [
+      'loadstart', 'suspend', 'emptied', 'stalled', 'error', 'abort',
+      'waiting', 'playing', 'loadedmetadata', 'canplay', 'play', 'pause'
+    ];
+
+    const logEvent = (e: Event) => {
+      const eventName = e.type.toUpperCase();
+      console.log(`[ACM TV][MEDIA EVENT] ${eventName} | readyState: ${video.readyState} | networkState: ${video.networkState}`);
+      setLastMediaEvent(`${eventName} (${new Date().toLocaleTimeString()})`);
+    };
+
+    events.forEach(evt => video.addEventListener(evt, logEvent));
+
+    return () => {
+      events.forEach(evt => video.removeEventListener(evt, logEvent));
+    };
+  }, [videoSrc]);
+
+  // Reset fallback active on program switch
+  useEffect(() => {
+    if (isFallbackActive) {
+      setIsFallbackActive(false);
+    }
+  }, [broadcastState?.currentProgram?.instanceId]);
+
   // Main Effect: Switch programs, load metadata, filter missing files, apply defaults
   useEffect(() => {
     const currentInst = broadcastState?.currentProgram;
@@ -508,95 +615,65 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     setMissingFilePath(null);
     consecutiveErrorsRef.current = 0;
     setMetadataLoaded(false);
+
     if (isFallbackActive) {
-      setIsFallbackActive(false);
-      return; // Return early, the state update will re-run this effect
+      const video = videoRef.current;
+      if (video) {
+        video.pause();
+        video.src = '';
+      }
+      setIsLoading(false);
+      return;
     }
 
     const loadMetadataAndSetup = async () => {
       const videoUrl = currentInst.program.videoUrl;
-      const lastDotIndex = videoUrl.lastIndexOf('.');
-      const base = lastDotIndex !== -1 ? videoUrl.substring(0, lastDotIndex) : videoUrl;
-      const metadataUrl = base + '.metadata.json';
-      
-      const targetSrc = isFallbackActive 
-        ? STANDBY_FALLBACK_VIDEO_URL 
-        : getDirectVideoUrl(videoUrl);
+      const targetSrc = getDirectVideoUrl(videoUrl);
 
       setIsLoading(true);
       setValidationResult('Validating...');
 
-      // 1. Verify metadata file exists (only if not fallback)
-      if (!isFallbackActive) {
-        const metadataExists = await verifyFileExists(metadataUrl);
-        if (!metadataExists) {
-          const reason = `Metadata file does not exist: ${metadataUrl}`;
-          setValidationResult(`Failed: ${reason}`);
-          setMediaError(reason);
-          setMissingFilePath(metadataUrl);
-          setIsLoading(false);
-          return;
-        }
-      }
-
-      // 2. Verify video file exists & resolves (currentSrc resolves)
-      const videoExists = await verifyFileExists(targetSrc);
-      if (!videoExists) {
-        const reason = `Video file does not exist or fails to resolve: ${targetSrc}`;
+      // 1. Verify remote URL before assigning it
+      console.log(`[ACM TV][VALIDATION] Validating remote source: ${targetSrc}`);
+      const valRes = await validateRemoteUrl(targetSrc);
+      console.log(`[ACM TV][VALIDATION RESULT] Success: ${valRes.success}, Reason: ${valRes.reason || 'None'}`);
+      if (!valRes.success) {
+        const reason = `Validation failed: ${valRes.reason || 'Unknown error'}`;
         setValidationResult(`Failed: ${reason}`);
-        setMediaError(reason);
-        setMissingFilePath(targetSrc);
+        updateFailedProgram(currentInst.instanceId);
         setIsLoading(false);
         return;
       }
 
-      // 3. Verify browser supports source natively
-      const video = videoRef.current;
-      if (video) {
-        let mimeType = '';
-        if (targetSrc.endsWith('.mp4')) mimeType = 'video/mp4';
-        else if (targetSrc.endsWith('.m3u8')) mimeType = 'application/x-mpegURL';
-        else if (targetSrc.endsWith('.webm')) mimeType = 'video/webm';
-        else if (targetSrc.endsWith('.m4a')) mimeType = 'audio/mp4';
-        else if (targetSrc.endsWith('.mkv')) mimeType = 'video/x-matroska';
-        
-        if (mimeType) {
-          const canPlay = video.canPlayType(mimeType);
-          if (canPlay === '' && targetSrc.endsWith('.mkv')) {
-            const reason = `Browser does not support source format: .mkv natively unsupported by Chromium`;
-            setValidationResult(`Failed: ${reason}`);
-            setMediaError(reason);
-            setMissingFilePath(targetSrc);
-            setIsLoading(false);
-            return;
-          }
-        }
-      }
-
-      const metadata = await fetchAndCacheMetadata(videoUrl);
-
+      // 2. Fetch metadata (completely optional, do not block or throw error if it fails)
+      const metadata = await fetchAndCacheMetadata(videoUrl, currentInst.program.metadataUrl);
       if (!active) return;
 
       const videoSource = metadata ? (metadata.hls || metadata.video || targetSrc) : targetSrc;
 
-      // 4. Verify duration > 0
+      // 3. Verify duration > 0 (fallback to program default if metadata missing)
       const duration = metadata?.duration || currentInst.program.duration;
       if (!(duration > 0)) {
         const reason = `Invalid duration: ${duration}s (must be > 0)`;
         setValidationResult(`Failed: ${reason}`);
-        setMediaError(reason);
-        setMissingFilePath(targetSrc);
+        updateFailedProgram(currentInst.instanceId);
         setIsLoading(false);
         return;
       }
 
-      // 5. Validation passed
+      // Validation passed
       setValidationResult('Passed');
 
-      // Setup audio tracks
-      if (metadata && Array.isArray(metadata.audioTracks) && metadata.audioTracks.length > 0) {
+      // Setup audio tracks (fallback to program defaults first, then native)
+      const audioTracksSource = (metadata && Array.isArray(metadata.audioTracks) && metadata.audioTracks.length > 0)
+        ? metadata.audioTracks
+        : (currentInst.program.audioTracks && Array.isArray(currentInst.program.audioTracks) && currentInst.program.audioTracks.length > 0)
+          ? currentInst.program.audioTracks
+          : null;
+
+      if (audioTracksSource) {
         const currentSelection = audioTracks.find(t => t.enabled)?.id;
-        const mapped = metadata.audioTracks.map((track: any) => ({
+        const mapped = audioTracksSource.map((track: any) => ({
           id: track.code,
           label: track.language,
           language: track.code,
@@ -626,9 +703,15 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         detectNativeAudioTracks();
       }
 
-      // Setup subtitles
-      if (metadata && Array.isArray(metadata.subtitles) && metadata.subtitles.length > 0) {
-        const mappedSub = metadata.subtitles.map((sub: any, i: number) => ({
+      // Setup subtitles (fallback to program defaults first, then empty)
+      const subtitlesSource = (metadata && Array.isArray(metadata.subtitles) && metadata.subtitles.length > 0)
+        ? metadata.subtitles
+        : (currentInst.program.subtitles && Array.isArray(currentInst.program.subtitles) && currentInst.program.subtitles.length > 0)
+          ? currentInst.program.subtitles
+          : null;
+
+      if (subtitlesSource) {
+        const mappedSub = subtitlesSource.map((sub: any, i: number) => ({
           id: `sub-${sub.code || sub.language}-${i}`,
           label: sub.language,
           language: sub.code || sub.language,
@@ -666,21 +749,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         console.log(`[ACM TV] Switching Program Source to: ${videoSource} (Seek offset: ${broadcastState?.playbackPosition || 0}s)`);
         activeInstanceIdRef.current = currentInst.instanceId;
         setVideoSrc(videoSource);
-
-        try {
-          const res = await fetch(videoSource, { method: 'HEAD' });
-          if (res.status === 404) {
-            console.error(`[ACM TV] Media file not found: ${videoSource}`);
-            setMediaError("Media file not found");
-            setMissingFilePath(videoSource);
-            setIsLoading(false);
-            return;
-          }
-          loadAndPlaySource(videoSource, broadcastState?.playbackPosition || 0);
-        } catch (e) {
-          console.warn(`[ACM TV] HEAD check failed for source ${videoSource}, playing directly:`, e);
-          loadAndPlaySource(videoSource, broadcastState?.playbackPosition || 0);
-        }
+        loadAndPlaySource(videoSource, broadcastState?.playbackPosition || 0);
       } else {
         setIsLoading(false);
       }
@@ -708,6 +777,20 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
     if (process.env.NODE_ENV === 'development' || true) {
       console.log(`[ACM TV][RECOVERY] Selected audio track "${selectedTrack?.label}" (ID: ${trackId})`);
+    }
+
+    // Bypass companion audio logic for remote programs
+    const isRemote = videoSrc.startsWith('http://') || videoSrc.startsWith('https://');
+    if (isRemote) {
+      const nativeTracks = (video as any).audioTracks;
+      if (nativeTracks) {
+        for (let i = 0; i < nativeTracks.length; i++) {
+          const track = nativeTracks[i];
+          track.enabled = (track.id === trackId || `track-${i}` === trackId);
+        }
+        detectNativeAudioTracks();
+      }
+      return;
     }
 
     // 1. If it's a mapped track (Chrome compatible)
@@ -769,6 +852,16 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     const video = videoRef.current;
     const audio = audioRef.current;
     if (!video || !audio) return;
+
+    // Bypass companion audio element sync for remote streams
+    const isRemote = videoSrc.startsWith('http://') || videoSrc.startsWith('https://');
+    if (isRemote) {
+      if (!audio.paused) {
+        audio.pause();
+      }
+      audio.src = '';
+      return;
+    }
 
     const activeTrack = audioTracks.find(t => t.enabled);
     
@@ -1163,8 +1256,19 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         </div>
       )}
 
+      {/* Branded Standby Slate / Technical Difficulties */}
+      {isFallbackActive && (
+        <StandbyOverlay
+          channel={channel}
+          currentProgram={broadcastState?.currentProgram || null}
+          upNext={broadcastState?.upNext || null}
+          onRetry={handleReconnect}
+          isRetrying={isRetrying}
+        />
+      )}
+
       {/* Custom Media / File Not Found Overlay (Validation Block) */}
-      {mediaError && (
+      {mediaError && !isFallbackActive && (
         <div className="absolute inset-0 z-40 bg-zinc-950 flex flex-col items-center justify-center overflow-hidden">
           {/* Subtle Branded Background */}
           <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:30px_30px]"></div>
@@ -1403,6 +1507,8 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
             <div><span className="text-zinc-500 font-bold">Stalled State:</span> <span className={`font-bold ${isStalledState.current ? 'text-red-500' : 'text-zinc-400'}`}>{isStalledState.current ? 'STALLED (True)' : 'Normal (False)'}</span></div>
             <div><span className="text-zinc-500 font-bold">Stall Count (Ticks):</span> <span className="text-white font-bold">{stallCountRef.current}</span></div>
             <div><span className="text-zinc-500 font-bold">Recovery Count:</span> <span className="text-amber-500 font-bold">{broadcastState?.currentProgram ? (recoveryCountRef.current[broadcastState.currentProgram.instanceId] || 0) : 0}</span></div>
+            <div><span className="text-zinc-500 font-bold">video.error:</span> <span className="text-red-500 font-bold">{videoRef.current?.error ? `Code ${videoRef.current.error.code}: ${videoRef.current.error.message || 'Error'}` : 'None'}</span></div>
+            <div><span className="text-zinc-500 font-bold">Last Media Event:</span> <span className="text-white font-bold">{lastMediaEvent}</span></div>
           </div>
         </div>
       )}
