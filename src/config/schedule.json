@@ -257,8 +257,8 @@
       { "startTime": "08:00", "programId": "promo-trailers-1" },
       { "startTime": "08:15", "programId": "spiderman-brand-new-day-trailer-1" },
       { "startTime": "12:00", "programId": "ident-trailers-1" },
-      { "startTime": "12:15", "programId": "prog-trailer-sintel" },
-      { "startTime": "16:00", "programId": "promo-trailers-1" },
+      { "startTime": "12:15", "programId": "spiderman-brand-new-day-trailer-1" },
+      { "startTime": "16:00", "programId": "spiderman-brand-new-day-trailer-2" },
       { "startTime": "16:15", "programId": "spiderman-brand-new-day-trailer-2" },
       { "startTime": "20:00", "programId": "ident-trailers-1" },
       { "startTime": "20:15", "programId": "prog-trailer-sintel" }
