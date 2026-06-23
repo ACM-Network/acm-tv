@@ -21,9 +21,25 @@ export function getRuntimeChannels(): Channel[] {
   const masterChannel = allChannels.find(c => c.id === 'acm-tv');
   if (!masterChannel) return allChannels;
 
-  // Filter program catalog inside ACM TV to keep only the four real assets
+  // Search across all channels in the database to find the real program objects for the 4 assets
   const realProgramIds = ['x-men-6', 'spiderman-brand-new-day-trailer-1', 'spiderman-brand-new-day-trailer-2', 'neno-butterfly'];
-  const filteredPrograms = masterChannel.programs.filter(p => realProgramIds.includes(p.id));
+  const filteredPrograms: Program[] = [];
+
+  for (const id of realProgramIds) {
+    let foundProg: Program | undefined;
+    for (const ch of allChannels) {
+      const p = ch.programs.find(prog => prog.id === id) ||
+                (ch.idents && ch.idents.find(prog => prog.id === id)) ||
+                (ch.promos && ch.promos.find(prog => prog.id === id));
+      if (p) {
+        foundProg = p;
+        break;
+      }
+    }
+    if (foundProg) {
+      filteredPrograms.push(foundProg);
+    }
+  }
 
   return [{
     ...masterChannel,
