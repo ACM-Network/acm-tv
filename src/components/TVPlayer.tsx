@@ -9,9 +9,12 @@ import StandbyOverlay from './StandbyOverlay';
 import { motion, AnimatePresence } from 'framer-motion';
 import AudioTrackSelector, { AudioTrack } from './AudioTrackSelector';
 import SubtitleSelector, { SubtitleTrack } from './SubtitleSelector';
+import Hls from 'hls.js';
 
 interface ExtendedAudioTrack extends AudioTrack {
   url?: string;
+  default?: boolean;
+  codec?: string;
 }
 
 const validateRemoteUrl = async (url: string): Promise<{ success: boolean; reason?: string }> => {
@@ -30,15 +33,16 @@ const validateRemoteUrl = async (url: string): Promise<{ success: boolean; reaso
     } else {
       return { success: false, reason: `URL returned status code: ${res.status}` };
     }
-  } catch (err: any) {
+  } catch (err: unknown) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
       await fetch(url, { method: 'GET', mode: 'no-cors', signal: controller.signal });
       clearTimeout(timeoutId);
       return { success: true };
-    } catch (e: any) {
-      return { success: false, reason: `Host unreachable or connection failed: ${e.message || e}` };
+    } catch (e: unknown) {
+      const errMsg = e instanceof Error ? e.message : String(e);
+      return { success: false, reason: `Host unreachable or connection failed: ${errMsg}` };
     }
   }
 };
@@ -89,6 +93,56 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   
   // Ref to track the current active instance ID to avoid unnecessary src changes
   const activeInstanceIdRef = useRef<string>('');
+
+  // Hls.js diagnostics and state
+  const hlsRef = useRef<Hls | null>(null);
+  const [hlsUrl, setHlsUrl] = useState<string | null>(null);
+  const [hlsManifestStatus, setHlsManifestStatus] = useState<string>('N/A');
+  const [hlsQualityLevel, setHlsQualityLevel] = useState<string>('N/A');
+  const [hlsPlaybackState, setHlsPlaybackState] = useState<string>('Idle');
+  const [hlsFatalError, setHlsFatalError] = useState<string>('None');
+  const [tokenExpiryStatus, setTokenExpiryStatus] = useState<string>('N/A');
+  const [durationWarning, setDurationWarning] = useState<string | null>(null);
+
+  // States for rendering ref diagnostics without direct ref access in render (ESLint safety)
+  const [videoReadyState, setVideoReadyState] = useState<number>(0);
+  const [videoNetworkState, setVideoNetworkState] = useState<number>(0);
+  const [videoCurrentTime, setVideoCurrentTime] = useState<number>(0);
+  const [videoDuration, setVideoDuration] = useState<number>(0);
+  const [videoBufferedRanges, setVideoBufferedRanges] = useState<string>('none');
+  const [hudStalledState, setHudStalledState] = useState<boolean>(false);
+  const [hudStallCount, setHudStallCount] = useState<number>(0);
+  const [hudRecoveryCount, setHudRecoveryCount] = useState<number>(0);
+  const [videoError, setVideoError] = useState<string>('None');
+
+  // Clock state to prevent impure Date.now() during render
+  const [localTimeMs, setLocalTimeMs] = useState<number>(typeof window !== 'undefined' ? Date.now() : 0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setLocalTimeMs(Date.now());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const destroyHls = () => {
+    if (hlsRef.current) {
+      console.log('[ACM TV] Destroying active Hls instance...');
+      try {
+        hlsRef.current.detachMedia();
+        hlsRef.current.destroy();
+      } catch (err) {
+        console.error('Error destroying Hls instance:', err);
+      }
+      hlsRef.current = null;
+    }
+    setHlsUrl(null);
+    setHlsManifestStatus('N/A');
+    setHlsQualityLevel('N/A');
+    setHlsPlaybackState('Idle');
+    setHlsFatalError('None');
+    setTokenExpiryStatus('N/A');
+  };
   // Controls autohide timer
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
@@ -396,48 +450,271 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   // Helper to load and play the video source
   const loadAndPlaySource = (src: string, seekOffset: number) => {
     const video = videoRef.current;
-    if (video) {
-      // Guard against duplicate loads
+    if (!video) return;
+
+    const currentInst = broadcastState?.currentProgram;
+    const isHlsUrl = src.includes('.m3u8');
+
+    // Destroy existing HLS instance
+    destroyHls();
+    setDurationWarning(null);
+
+    if (isHlsUrl) {
+      setHlsUrl(src);
+      setHlsManifestStatus('Loading');
+
+      // Check if token seems present/expired
+      const hasToken = src.includes('t=') || src.includes('s=') || src.includes('e=');
+      if (hasToken) {
+        setTokenExpiryStatus('Valid');
+      } else {
+        setTokenExpiryStatus('N/A');
+      }
+
+      if (Hls.isSupported()) {
+        console.log(`[ACM TV] Initializing hls.js for source: ${src}`);
+        const hls = new Hls({
+          startPosition: seekOffset,
+          enableWorker: true,
+          lowLatencyMode: true,
+          manifestLoadingMaxRetry: 2,
+          levelLoadingMaxRetry: 2,
+          fragLoadingMaxRetry: 3
+        });
+
+        hlsRef.current = hls;
+
+        hls.attachMedia(video);
+
+        hls.on(Hls.Events.MEDIA_ATTACHED, () => {
+          hls.loadSource(src);
+        });
+
+        hls.on(Hls.Events.MANIFEST_LOADED, () => {
+          setHlsManifestStatus('Loaded');
+          setHlsPlaybackState('Loaded Manifest');
+        });
+
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          console.log('[ACM TV] Hls manifest parsed. Level count:', hls.levels.length);
+          setHlsPlaybackState('Parsed');
+          video.play()
+            .then(() => {
+              setIsPlaying(true);
+              setIsLoading(false);
+              setHlsPlaybackState('Playing');
+              consecutiveErrorsRef.current = 0;
+            })
+            .catch((err) => {
+              if (err.name === 'NotAllowedError') {
+                console.warn("[ACM TV] Autoplay blocked for HLS stream.");
+                setIsMuted(true);
+                setShowTapToUnmute(true);
+                video.muted = true;
+                video.play().catch(e => console.error("Muted HLS play failed:", e));
+              } else if (err.name !== 'AbortError') {
+                handlePlaybackError('Hls play call rejected', err);
+              }
+            });
+        });
+
+        hls.on(Hls.Events.LEVEL_SWITCHED, (event, data) => {
+          const levelIdx = data.level;
+          const level = hls.levels[levelIdx];
+          if (level) {
+            setHlsQualityLevel(`${level.height || level.width || levelIdx}p`);
+          } else {
+            setHlsQualityLevel(`Level ${levelIdx}`);
+          }
+        });
+
+        hls.on(Hls.Events.ERROR, (event, data) => {
+          if (data.fatal) {
+            console.error(`[ACM TV] Fatal HLS error: ${data.type} - ${data.details}`);
+            setHlsFatalError(`Fatal: ${data.details}`);
+            
+            const isNetworkError = data.type === Hls.ErrorTypes.NETWORK_ERROR;
+            const isManifestError = data.details === Hls.ErrorDetails.MANIFEST_LOAD_ERROR || 
+                                    data.details === Hls.ErrorDetails.MANIFEST_LOAD_TIMEOUT ||
+                                    data.details === Hls.ErrorDetails.LEVEL_LOAD_ERROR;
+            
+            const responseCode = data.response?.code;
+            const isTokenExpiredOrAuthError = responseCode === 403 || responseCode === 404 || responseCode === 401;
+
+            if (isManifestError || isTokenExpiredOrAuthError || (responseCode && responseCode >= 400)) {
+              console.warn(`[ACM TV] Fatal manifest / token expired error detected (${responseCode || data.details}). Skipping program.`);
+              setTokenExpiryStatus(responseCode === 403 ? 'Expired (403)' : responseCode === 404 ? 'Expired (404)' : 'Error');
+              if (currentInst) {
+                updateFailedProgram(currentInst.instanceId);
+              }
+            } else {
+              if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+                console.log('[ACM TV] Fatal Media Error. Attempting HLS recoverMediaError...');
+                hls.recoverMediaError();
+              } else if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+                console.log('[ACM TV] Fatal Network Error. Attempting HLS startLoad...');
+                hls.startLoad();
+              } else {
+                console.warn(`[ACM TV] Unrecoverable HLS error (${data.details}). Skipping program.`);
+                if (currentInst) {
+                  updateFailedProgram(currentInst.instanceId);
+                }
+              }
+            }
+          } else {
+            console.warn(`[ACM TV] Non-fatal HLS error: ${data.details}`);
+          }
+        });
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        console.log(`[ACM TV] Native HLS supported. Loading URL: ${src}`);
+        setHlsManifestStatus('Native (Safari)');
+        setHlsQualityLevel('Auto (Native)');
+        
+        video.src = src;
+        video.load();
+        
+        const playNative = () => {
+          video.currentTime = seekOffset;
+          video.play()
+            .then(() => {
+              setIsPlaying(true);
+              setIsLoading(false);
+              consecutiveErrorsRef.current = 0;
+            })
+            .catch(err => {
+              if (err.name === 'NotAllowedError') {
+                setShowTapToUnmute(true);
+              } else if (err.name !== 'AbortError') {
+                handlePlaybackError('Native Hls play failed', err);
+              }
+            });
+          video.removeEventListener('loadedmetadata', playNative);
+        };
+        video.addEventListener('loadedmetadata', playNative);
+      } else {
+        console.error('[ACM TV] HLS is not supported in this browser!');
+        setHlsManifestStatus('Unsupported Browser');
+        if (currentInst) {
+          updateFailedProgram(currentInst.instanceId);
+        }
+      }
+    } else {
+      setHlsUrl(null);
+      setHlsManifestStatus('N/A');
+      setHlsQualityLevel('N/A (MP4)');
+      setHlsPlaybackState('Playing (MP4)');
+      setHlsFatalError('None');
+      setTokenExpiryStatus('N/A');
+
       if (video.src !== src && !video.src.endsWith(src)) {
-        console.log(`[ACM TV] Loading source: ${src}`);
+        console.log(`[ACM TV] Loading standard source: ${src}`);
         video.src = src;
         video.load();
       }
-      
-      // Attempt play
+
       video.play()
         .then(() => {
           setIsPlaying(true);
           setIsLoading(false);
-          consecutiveErrorsRef.current = 0; // Reset count on successful playback
+          consecutiveErrorsRef.current = 0;
         })
         .catch((err) => {
           if (err.name === 'NotAllowedError') {
-            console.warn("[ACM TV] Autoplay blocked by browser. Showing unmute overlay.");
-            video.muted = true;
-            setIsMuted(true);
             setShowTapToUnmute(true);
-            video.play()
-              .then(() => {
-                setIsPlaying(true);
-                setIsLoading(false);
-                consecutiveErrorsRef.current = 0;
-              })
-              .catch(e => {
-                if (e.name === 'NotAllowedError') {
-                  setShowTapToUnmute(true);
-                } else if (e.name !== 'AbortError') {
-                  handlePlaybackError('Initial muted playback failed', e);
-                }
-              });
-          } else if (err.name === 'AbortError') {
-            console.log("[ACM TV] Play call aborted by subsequent load/seek request.");
-          } else {
-            handlePlaybackError('Play call rejected', err);
+          } else if (err.name !== 'AbortError') {
+            handlePlaybackError('MP4 play failed', err);
           }
         });
     }
   };
+
+  // Clean up Hls instance on unmount
+  useEffect(() => {
+    return () => {
+      destroyHls();
+    };
+  }, []);
+
+  // Sync playback state in state variable for HUD
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const updateStateLabel = () => {
+      if (video.paused) {
+        setHlsPlaybackState('Paused');
+      } else if (video.seeking) {
+        setHlsPlaybackState('Seeking');
+      } else if (isBuffering) {
+        setHlsPlaybackState('Buffering');
+      } else {
+        setHlsPlaybackState('Playing');
+      }
+    };
+
+    video.addEventListener('play', updateStateLabel);
+    video.addEventListener('playing', updateStateLabel);
+    video.addEventListener('pause', updateStateLabel);
+    video.addEventListener('seeking', updateStateLabel);
+    video.addEventListener('seeked', updateStateLabel);
+    video.addEventListener('waiting', updateStateLabel);
+
+    return () => {
+      video.removeEventListener('play', updateStateLabel);
+      video.removeEventListener('playing', updateStateLabel);
+      video.removeEventListener('pause', updateStateLabel);
+      video.removeEventListener('seeking', updateStateLabel);
+      video.removeEventListener('seeked', updateStateLabel);
+      video.removeEventListener('waiting', updateStateLabel);
+    };
+  }, [isBuffering]);
+
+  // Sync real-time video element diagnostics for HUD without accessing refs inside JSX
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const updateDiagStates = () => {
+      setVideoReadyState(video.readyState);
+      setVideoNetworkState(video.networkState);
+      setVideoCurrentTime(video.currentTime);
+      setVideoDuration(video.duration);
+      
+      const ranges: string[] = [];
+      for (let i = 0; i < video.buffered.length; i++) {
+        ranges.push(`[${video.buffered.start(i).toFixed(1)}s - ${video.buffered.end(i).toFixed(1)}s]`);
+      }
+      setVideoBufferedRanges(ranges.join(', ') || 'none');
+      setVideoError(video.error ? `Code ${video.error.code}: ${video.error.message || 'Error'}` : 'None');
+      setHudStalledState(isStalledState.current);
+      setHudStallCount(stallCountRef.current);
+      
+      const currentInst = broadcastState?.currentProgram;
+      if (currentInst) {
+        setHudRecoveryCount(recoveryCountRef.current[currentInst.instanceId] || 0);
+      }
+    };
+
+    video.addEventListener('timeupdate', updateDiagStates);
+    video.addEventListener('progress', updateDiagStates);
+    video.addEventListener('durationchange', updateDiagStates);
+    video.addEventListener('loadedmetadata', updateDiagStates);
+    video.addEventListener('error', updateDiagStates);
+    video.addEventListener('waiting', updateDiagStates);
+    video.addEventListener('playing', updateDiagStates);
+
+    updateDiagStates();
+
+    return () => {
+      video.removeEventListener('timeupdate', updateDiagStates);
+      video.removeEventListener('progress', updateDiagStates);
+      video.removeEventListener('durationchange', updateDiagStates);
+      video.removeEventListener('loadedmetadata', updateDiagStates);
+      video.removeEventListener('error', updateDiagStates);
+      video.removeEventListener('waiting', updateDiagStates);
+      video.removeEventListener('playing', updateDiagStates);
+    };
+  }, [broadcastState?.currentProgram?.instanceId, isBuffering]);
 
   // Check native audioTracks API support on mount
   useEffect(() => {
@@ -673,7 +950,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
       if (audioTracksSource) {
         const currentSelection = audioTracks.find(t => t.enabled)?.id;
-        const mapped = audioTracksSource.map((track: any) => ({
+        const mapped: ExtendedAudioTrack[] = audioTracksSource.map((track: { code: string; language: string; codec?: string; default?: boolean; url?: string }) => ({
           id: track.code,
           label: track.language,
           language: track.code,
@@ -683,15 +960,15 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
           url: track.url
         }));
 
-        if (!mapped.some((t: any) => t.enabled)) {
-          const defaultTrack = mapped.find((t: any) => t.default);
+        if (!mapped.some((t: ExtendedAudioTrack) => t.enabled)) {
+          const defaultTrack = mapped.find((t: ExtendedAudioTrack) => t.default);
           if (defaultTrack) {
             defaultTrack.enabled = true;
           } else {
-            const native = mapped.find((t: any) => !t.url);
+            const native = mapped.find((t: ExtendedAudioTrack) => !t.url);
             if (native) native.enabled = true;
             else {
-              const eng = mapped.find((t: any) => t.language === 'eng');
+              const eng = mapped.find((t: ExtendedAudioTrack) => t.language === 'eng');
               if (eng) eng.enabled = true;
               else if (mapped.length > 0) mapped[0].enabled = true;
             }
@@ -711,7 +988,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
           : null;
 
       if (subtitlesSource) {
-        const mappedSub = subtitlesSource.map((sub: any, i: number) => ({
+        const mappedSub = subtitlesSource.map((sub: { code?: string; language: string; format?: string; default?: boolean; url?: string }, i: number) => ({
           id: `sub-${sub.code || sub.language}-${i}`,
           label: sub.language,
           language: sub.code || sub.language,
@@ -1001,8 +1278,23 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     const currentInst = broadcastState?.currentProgram;
     if (video && currentInst) {
       setIsLoading(false);
+
+      // Check actual vs. configured duration
+      const actualDuration = video.duration;
+      const configuredDuration = currentInst.program.duration;
+      if (actualDuration && configuredDuration) {
+        const diff = Math.abs(actualDuration - configuredDuration);
+        if (diff > 2) {
+          const warning = `Duration mismatch: Configured ${configuredDuration}s vs Actual ${actualDuration.toFixed(1)}s`;
+          console.warn(warning);
+          setDurationWarning(warning);
+        } else {
+          setDurationWarning(null);
+        }
+      }
+
       // Modulo clamp using actual video duration
-      const duration = video.duration || currentInst.program.duration || 1;
+      const duration = video.duration || configuredDuration || 1;
       const targetPos = Math.max(0, broadcastState?.playbackPosition || 0) % duration;
       console.log(`[ACM TV] Seek to target position: ${targetPos.toFixed(1)}s (video.duration: ${video.duration.toFixed(1)}s)`);
       video.currentTime = targetPos;
@@ -1015,16 +1307,24 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     }
   };
 
-  const handlePlaybackError = (errorContext: string, errorDetail?: any) => {
+  const handlePlaybackError = (errorContext: string, errorDetail?: unknown) => {
     const video = videoRef.current;
     if (!video) return;
 
-    const errorName = errorDetail?.name || errorDetail?.message || '';
-    if (errorName === 'AbortError' || errorName.includes('abort') || errorContext.includes('AbortError')) {
+    let errorName = '';
+    let errorMessage = '';
+    if (errorDetail && typeof errorDetail === 'object') {
+      const detailObj = errorDetail as Record<string, unknown>;
+      errorName = typeof detailObj.name === 'string' ? detailObj.name : '';
+      errorMessage = typeof detailObj.message === 'string' ? detailObj.message : '';
+    }
+    const combinedError = errorName || errorMessage;
+
+    if (combinedError === 'AbortError' || combinedError.includes('abort') || errorContext.includes('AbortError')) {
       console.log(`[ACM TV] Playback aborted (AbortError) - normal navigation/seeking interruption. Ignoring.`);
       return;
     }
-    if (errorName === 'NotAllowedError' || errorName.includes('NotAllowed') || errorContext.includes('NotAllowedError')) {
+    if (combinedError === 'NotAllowedError' || combinedError.includes('NotAllowed') || errorContext.includes('NotAllowedError')) {
       console.warn(`[ACM TV] Playback blocked (NotAllowedError) - autoplay restriction. Showing unmute overlay.`);
       setShowTapToUnmute(true);
       return;
@@ -1041,30 +1341,29 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       recoveryCountRef.current[instanceId] = recoveryCount + 1;
       console.log(`[ACM TV][RECOVERY] Attempting controlled recovery for instance: ${instanceId}`);
       try {
-        video.load();
-        const targetPos = broadcastState?.playbackPosition || 0;
-        const duration = video.duration || currentInst.program.duration || 1;
-        video.currentTime = targetPos % duration;
-        video.play()
-          .then(() => {
-            console.log(`[ACM TV][RECOVERY] Recovery attempt succeeded.`);
-          })
-          .catch((err) => {
-            if (err.name !== 'AbortError' && err.name !== 'NotAllowedError') {
-              handlePlaybackError('Recovery play failed', err);
-            }
-          });
+        if (hlsRef.current) {
+          hlsRef.current.recoverMediaError();
+        } else {
+          video.load();
+          const targetPos = broadcastState?.playbackPosition || 0;
+          const duration = video.duration || currentInst.program.duration || 1;
+          video.currentTime = targetPos % duration;
+          video.play()
+            .then(() => {
+              console.log(`[ACM TV][RECOVERY] Recovery attempt succeeded.`);
+            })
+            .catch((err) => {
+              if (err instanceof Error && err.name !== 'AbortError' && err.name !== 'NotAllowedError') {
+                handlePlaybackError('Recovery play failed', err);
+              }
+            });
+        }
       } catch (err) {
         handlePlaybackError('Recovery reload/seek failed', err);
       }
     } else {
-      console.error(`[ACM TV][RECOVERY] Recovery already attempted for instance ${instanceId}. Escalating to Broadcast Outage.`);
-      setMediaError(errorDetail?.message || "Video playback failed (recovery exhausted)");
-      setMissingFilePath(video.src || videoSrc);
-      setIsLoading(false);
-      if (!isFallbackActive) {
-        setIsFallbackActive(true);
-      }
+      console.error(`[ACM TV][RECOVERY] Recovery already attempted for instance ${instanceId}. Skipping to next program.`);
+      updateFailedProgram(instanceId);
     }
   };
 
@@ -1373,7 +1672,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
               </div>
               <div className="flex items-center space-x-1.5 text-xs font-mono text-zinc-300 bg-black/40 border border-zinc-800/80 px-3 py-1 rounded">
                 <Wifi className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
-                <span>UTC {formatLocalTime(Date.now()).replace(/AM|PM/g, '')}</span>
+                <span>UTC {formatLocalTime(localTimeMs).replace(/AM|PM/g, '')}</span>
               </div>
             </div>
 
@@ -1489,25 +1788,29 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
             </button>
           </div>
           <div className="space-y-1">
-            <div><span className="text-zinc-500 font-bold">Current Program:</span> <span className="text-white font-bold">{broadcastState?.currentProgram?.program.title || 'N/A'} ({broadcastState?.currentProgram?.program.id || 'N/A'})</span></div>
+            <div><span className="text-zinc-500 font-bold">Active Program ID:</span> <span className="text-amber-400 font-bold">{broadcastState?.currentProgram?.program.id || 'N/A'}</span></div>
+            <div><span className="text-zinc-500 font-bold">Active Program Title:</span> <span className="text-white font-bold">{broadcastState?.currentProgram?.program.title || 'N/A'}</span></div>
             <div><span className="text-zinc-500 font-bold">Schedule Slot:</span> <span className="text-white font-bold">{broadcastState?.currentProgram ? `${broadcastState.currentProgram.startTimeFormatted} - ${broadcastState.currentProgram.endTimeFormatted}` : 'N/A'}</span></div>
-            <div><span className="text-zinc-500 font-bold">Active Video URL:</span> <span className="text-zinc-400 break-all select-all font-bold">{videoSrc || 'N/A'}</span></div>
-            <div><span className="text-zinc-500 font-bold">Program Config videoUrl:</span> <span className="text-zinc-400 break-all select-all font-bold">{broadcastState?.currentProgram?.program.videoUrl || 'N/A'}</span></div>
-            <div><span className="text-zinc-500 font-bold">Program Type / Cat:</span> <span className="text-white font-bold">{broadcastState?.currentProgram?.program.type || 'N/A'} / {broadcastState?.currentProgram?.program.category || 'N/A'}</span></div>
-            <div><span className="text-zinc-500 font-bold">Active Audio URL:</span> <span className="text-zinc-400 break-all select-all font-bold">{audioTracks.find(t => t.enabled)?.url || 'Embedded / Native'}</span></div>
-            <div><span className="text-zinc-500 font-bold">Metadata URL:</span> <span className="text-zinc-400 break-all select-all font-bold">{broadcastState?.currentProgram ? (broadcastState.currentProgram.program.videoUrl.substring(0, broadcastState.currentProgram.program.videoUrl.lastIndexOf('.')) + '.metadata.json') : 'N/A'}</span></div>
-            <div><span className="text-zinc-500 font-bold">Metadata Status:</span> <span className="text-white font-bold">{metadataLoaded ? 'Valid' : 'Missing / Invalid'}</span></div>
-            <div><span className="text-zinc-500 font-bold">Validation Result:</span> <span className={`font-bold ${validationResult.startsWith('Failed') ? 'text-red-500' : 'text-emerald-500'}`}>{validationResult}</span></div>
-            <div><span className="text-zinc-500 font-bold">video.readyState:</span> <span className="text-white font-bold">{videoRef.current?.readyState ?? 0}</span></div>
-            <div><span className="text-zinc-500 font-bold">video.networkState:</span> <span className="text-white font-bold">{videoRef.current?.networkState ?? 0}</span></div>
-            <div><span className="text-zinc-500 font-bold">video.currentSrc:</span> <span className="text-zinc-400 break-all select-all font-bold">{videoRef.current?.currentSrc || 'N/A'}</span></div>
-            <div><span className="text-zinc-500 font-bold">Playhead (Time/Dur):</span> <span className="text-white font-bold">{videoRef.current ? `${videoRef.current.currentTime.toFixed(2)}s / ${videoRef.current.duration.toFixed(2)}s` : 'N/A'}</span></div>
-            <div><span className="text-zinc-500 font-bold">Buffered Ranges:</span> <span className="text-zinc-400 font-bold">{getBufferedRangesString()}</span></div>
-            <div><span className="text-zinc-500 font-bold">Playback Rate:</span> <span className="text-white font-bold">{videoRef.current?.playbackRate ?? 1}</span></div>
-            <div><span className="text-zinc-500 font-bold">Stalled State:</span> <span className={`font-bold ${isStalledState.current ? 'text-red-500' : 'text-zinc-400'}`}>{isStalledState.current ? 'STALLED (True)' : 'Normal (False)'}</span></div>
-            <div><span className="text-zinc-500 font-bold">Stall Count (Ticks):</span> <span className="text-white font-bold">{stallCountRef.current}</span></div>
-            <div><span className="text-zinc-500 font-bold">Recovery Count:</span> <span className="text-amber-500 font-bold">{broadcastState?.currentProgram ? (recoveryCountRef.current[broadcastState.currentProgram.instanceId] || 0) : 0}</span></div>
-            <div><span className="text-zinc-500 font-bold">video.error:</span> <span className="text-red-500 font-bold">{videoRef.current?.error ? `Code ${videoRef.current.error.code}: ${videoRef.current.error.message || 'Error'}` : 'None'}</span></div>
+            <div><span className="text-zinc-500 font-bold">Active Source URL:</span> <span className="text-zinc-400 break-all select-all font-bold">{videoSrc || 'N/A'}</span></div>
+            <div><span className="text-zinc-500 font-bold">HLS Manifest URL:</span> <span className="text-zinc-400 break-all select-all font-bold">{hlsUrl || 'N/A'}</span></div>
+            <div><span className="text-zinc-500 font-bold">HLS Manifest Status:</span> <span className={`font-bold ${hlsManifestStatus === 'Error' ? 'text-red-500' : 'text-emerald-500'}`}>{hlsManifestStatus}</span></div>
+            <div><span className="text-zinc-500 font-bold">HLS Quality Level:</span> <span className="text-white font-bold">{hlsQualityLevel}</span></div>
+            <div><span className="text-zinc-500 font-bold">HLS Playback State:</span> <span className="text-white font-bold">{hlsPlaybackState}</span></div>
+            <div><span className="text-zinc-500 font-bold">HLS Fatal Error Status:</span> <span className={`font-bold ${hlsFatalError !== 'None' ? 'text-red-500' : 'text-zinc-400'}`}>{hlsFatalError}</span></div>
+            <div><span className="text-zinc-500 font-bold">Token Expiry Status:</span> <span className={`font-bold ${tokenExpiryStatus.startsWith('Expired') ? 'text-red-500' : 'text-zinc-400'}`}>{tokenExpiryStatus}</span></div>
+            <div><span className="text-zinc-500 font-bold">Schedule Offset (Target):</span> <span className="text-white font-bold">{broadcastState?.playbackPosition ? `${broadcastState.playbackPosition.toFixed(2)}s` : '0.00s'}</span></div>
+            <div><span className="text-zinc-500 font-bold">Current Program Position:</span> <span className="text-white font-bold">{`${videoCurrentTime.toFixed(2)}s / ${videoDuration.toFixed(2)}s`}</span></div>
+            {durationWarning && (
+              <div className="text-amber-500 font-bold border border-amber-900 bg-amber-950/40 p-1.5 rounded mt-1.5">{durationWarning}</div>
+            )}
+            <div className="border-t border-zinc-800/80 my-1 pt-1"></div>
+            <div><span className="text-zinc-500 font-bold">video.readyState:</span> <span className="text-white font-bold">{videoReadyState}</span></div>
+            <div><span className="text-zinc-500 font-bold">video.networkState:</span> <span className="text-white font-bold">{videoNetworkState}</span></div>
+            <div><span className="text-zinc-500 font-bold">Buffered Ranges:</span> <span className="text-zinc-400 font-bold">{videoBufferedRanges}</span></div>
+            <div><span className="text-zinc-500 font-bold">Stalled State:</span> <span className={`font-bold ${hudStalledState ? 'text-red-500' : 'text-zinc-400'}`}>{hudStalledState ? 'STALLED (True)' : 'Normal (False)'}</span></div>
+            <div><span className="text-zinc-500 font-bold">Stall Ticks:</span> <span className="text-white font-bold">{hudStallCount}</span></div>
+            <div><span className="text-zinc-500 font-bold">Recovery Count:</span> <span className="text-amber-500 font-bold">{hudRecoveryCount}</span></div>
+            <div><span className="text-zinc-500 font-bold">video.error:</span> <span className="text-red-500 font-bold">{videoError}</span></div>
             <div><span className="text-zinc-500 font-bold">Last Media Event:</span> <span className="text-white font-bold">{lastMediaEvent}</span></div>
           </div>
         </div>

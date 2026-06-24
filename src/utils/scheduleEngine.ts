@@ -21,8 +21,18 @@ export function getRuntimeChannels(): Channel[] {
   const masterChannel = allChannels.find(c => c.id === 'acm-tv');
   if (!masterChannel) return allChannels;
 
-  // Search across all channels in the database to find the real program objects for the 4 assets
-  const realProgramIds = ['x-men-6', 'spiderman-brand-new-day-trailer-1', 'spiderman-brand-new-day-trailer-2', 'neno-butterfly'];
+  // Search across all channels in the database to find the real program objects for the 9 assets
+  const realProgramIds = [
+    'x-men-6',
+    'spiderman-brand-new-day-trailer-1',
+    'spiderman-brand-new-day-trailer-2',
+    'neno-butterfly',
+    'doraemon-s01e01',
+    'doraemon-s01e02',
+    'doraemon-s01e03',
+    'doraemon-s01e04',
+    'doraemon-s01e05'
+  ];
   const filteredPrograms: Program[] = [];
 
   for (const id of realProgramIds) {
@@ -51,25 +61,30 @@ export function getRuntimeChannels(): Channel[] {
 
 export function getProductionScheduleForDay(): ScheduleEntry[] {
   const entries: ScheduleEntry[] = [];
-  const cycleMinutes = 15;
-  const numCycles = 96; // 96 * 15 = 1440 minutes (24 hours)
-
+  
   const items = [
-    { offset: 0, programId: 'neno-butterfly' },
-    { offset: 5, programId: 'spiderman-brand-new-day-trailer-1' },
-    { offset: 8, programId: 'spiderman-brand-new-day-trailer-2' },
-    { offset: 11, programId: 'x-men-6' }
+    { programId: 'neno-butterfly', slotMinutes: 5 },
+    { programId: 'spiderman-brand-new-day-trailer-1', slotMinutes: 3 },
+    { programId: 'spiderman-brand-new-day-trailer-2', slotMinutes: 3 },
+    { programId: 'x-men-6', slotMinutes: 4 },
+    { programId: 'doraemon-s01e01', slotMinutes: 21 },
+    { programId: 'doraemon-s01e02', slotMinutes: 11 },
+    { programId: 'doraemon-s01e03', slotMinutes: 10 },
+    { programId: 'doraemon-s01e04', slotMinutes: 21 },
+    { programId: 'doraemon-s01e05', slotMinutes: 11 }
   ];
 
-  for (let c = 0; c < numCycles; c++) {
-    const cycleStartMin = c * cycleMinutes;
-    for (const item of items) {
-      const totalMin = cycleStartMin + item.offset;
-      const hours = Math.floor(totalMin / 60);
-      const minutes = totalMin % 60;
-      const startTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-      entries.push({ startTime, programId: item.programId });
-    }
+  let currentMin = 0;
+  let idx = 0;
+
+  while (currentMin < 1440) {
+    const item = items[idx % items.length];
+    const hours = Math.floor(currentMin / 60);
+    const minutes = currentMin % 60;
+    const startTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    entries.push({ startTime, programId: item.programId });
+    currentMin += item.slotMinutes;
+    idx++;
   }
 
   return entries;

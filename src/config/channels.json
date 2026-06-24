@@ -50,6 +50,56 @@
           "type": "song",
           "category": "SONG",
           "thumbnail": "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=400"
+        },
+        {
+          "id": "doraemon-s01e01",
+          "title": "Doraemon S01E01",
+          "description": "Episode 1 of Doraemon Season 1.",
+          "duration": 1218,
+          "videoUrl": "https://edge1-frankfurt-sprintcdn.owphbf24.com/hls2/06/10459/5y6wzmhd6fy2_x/index-v1-a3.m3u8?t=whMDlhFuN8FKpFHvM48CMW8IKbwIh4t40ct3jy-7FF8&s=1782290586&e=10800&f=52296787&srv=1070&asn=45609&sp=5500&p=0",
+          "type": "content",
+          "category": "Animation",
+          "thumbnail": "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=400"
+        },
+        {
+          "id": "doraemon-s01e02",
+          "title": "Doraemon S01E02",
+          "description": "Episode 2 of Doraemon Season 1.",
+          "duration": 608,
+          "videoUrl": "https://edge1-moscow-sprintcdn.owphbf24.com/hls2/05/10459/7wvbe65a0ieu_x/index-v1-a3.m3u8?t=qUiFBPVdc1nzpz1WdvRiz1Y9XK7qaC6KaSnnicxVe_Q&s=1782290919&e=10800&f=52296764&srv=1055&asn=45609&sp=5500&p=0",
+          "type": "content",
+          "category": "Animation",
+          "thumbnail": "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=400"
+        },
+        {
+          "id": "doraemon-s01e03",
+          "title": "Doraemon S01E03",
+          "description": "Episode 3 of Doraemon Season 1.",
+          "duration": 590,
+          "videoUrl": "https://edge1-frankfurt-sprintcdn.owphbf24.com/hls2/05/10459/evt45bw50j1n_x/index-v1-a3.m3u8?t=b5svbDhwpW0AWZaoMg0Xw7kl1LCuCpVRl-c38pTfdkE&s=1782291001&e=10800&f=52296762&srv=1055&asn=45609&sp=5500&p=0",
+          "type": "content",
+          "category": "Animation",
+          "thumbnail": "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=400"
+        },
+        {
+          "id": "doraemon-s01e04",
+          "title": "Doraemon S01E04",
+          "description": "Episode 4 of Doraemon Season 1.",
+          "duration": 1204,
+          "videoUrl": "https://edge1-waw-sprintcdn.r66nv9ed.com/hls2/09/10459/6uboj97kqy61_x/index-v1-a3.m3u8?t=bakAE-ppt9pVBHqPkICOuqX6mbDxwWSW9WKEq6pzX9o&s=1782291066&e=10800&f=52296784&srv=1065&asn=45609&sp=5500&p=0",
+          "type": "content",
+          "category": "Animation",
+          "thumbnail": "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=400"
+        },
+        {
+          "id": "doraemon-s01e05",
+          "title": "Doraemon S01E05",
+          "description": "Episode 5 of Doraemon Season 1.",
+          "duration": 642,
+          "videoUrl": "https://edge1-frankfurt-sprintcdn.owphbf24.com/hls2/06/10459/y9p00ed4u2cs_x/index-v1-a3.m3u8?t=bH4urXYaojha9sq23evNkAOOkRvjPaFZXEskdF3r5KU&s=1782291123&e=10800&f=52296768&srv=1050&asn=45609&sp=5500&p=0",
+          "type": "content",
+          "category": "Animation",
+          "thumbnail": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=400"
         }
       ],
       "idents": [],
