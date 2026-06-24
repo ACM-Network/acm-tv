@@ -22,7 +22,7 @@ export default function Footer() {
               ACM TV is a global virtual television network delivering real-time cinematic content, trailer blocks, and media showcases in absolute sync to viewers worldwide.
             </p>
             <div className="text-xs text-amber-500/80 font-bold tracking-wider uppercase">
-              "Entertainment Without Limits"
+              &quot;Entertainment Without Limits&quot;
             </div>
           </div>
 

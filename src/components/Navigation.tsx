@@ -29,8 +29,12 @@ export default function Navigation() {
 
   // Close mobile navigation on route change
   useEffect(() => {
-    setIsOpen(false);
-  }, [pathname]);
+    if (isOpen) {
+      setTimeout(() => {
+        setIsOpen(false);
+      }, 0);
+    }
+  }, [pathname, isOpen]);
 
   return (
     <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${

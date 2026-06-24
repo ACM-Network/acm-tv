@@ -7,17 +7,15 @@ import { Channel, BroadcastState } from '@/types';
 import { getBroadcastState, getRuntimeChannels } from '@/utils/scheduleEngine';
 import LiveNowCard from '@/components/LiveNowCard';
 
+const channels: Channel[] = getRuntimeChannels();
+const flagshipChannel = channels.find(c => c.id === 'acm-tv') || channels[0];
+
 export default function Home() {
   const [flagshipState, setFlagshipState] = useState<BroadcastState | null>(null);
   const [networkStates, setNetworkStates] = useState<{ [key: string]: BroadcastState }>({});
   const [isMounted, setIsMounted] = useState(false);
 
-  const channels: Channel[] = getRuntimeChannels();
-  const flagshipChannel = channels.find(c => c.id === 'acm-tv') || channels[0];
-
   useEffect(() => {
-    setIsMounted(true);
-    
     const updateAllStates = () => {
       const now = Date.now();
       
@@ -41,7 +39,11 @@ export default function Home() {
       setNetworkStates(states);
     };
 
-    updateAllStates();
+    setTimeout(() => {
+      setIsMounted(true);
+      updateAllStates();
+    }, 0);
+
     const interval = setInterval(updateAllStates, 5000); // Update every 5 seconds
 
     return () => clearInterval(interval);

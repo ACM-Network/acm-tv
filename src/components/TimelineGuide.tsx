@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Clock, Tv, Calendar, AlertCircle, Play } from 'lucide-react';
+import { Tv, AlertCircle, Play } from 'lucide-react';
 import Link from 'next/link';
 import { Channel, ProgramInstance } from '../types';
 import { getDailyTimeline } from '../utils/scheduleEngine';
@@ -16,8 +16,10 @@ export default function TimelineGuide({ channel }: TimelineGuideProps) {
   const [activeFilter, setActiveFilter] = useState<string>('all');
 
   useEffect(() => {
-    setCurrentTimeMs(Date.now());
-    setTimeline(getDailyTimeline(channel, Date.now()));
+    setTimeout(() => {
+      setCurrentTimeMs(Date.now());
+      setTimeline(getDailyTimeline(channel, Date.now()));
+    }, 0);
 
     // Keep times updated
     const interval = setInterval(() => {
@@ -58,7 +60,7 @@ export default function TimelineGuide({ channel }: TimelineGuideProps) {
 
       {/* Timeline Layout */}
       <div className="relative border-l border-zinc-800 ml-4 md:ml-32 pl-6 md:pl-8 space-y-6">
-        {filteredTimeline.map((item, index) => {
+        {filteredTimeline.map((item) => {
           const isLive = currentTimeMs >= item.startTime && currentTimeMs < item.endTime;
           const isPast = currentTimeMs >= item.endTime;
 

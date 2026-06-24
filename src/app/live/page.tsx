@@ -18,15 +18,8 @@ function LiveTVClientContent() {
   const channelIdParam = searchParams.get('channel') || 'acm-tv';
   const initialChannel = channels.find(c => c.id === channelIdParam) || channels[0];
   
-  const [activeChannel, setActiveChannel] = useState<Channel>(initialChannel);
+  const activeChannel = channels.find(c => c.id === (searchParams.get('channel') || 'acm-tv')) || channels[0];
   const [broadcastState, setBroadcastState] = useState<BroadcastState | null>(null);
-
-  // Sync active channel when query param changes
-  useEffect(() => {
-    const chId = searchParams.get('channel') || 'acm-tv';
-    const found = channels.find(c => c.id === chId) || channels[0];
-    setActiveChannel(found);
-  }, [searchParams]);
 
   const handleChannelSwitch = (channelId: string) => {
     router.push(`/live?channel=${channelId}`);

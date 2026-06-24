@@ -17,14 +17,7 @@ function ScheduleClientContent() {
   const channelIdParam = searchParams.get('channel') || 'acm-tv';
   const initialChannel = channels.find(c => c.id === channelIdParam) || channels[0];
   
-  const [activeChannel, setActiveChannel] = useState<Channel>(initialChannel);
-
-  // Sync active channel when query param changes
-  useEffect(() => {
-    const chId = searchParams.get('channel') || 'acm-tv';
-    const found = channels.find(c => c.id === chId) || channels[0];
-    setActiveChannel(found);
-  }, [searchParams]);
+  const activeChannel = channels.find(c => c.id === (searchParams.get('channel') || 'acm-tv')) || channels[0];
 
   const handleChannelSwitch = (channelId: string) => {
     router.push(`/schedule?channel=${channelId}`);
