@@ -1,8 +1,8 @@
 "use client";
 
 import React from 'react';
-import { CalendarDays, Clock, Play, Radio, Volume2 } from 'lucide-react';
-import { BroadcastState, ProgramInstance } from '../types';
+import { Radio } from 'lucide-react';
+import { BroadcastState } from '../types';
 import NextProgramCard from './NextProgramCard';
 
 interface ProgramGuideProps {
@@ -104,7 +104,7 @@ export default function ProgramGuide({ broadcastState }: ProgramGuideProps) {
         
         {/* Scrollable list */}
         <div className="flex-1 overflow-y-auto pr-1 space-y-2.5 max-h-[350px] lg:max-h-none scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
-          {laterTonight.map((item, index) => {
+          {laterTonight.map((item) => {
             return (
               <div 
                 key={item.instanceId}
@@ -113,7 +113,7 @@ export default function ProgramGuide({ broadcastState }: ProgramGuideProps) {
                 {/* Small thumbnail */}
                 <div className="relative w-16 aspect-video bg-zinc-950 rounded-lg overflow-hidden flex-shrink-0 border border-zinc-900">
                   <img 
-                    src={item.program.thumbnail || "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=200"} 
+                    src={item.program.thumbnail || "/branding/acm-tv-bug.svg"} 
                     alt={item.program.title}
                     className="w-full h-full object-cover opacity-60"
                   />

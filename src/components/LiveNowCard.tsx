@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Play, Film, Calendar, Clock, Tv } from 'lucide-react';
+import { Play, Clock, Tv } from 'lucide-react';
 import { Channel, ProgramInstance } from '../types';
 
 interface LiveNowCardProps {

@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { Search, Film, Calendar, Clock, Tv, ArrowUpRight, ShieldAlert } from 'lucide-react';
+import { Search, Film, Clock, ArrowUpRight, ShieldAlert } from 'lucide-react';
 import { getRuntimeChannels } from '@/utils/scheduleEngine';
 import { Channel, Program } from '@/types';
 

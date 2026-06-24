@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { AlertCircle, RefreshCw } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import { Channel, ProgramInstance } from '../types';
 import { motion } from 'framer-motion';
 
@@ -51,18 +51,18 @@ export default function StandbyOverlay({
           />
         </div>
 
-        {/* Standby Header */}
-        <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-red-500/10 border border-red-500/30 text-red-500 mb-6">
-          <AlertCircle className="w-4 h-4 animate-pulse" />
-          <span className="text-xs font-bold tracking-widest uppercase">STANDBY / TECHNICAL DIFFICULTIES</span>
+        {/* Offline Badge */}
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-500 mb-6">
+          <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+          <span className="text-[10px] font-bold tracking-widest uppercase">TEMPORARILY OFFLINE</span>
         </div>
 
-        <h3 className="text-2xl font-black text-white tracking-tight mb-3">
-          PLEASE STAND BY
+        <h3 className="text-xl font-black text-white tracking-tight mb-3">
+          BROADCAST TEMPORARILY OFFLINE
         </h3>
         
-        <p className="text-sm text-zinc-400 leading-relaxed mb-6">
-          The broadcast is experiencing temporary network issues or content delivery blockages. ACM TV is attempting to reconnect to the stream.
+        <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed mb-6 px-4">
+          We are experiencing a brief interruption in the stream. We will resume the broadcast shortly. Thank you for your patience.
         </p>
 
         {/* Current / Next Program Metadata */}
@@ -90,7 +90,7 @@ export default function StandbyOverlay({
           className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-bold text-sm transition-all shadow-lg shadow-amber-500/10 active:scale-[0.98] disabled:opacity-50"
         >
           <RefreshCw className={`w-4 h-4 ${isRetrying ? 'animate-spin' : ''}`} />
-          {isRetrying ? 'RECONNECTING...' : 'FORCE RECONNECT'}
+          {isRetrying ? 'RETRIEVING FEED...' : 'RETRY CONNECTION'}
         </button>
       </motion.div>
 

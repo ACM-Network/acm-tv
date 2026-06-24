@@ -1,4 +1,4 @@
-import { Channel, Program, ProgramInstance, BroadcastState, ProgramType } from '../types';
+import { Channel, Program, ProgramInstance, BroadcastState } from '../types';
 import channelsData from '../config/channels.json';
 import scheduleData from '../config/schedule.json';
 import { PRODUCTION_SINGLE_CHANNEL_MODE } from '../config/mode';
@@ -141,7 +141,7 @@ export function formatLocalTime(timestampMs: number): string {
       minute: '2-digit',
       hour12: true
     }).format(new Date(timestampMs));
-  } catch (error) {
+  } catch {
     const d = new Date(timestampMs);
     return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
   }

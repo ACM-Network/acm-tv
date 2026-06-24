@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from 'react';
-import { Play, VolumeX, Volume2, Maximize2, Minimize2, Tv, Wifi, AlertTriangle, Loader2, Activity } from 'lucide-react';
+import { VolumeX, Volume2, Maximize2, Minimize2, Tv, Wifi, AlertTriangle, Loader2 } from 'lucide-react';
 import { Channel, ProgramInstance, BroadcastState } from '../types';
 import { getBroadcastState, formatLocalTime } from '../utils/scheduleEngine';
-import { getDirectVideoUrl, STANDBY_FALLBACK_VIDEO_URL } from '../utils/videoParser';
+import { getDirectVideoUrl } from '../utils/videoParser';
 import StandbyOverlay from './StandbyOverlay';
 import { motion, AnimatePresence } from 'framer-motion';
 import AudioTrackSelector, { AudioTrack } from './AudioTrackSelector';
@@ -58,7 +58,7 @@ const validateRemoteUrl = async (url: string): Promise<{ success: boolean; reaso
     } else {
       return { success: false, reason: `URL returned status code: ${res.status}` };
     }
-  } catch (err: unknown) {
+  } catch {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
@@ -70,27 +70,6 @@ const validateRemoteUrl = async (url: string): Promise<{ success: boolean; reaso
       return { success: false, reason: `Host unreachable or connection failed: ${errMsg}` };
     }
   }
-};
-
-const getReadyStateLabel = (state: number): string => {
-  const states = [
-    'HAVE_NOTHING (0)',
-    'HAVE_METADATA (1)',
-    'HAVE_CURRENT_DATA (2)',
-    'HAVE_FUTURE_DATA (3)',
-    'HAVE_ENOUGH_DATA (4)'
-  ];
-  return states[state] || `UNKNOWN (${state})`;
-};
-
-const getNetworkStateLabel = (state: number): string => {
-  const states = [
-    'NETWORK_EMPTY (0)',
-    'NETWORK_IDLE (1)',
-    'NETWORK_LOADING (2)',
-    'NETWORK_NO_SOURCE (3)'
-  ];
-  return states[state] || `UNKNOWN (${state})`;
 };
 
 interface TVPlayerProps {
@@ -123,53 +102,33 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   const [isRetrying, setIsRetrying] = useState(false);
   const [videoSrc, setVideoSrc] = useState<string>('');
 
-  const [failedPrograms, setFailedPrograms] = useState<Record<string, boolean>>({});
   const failedProgramsRef = useRef<Record<string, boolean>>({});
   const updateFailedProgram = (instanceId: string, nowMs: number) => {
     failedProgramsRef.current = { ...failedProgramsRef.current, [instanceId]: true };
-    setFailedPrograms({ ...failedProgramsRef.current });
     updateBroadcastState(nowMs);
   };
-  const [lastMediaEvent, setLastMediaEvent] = useState<string>('None');
 
-  // Diagnostics and caching
-  const [showDiagnostics, setShowDiagnostics] = useState(false);
-  const [metadataLoaded, setMetadataLoaded] = useState(false);
-  const [validationResult, setValidationResult] = useState<string>('Pending');
   
   // Ref to track the current active instance ID to avoid unnecessary src changes
   const activeInstanceIdRef = useRef<string>('');
+  const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Interactive progress bar hover states
+  const [hoverPosition, setHoverPosition] = useState<number | null>(null);
+  const [hoverTimeStr, setHoverTimeStr] = useState<string>('');
+  const progressBarRef = useRef<HTMLDivElement>(null);
 
   // Hls.js diagnostics and state
   const hlsRef = useRef<Hls | null>(null);
-  const [hlsUrl, setHlsUrl] = useState<string | null>(null);
-  const [hlsQualityLevel, setHlsQualityLevel] = useState<string>('N/A');
-  const [hlsPlaybackState, setHlsPlaybackState] = useState<string>('Idle');
-  const [hlsFatalError, setHlsFatalError] = useState<string>('None');
-  const [tokenExpiryStatus, setTokenExpiryStatus] = useState<string>('N/A');
-  const [durationWarning, setDurationWarning] = useState<string | null>(null);
-
-  // Throttled HUD States
-  const [videoReadyState, setVideoReadyState] = useState<number>(0);
-  const [videoNetworkState, setVideoNetworkState] = useState<number>(0);
   const [videoCurrentTime, setVideoCurrentTime] = useState<number>(0);
   const [videoDuration, setVideoDuration] = useState<number>(0);
-  const [videoBufferedRanges, setVideoBufferedRanges] = useState<string>('none');
-  const [hudStalledState, setHudStalledState] = useState<boolean>(false);
-  const [hudStallCount, setHudStallCount] = useState<number>(0);
-  const [hudRecoveryCount, setHudRecoveryCount] = useState<number>(0);
-  const [videoError, setVideoError] = useState<string>('None');
+  const [bufferedPercent, setBufferedPercent] = useState<number>(0);
 
   // Aspect Ratio & Display Mode
   const [displayMode, setDisplayMode] = useState<'Auto' | 'Contain' | 'Cover' | 'Fill' | 'Stretch'>('Auto');
   const [autoFit, setAutoFit] = useState<'contain' | 'cover'>('contain');
 
   // HLS Stream Info
-  const [hlsResolution, setHlsResolution] = useState<string>('N/A');
-  const [hlsBitrate, setHlsBitrate] = useState<string>('N/A');
-  const [hlsLevelIndex, setHlsLevelIndex] = useState<string>('N/A');
-  const [hlsTotalLevels, setHlsTotalLevels] = useState<number>(0);
-
   // Volume
   const [volume, setVolume] = useState<number>(1.0);
 
@@ -180,11 +139,6 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   // Channel Info Overlay
   const [showInfoOverlay, setShowInfoOverlay] = useState<boolean>(true);
   const infoOverlayTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Quality Monitor / Health
-  const [droppedFrames, setDroppedFrames] = useState<number>(0);
-  const [bufferedSeconds, setBufferedSeconds] = useState<number>(0);
-  const [playbackHealth, setPlaybackHealth] = useState<'Excellent' | 'Good' | 'Fair' | 'Poor'>('Excellent');
 
   // Stability counters & safeguards
   const reloadTimestampsRef = useRef<number[]>([]);
@@ -205,8 +159,6 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     return () => clearInterval(timer);
   }, []);
 
-  const [hlsManifestStatus, setHlsManifestStatus] = useState<string>('N/A');
-
   const destroyHls = () => {
     if (hlsRef.current) {
       console.log('[ACM TV] Destroying active Hls instance...');
@@ -217,31 +169,6 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         console.error('Error destroying Hls instance:', err);
       }
       hlsRef.current = null;
-    }
-    setHlsUrl(null);
-    setHlsManifestStatus('N/A');
-    setHlsQualityLevel('N/A');
-    setHlsPlaybackState('Idle');
-    setHlsFatalError('None');
-    setTokenExpiryStatus('N/A');
-    setHlsResolution('N/A');
-    setHlsBitrate('N/A');
-    setHlsLevelIndex('N/A');
-    setHlsTotalLevels(0);
-  };
-
-  // Helper functions for Display State and Volume controls
-  const handleDisplayModeChange = (mode: 'Auto' | 'Contain' | 'Cover' | 'Fill' | 'Stretch') => {
-    if (['Auto', 'Contain', 'Cover', 'Fill', 'Stretch'].includes(mode)) {
-      setDisplayMode(mode);
-      try {
-        localStorage.setItem('acm_tv_display_mode', mode);
-      } catch (e) {}
-    } else {
-      setDisplayMode('Auto');
-      try {
-        localStorage.setItem('acm_tv_display_mode', 'Auto');
-      } catch (e) {}
     }
   };
 
@@ -290,7 +217,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     }
     try {
       localStorage.setItem('acm_tv_volume', val.toString());
-    } catch (e) {}
+    } catch {}
   };
 
   // Load display mode, volume, and support on mount (SSR Safe)
@@ -304,7 +231,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
           } else {
             setDisplayMode('Auto');
           }
-        } catch (e) {
+        } catch {
           setDisplayMode('Auto');
         }
 
@@ -321,7 +248,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
               }
             }
           }
-        } catch (e) {}
+        } catch {}
 
         // PiP Support Check
         const video = videoRef.current;
@@ -347,7 +274,6 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   const lastTimeRef = useRef<number>(-1);
   const stallCountRef = useRef<number>(0);
   const isStalledState = useRef<boolean>(false);
-  const recoveryCountRef = useRef<Record<string, number>>({});
 
   // Helper to check if file exists (returns 404 safety check with caching)
   const verifyFileExists = async (url: string): Promise<boolean> => {
@@ -359,7 +285,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       const exists = res.status !== 404;
       fileExistenceCacheRef.current[url] = exists;
       return exists;
-    } catch (e) {
+    } catch {
       return true; // Assume present on CORS/network errors to prevent false negatives
     }
   };
@@ -374,7 +300,6 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     }
 
     if (metadataCacheRef.current[metadataUrl]) {
-      setMetadataLoaded(true);
       return metadataCacheRef.current[metadataUrl];
     }
 
@@ -475,7 +400,6 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       };
 
       metadataCacheRef.current[metadataUrl] = validated;
-      setMetadataLoaded(true);
       return validated;
     } catch (e) {
       console.warn(`[ACM TV][METADATA] Could not fetch metadata from: ${metadataUrl}. Using defaults.`, e);
@@ -501,14 +425,15 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     }
     downgradeTimestampsRef.current.push(nowMs);
 
-    // Downgrade HLS quality cap
+    // Downgrade HLS quality cap: One step lower only if needed
     if (hlsRef.current && hlsRef.current.levels.length > 1) {
       const hls = hlsRef.current;
-      const currentLevelIdx = hls.currentLevel >= 0 ? hls.currentLevel : hls.loadLevel;
-      const newCap = Math.max(0, currentLevelIdx - 1);
+      const highestLevelIdx = hls.levels.length - 1;
+      const newCap = highestLevelIdx - 1;
       if (maxLevelCapRef.current === -1 || newCap < maxLevelCapRef.current) {
         maxLevelCapRef.current = newCap;
         hls.autoLevelCapping = newCap;
+        hls.currentLevel = -1; // Unlock level so it can switch down
         console.warn(`[ACM TV] Stability Manager: Buffering detected. Downgrading max level cap to: index ${newCap} (${hls.levels[newCap].height}p)`);
       }
     }
@@ -600,17 +525,8 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
                 isStalledState.current = true;
                 console.warn(`[ACM TV][STALL] Playback stalled at position ${actualPos.toFixed(2)}s for over 5 seconds.`);
                 
-                // STALL RECOVERY: 3 reload attempts within 60s
-                const currentNowMs = nowMs;
-                reloadTimestampsRef.current = reloadTimestampsRef.current.filter(t => currentNowMs - t < 60000);
-                if (reloadTimestampsRef.current.length >= 3) {
-                  console.error("[ACM TV] Stall Recovery: Reload limit exceeded (3 in 60s). Skipping program.");
-                  markProgramUnhealthyAndSkip(currentNowMs);
-                  return;
-                }
-                reloadTimestampsRef.current.push(currentNowMs);
-
-                console.log(`[ACM TV][STALL RECOVERY] Attempting reload (Attempt ${reloadTimestampsRef.current.length}) for instance ${currentInst.instanceId}.`);
+                // STALL RECOVERY: Attempt silent recovery without skipping
+                console.log(`[ACM TV][STALL RECOVERY] Attempting reload for instance ${currentInst.instanceId}.`);
 
                 try {
                   const duration = video.duration || currentInst.program.duration || 1;
@@ -681,6 +597,18 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     destroyHls();
     setDurationWarning(null);
 
+    // Setup 20-second startup timeout for HLS or standard content
+    if (loadingTimeoutRef.current) {
+      clearTimeout(loadingTimeoutRef.current);
+      loadingTimeoutRef.current = null;
+    }
+    loadingTimeoutRef.current = setTimeout(() => {
+      if (activeInstanceIdRef.current === currentInst?.instanceId) {
+        console.error(`[ACM TV] Loading/manifest startup timeout (20s) exceeded for: ${currentInst.program.title}`);
+        markProgramUnhealthyAndSkip(getUnixTimeMs());
+      }
+    }, 20000);
+
     if (isHlsUrl) {
       setHlsUrl(src);
       setHlsManifestStatus('Loading');
@@ -699,9 +627,15 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
           startPosition: seekOffset,
           enableWorker: true,
           lowLatencyMode: true,
-          manifestLoadingMaxRetry: 2,
-          levelLoadingMaxRetry: 2,
-          fragLoadingMaxRetry: 3
+          manifestLoadingMaxRetry: 5,
+          manifestLoadingRetryDelay: 1000,
+          manifestLoadingMaxRetryTimeout: 20000,
+          levelLoadingMaxRetry: 5,
+          levelLoadingRetryDelay: 1000,
+          levelLoadingMaxRetryTimeout: 20000,
+          fragLoadingMaxRetry: 5,
+          fragLoadingRetryDelay: 1000,
+          fragLoadingMaxRetryTimeout: 20000
         });
 
         hlsRef.current = hls;
@@ -722,7 +656,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
           setHlsPlaybackState('Parsed');
           setHlsTotalLevels(hls.levels.length);
 
-          // Always start with highest available quality level
+          // Always start and lock to highest available quality level
           let highestLevelIdx = hls.levels.length - 1;
           let maxBitrate = 0;
           for (let i = 0; i < hls.levels.length; i++) {
@@ -731,13 +665,14 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
               highestLevelIdx = i;
             }
           }
+          
           hls.startLevel = highestLevelIdx;
-          console.log(`[ACM TV] Stability Manager: Configured startLevel to highest index: ${highestLevelIdx}`);
-
-          // Reset caps when loading new program
-          maxLevelCapRef.current = -1;
-          hls.autoLevelCapping = -1;
+          hls.currentLevel = highestLevelIdx; // Lock to highest initially
+          maxLevelCapRef.current = highestLevelIdx;
+          hls.autoLevelCapping = highestLevelIdx;
           stablePlaybackSecondsRef.current = 0;
+
+          console.log(`[ACM TV] Quality locked to highest index: ${highestLevelIdx}`);
 
           video.play()
             .then(() => {
@@ -745,6 +680,10 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
               setIsLoading(false);
               setHlsPlaybackState('Playing');
               consecutiveErrorsRef.current = 0;
+              if (loadingTimeoutRef.current) {
+                clearTimeout(loadingTimeoutRef.current);
+                loadingTimeoutRef.current = null;
+              }
             })
             .catch((err) => {
               if (err.name === 'NotAllowedError') {
@@ -777,16 +716,11 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
             console.error(`[ACM TV] Fatal HLS error: ${data.type} - ${data.details}`);
             setHlsFatalError(`Fatal: ${data.details}`);
             
-            const isManifestError = data.details === Hls.ErrorDetails.MANIFEST_LOAD_ERROR || 
-                                    data.details === Hls.ErrorDetails.MANIFEST_LOAD_TIMEOUT ||
-                                    data.details === Hls.ErrorDetails.LEVEL_LOAD_ERROR;
-            
             const responseCode = data.response?.code;
-            const isTokenExpiredOrAuthError = responseCode === 403 || responseCode === 404 || responseCode === 401;
+            const is404 = responseCode === 404;
 
-            if (isManifestError || isTokenExpiredOrAuthError || (responseCode && responseCode >= 400)) {
-              console.warn(`[ACM TV] Fatal manifest / token expired error detected (${responseCode || data.details}). Skipping program.`);
-              setTokenExpiryStatus(responseCode === 403 ? 'Expired (403)' : responseCode === 404 ? 'Expired (404)' : 'Error');
+            if (is404) {
+              console.warn(`[ACM TV] Fatal 404 error detected. Skipping program.`);
               markProgramUnhealthyAndSkip(getUnixTimeMs());
             } else {
               // Rate limit reloads to 3 within 60 seconds
@@ -799,15 +733,17 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
               }
               reloadTimestampsRef.current.push(now);
 
+              console.log('[ACM TV] Attempting silent recovery...');
               if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
-                console.log('[ACM TV] Fatal Media Error. Attempting HLS recoverMediaError...');
                 hls.recoverMediaError();
               } else if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-                console.log('[ACM TV] Fatal Network Error. Attempting HLS startLoad...');
                 hls.startLoad();
               } else {
-                console.warn(`[ACM TV] Unrecoverable HLS error (${data.details}). Skipping program.`);
-                markProgramUnhealthyAndSkip(now);
+                setTimeout(() => {
+                  if (activeInstanceIdRef.current === currentInst?.instanceId) {
+                    hls.startLoad();
+                  }
+                }, 3000);
               }
             }
           } else {
@@ -829,6 +765,10 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
               setIsPlaying(true);
               setIsLoading(false);
               consecutiveErrorsRef.current = 0;
+              if (loadingTimeoutRef.current) {
+                clearTimeout(loadingTimeoutRef.current);
+                loadingTimeoutRef.current = null;
+              }
             })
             .catch(err => {
               if (err.name === 'NotAllowedError') {
@@ -866,6 +806,10 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
           setIsPlaying(true);
           setIsLoading(false);
           consecutiveErrorsRef.current = 0;
+          if (loadingTimeoutRef.current) {
+            clearTimeout(loadingTimeoutRef.current);
+            loadingTimeoutRef.current = null;
+          }
         })
         .catch((err) => {
           if (err.name === 'NotAllowedError') {
@@ -875,6 +819,26 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
           }
         });
     }
+  };
+
+  const updateVideoStats = (video: HTMLVideoElement) => {
+    setVideoCurrentTime(video.currentTime);
+    if (video.duration && video.duration !== videoDuration) {
+      setVideoDuration(video.duration);
+    }
+    
+    let bufPercent = 0;
+    if (video.duration > 0) {
+      for (let i = 0; i < video.buffered.length; i++) {
+        const start = video.buffered.start(i);
+        const end = video.buffered.end(i);
+        if (video.currentTime >= start && video.currentTime <= end) {
+          bufPercent = (end / video.duration) * 100;
+          break;
+        }
+      }
+    }
+    setBufferedPercent(bufPercent);
   };
 
   // Clean up Hls instance on unmount
@@ -890,8 +854,8 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       const video = videoRef.current;
       if (!video) return;
 
-      // Update current playhead position once per second for overlay & progress bar
-      setVideoCurrentTime(video.currentTime);
+      // Update current playhead position, duration and buffered stats
+      updateVideoStats(video);
 
       // Stability Monitor: check stable playback for quality restoration
       const curTime = video.currentTime;
@@ -912,88 +876,22 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
           stablePlaybackSecondsRef.current = 0;
           if (hlsRef.current && maxLevelCapRef.current !== -1) {
             const hls = hlsRef.current;
-            const nextCap = maxLevelCapRef.current + 1;
-            if (nextCap >= hls.levels.length - 1) {
-              maxLevelCapRef.current = -1;
-              hls.autoLevelCapping = -1;
-              console.log(`[ACM TV] Stability Manager: Playback stable for 20s. Restored quality to full Auto.`);
-            } else {
-              maxLevelCapRef.current = nextCap;
-              hls.autoLevelCapping = nextCap;
-              console.log(`[ACM TV] Stability Manager: Playback stable for 20s. Restored quality cap to index: ${nextCap} (${hls.levels[nextCap].height}p)`);
-            }
+            const highestLevelIdx = hls.levels.length - 1;
+            maxLevelCapRef.current = highestLevelIdx;
+            hls.autoLevelCapping = highestLevelIdx;
+            hls.currentLevel = highestLevelIdx; // Lock back to highest
+            console.log(`[ACM TV] Stability Manager: Playback stable for 20s. Restored and locked quality to highest level.`);
           }
         }
       } else {
         stablePlaybackSecondsRef.current = 0;
       }
 
-      // If Diagnostics HUD is open, perform throttled updates once per second
-      if (showDiagnostics) {
-        setVideoReadyState(video.readyState);
-        setVideoNetworkState(video.networkState);
-        setVideoDuration(video.duration || 0);
-
-        const ranges: string[] = [];
-        for (let i = 0; i < video.buffered.length; i++) {
-          ranges.push(`[${video.buffered.start(i).toFixed(1)}s-${video.buffered.end(i).toFixed(1)}s]`);
-        }
-        setVideoBufferedRanges(ranges.join(', ') || 'none');
-        setBufferedSeconds(bufAhead);
-
-        const quality = video.getVideoPlaybackQuality ? video.getVideoPlaybackQuality() : null;
-        const dropped = quality ? quality.droppedVideoFrames : ((video as HTMLVideoElement & { webkitDroppedFrameCount?: number }).webkitDroppedFrameCount || 0);
-        setDroppedFrames(dropped);
-
-        // Health Score
-        let health: 'Excellent' | 'Good' | 'Fair' | 'Poor' = 'Excellent';
-        if (isStalledState.current || video.paused || isBuffering) {
-          health = 'Poor';
-        } else if (bufAhead >= 8.0) {
-          health = 'Excellent';
-        } else if (bufAhead >= 4.0) {
-          health = 'Good';
-        } else if (bufAhead >= 1.5) {
-          health = 'Fair';
-        } else {
-          health = 'Poor';
-        }
-        setPlaybackHealth(health);
-
-        setVideoError(video.error ? `Code ${video.error.code}: ${video.error.message || 'Error'}` : 'None');
-        setHudStalledState(isStalledState.current);
-        setHudStallCount(stallCountRef.current);
-
-        const currentInst = broadcastState?.currentProgram;
-        if (currentInst) {
-          setHudRecoveryCount(recoveryCountRef.current[currentInst.instanceId] || 0);
-        }
-
-        // HLS specific state
-        if (hlsRef.current) {
-          const h = hlsRef.current;
-          setHlsTotalLevels(h.levels.length);
-          const currentLevelIdx = h.currentLevel;
-          setHlsLevelIndex(currentLevelIdx === -1 ? `Auto (Lvl ${h.loadLevel + 1})` : `Level ${currentLevelIdx + 1}`);
-
-          const activeLevel = h.levels[currentLevelIdx] || h.levels[h.loadLevel] || h.levels[0];
-          if (activeLevel) {
-            setHlsResolution(`${activeLevel.width}x${activeLevel.height}`);
-            setHlsBitrate(`${(activeLevel.bitrate / 1000).toFixed(0)} kbps`);
-          }
-        } else {
-          if (video.videoWidth && video.videoHeight) {
-            setHlsResolution(`${video.videoWidth}x${video.videoHeight}`);
-            setHlsBitrate('N/A (MP4)');
-            setHlsLevelIndex('N/A');
-            setHlsTotalLevels(0);
-          }
-        }
-      }
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [showDiagnostics, broadcastState, isBuffering, isPlaying]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [broadcastState, isBuffering, isPlaying]);
 
   // Picture-in-Picture event sync handlers
   useEffect(() => {
@@ -1028,6 +926,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       video.removeEventListener('enterpictureinpicture', onEnterPip);
       video.removeEventListener('leavepictureinpicture', onLeavePip);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [broadcastState?.currentProgram?.instanceId]);
 
   const togglePip = async () => {
@@ -1079,29 +978,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     }
   }, []);
 
-  // Listen for 'D' key press to toggle diagnostics HUD
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'd' || e.key === 'D') {
-        if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') {
-          return;
-        }
-        setShowDiagnostics(prev => !prev);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
 
-  // Force re-renders for diagnostics HUD without affecting core loop
-  const [diagnosticsTick, setDiagnosticsTick] = useState(0);
-  useEffect(() => {
-    if (!showDiagnostics) return;
-    const interval = setInterval(() => {
-      setDiagnosticsTick(t => t + 1);
-    }, 500);
-    return () => clearInterval(interval);
-  }, [showDiagnostics]);
 
   const fallbackToDefaultAudio = () => {
     const isRemote = videoSrc.startsWith('http://') || videoSrc.startsWith('https://');
@@ -1127,15 +1004,6 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     }
   };
 
-  const getBufferedRangesString = () => {
-    const video = videoRef.current;
-    if (!video) return 'none';
-    const ranges = [];
-    for (let i = 0; i < video.buffered.length; i++) {
-      ranges.push(`[${video.buffered.start(i).toFixed(1)}s - ${video.buffered.end(i).toFixed(1)}s]`);
-    }
-    return ranges.join(', ') || 'none';
-  };
 
   const detectNativeAudioTracks = () => {
     const video = videoRef.current;
@@ -1204,28 +1072,6 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     }
   }, [videoSrc]);
 
-  // Listen to video element events for diagnostics
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const events = [
-      'loadstart', 'suspend', 'emptied', 'stalled', 'error', 'abort',
-      'waiting', 'playing', 'loadedmetadata', 'canplay', 'play', 'pause'
-    ];
-
-    const logEvent = (e: Event) => {
-      const eventName = e.type.toUpperCase();
-      console.log(`[ACM TV][MEDIA EVENT] ${eventName} | readyState: ${video.readyState} | networkState: ${video.networkState}`);
-      setLastMediaEvent(`${eventName} (${new Date().toLocaleTimeString()})`);
-    };
-
-    events.forEach(evt => video.addEventListener(evt, logEvent));
-
-    return () => {
-      events.forEach(evt => video.removeEventListener(evt, logEvent));
-    };
-  }, [videoSrc]);
 
   // Reset fallback active on program switch
   useEffect(() => {
@@ -1249,7 +1095,6 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       if (!active) return;
       setMediaError(null);
       setMissingFilePath(null);
-      setMetadataLoaded(false);
     }, 0);
     consecutiveErrorsRef.current = 0;
 
@@ -1280,9 +1125,14 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       if (!valRes.success) {
         const reason = `Validation failed: ${valRes.reason || 'Unknown error'}`;
         setValidationResult(`Failed: ${reason}`);
-        updateFailedProgram(currentInst.instanceId, getUnixTimeMs());
-        setIsLoading(false);
-        return;
+        if (valRes.reason?.includes("404")) {
+          console.warn(`[ACM TV][VALIDATION] Definitive 404 detected. Skipping program.`);
+          updateFailedProgram(currentInst.instanceId, getUnixTimeMs());
+          setIsLoading(false);
+          return;
+        } else {
+          console.warn(`[ACM TV][VALIDATION] Non-404 failure: ${valRes.reason}. Attempting playback anyway.`);
+        }
       }
 
       // 2. Fetch metadata (completely optional, do not block or throw error if it fails)
@@ -1401,6 +1251,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       active = false;
       if (transitionTimer) clearTimeout(transitionTimer);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [broadcastState?.currentProgram?.instanceId, isFallbackActive]);
 
   const handleSelectTrack = (trackId: string | number) => {
@@ -1564,6 +1415,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       }
       audio.src = '';
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [audioTracks, isPlaying, isBuffering, isLoading, isMuted]);
 
   // Run update loop
@@ -1589,7 +1441,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
             scheduleNextHandover();
           }, msRemaining + 200); // 200ms buffer to allow server clock rollover
         }
-      } catch (e) {
+      } catch {
         // Ignored
       }
     };
@@ -1624,6 +1476,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       window.removeEventListener('focus', handleWindowFocus);
       window.removeEventListener('online', handleOnline);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channel, isFallbackActive]);
 
   const syncSubtitlesMode = () => {
@@ -1703,37 +1556,33 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     if (!currentInst) return;
 
     const instanceId = currentInst.instanceId;
-    const recoveryCount = recoveryCountRef.current[instanceId] || 0;
-    console.error(`[ACM TV][PLAYBACK ERROR] Context: ${errorContext} | Recovery Count: ${recoveryCount} | Details:`, errorDetail || '');
+    console.error(`[ACM TV][PLAYBACK ERROR] Context: ${errorContext} | Details:`, errorDetail || '');
 
-    if (recoveryCount < 1) {
-      recoveryCountRef.current[instanceId] = recoveryCount + 1;
-      console.log(`[ACM TV][RECOVERY] Attempting controlled recovery for instance: ${instanceId}`);
-      try {
-        if (hlsRef.current) {
-          hlsRef.current.recoverMediaError();
-        } else {
-          video.load();
-          const targetPos = broadcastState?.playbackPosition || 0;
-          const duration = video.duration || currentInst.program.duration || 1;
-          video.currentTime = targetPos % duration;
-          video.play()
-            .then(() => {
-              console.log(`[ACM TV][RECOVERY] Recovery attempt succeeded.`);
-            })
-            .catch((err) => {
-              if (err instanceof Error && err.name !== 'AbortError' && err.name !== 'NotAllowedError') {
-                handlePlaybackError('Recovery play failed', err);
-              }
-            });
+    // Silently attempt controlled recovery after 3 seconds
+    console.log(`[ACM TV][RECOVERY] Scheduling silent recovery in 3 seconds for instance: ${instanceId}`);
+    setTimeout(() => {
+      if (videoRef.current && activeInstanceIdRef.current === instanceId) {
+        console.log(`[ACM TV][RECOVERY] Attempting silent recovery for: ${instanceId}`);
+        const now = Date.now();
+        const state = getBroadcastState(channel, now);
+        const targetPos = state.playbackPosition;
+        const duration = video.duration || currentInst.program.duration || 1;
+        
+        try {
+          if (hlsRef.current) {
+            hlsRef.current.recoverMediaError();
+          } else {
+            video.load();
+            video.currentTime = targetPos % duration;
+            video.play()
+              .then(() => console.log(`[ACM TV][RECOVERY] Silent recovery succeeded.`))
+              .catch((e) => console.error("[ACM TV][RECOVERY] Silent recovery play failed:", e));
+          }
+        } catch (err) {
+          console.error("[ACM TV][RECOVERY] Silent recovery exception:", err);
         }
-      } catch (err) {
-        handlePlaybackError('Recovery reload/seek failed', err);
       }
-    } else {
-      console.error(`[ACM TV][RECOVERY] Recovery already attempted for instance ${instanceId}. Skipping to next program.`);
-      updateFailedProgram(instanceId, getUnixTimeMs());
-    }
+    }, 3000);
   };
 
   // Handle errors and fall back gracefully
@@ -1781,15 +1630,53 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     }
   };
 
-  const handleToggleInfoOverlay = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (showInfoOverlay) {
-      setShowInfoOverlay(false);
-      if (infoOverlayTimeoutRef.current) clearTimeout(infoOverlayTimeoutRef.current);
-    } else {
-      triggerInfoOverlay();
+  const handleGoLive = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const video = videoRef.current;
+    if (!video || !broadcastState) return;
+    const now = Date.now();
+    const state = getBroadcastState(channel, now);
+    const targetPos = state.playbackPosition;
+    const duration = video.duration || state.currentProgram?.program.duration || 1;
+    video.currentTime = targetPos % duration;
+    setVideoCurrentTime(targetPos % duration);
+    if (video.paused) {
+      video.play().then(() => setIsPlaying(true)).catch(err => console.error("Play failed:", err));
     }
   };
+
+  const handleProgressBarClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = progressBarRef.current?.getBoundingClientRect();
+    if (!rect || !videoRef.current || !broadcastState?.currentProgram) return;
+    const clickX = e.clientX - rect.left;
+    const width = rect.width;
+    const percentage = Math.max(0, Math.min(1, clickX / width));
+    
+    const duration = videoRef.current.duration || broadcastState.currentProgram.program.duration || 1;
+    const seekTarget = percentage * duration;
+    videoRef.current.currentTime = seekTarget;
+    setVideoCurrentTime(seekTarget);
+  };
+
+  const handleProgressBarMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = progressBarRef.current?.getBoundingClientRect();
+    if (!rect || !broadcastState?.currentProgram) return;
+    const moveX = e.clientX - rect.left;
+    const width = rect.width;
+    const percentage = Math.max(0, Math.min(1, moveX / width));
+    setHoverPosition(percentage * 100);
+
+    const duration = videoRef.current?.duration || broadcastState.currentProgram.program.duration || 0;
+    const hoverTime = percentage * duration;
+    const mins = Math.floor(hoverTime / 60);
+    const secs = Math.floor(hoverTime % 60);
+    setHoverTimeStr(`${mins}:${secs.toString().padStart(2, '0')}`);
+  };
+
+  const handleProgressBarMouseLeave = () => {
+    setHoverPosition(null);
+  };
+
 
   // Tap to Unmute Action
   const handleUnmute = () => {
@@ -1872,9 +1759,16 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     };
   }, []);
 
-  const progressPercent = broadcastState && broadcastState.currentProgram
-    ? (broadcastState.playbackPosition / broadcastState.currentProgram.program.duration) * 100
-    : 0;
+  const currentDuration = videoDuration || broadcastState?.currentProgram?.program.duration || 1;
+  const progressPercent = (videoCurrentTime / currentDuration) * 100;
+
+  const delaySec = broadcastState ? Math.max(0, broadcastState.playbackPosition - videoCurrentTime) : 0;
+  const isBehindLive = delaySec > 4; // 4s threshold to account for clock skew and playback buffer differences
+  const formattedDelay = (() => {
+    const mins = Math.floor(delaySec / 60);
+    const secs = Math.floor(delaySec % 60);
+    return `-${mins}:${secs.toString().padStart(2, '0')}`;
+  })();
 
   return (
     <div 
@@ -1898,7 +1792,14 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       {/* Video Element */}
       <video
         ref={videoRef}
-        onLoadedMetadata={handleLoadedMetadata}
+        onClick={handlePlayPause}
+        poster={broadcastState?.currentProgram?.program.thumbnail || "/branding/acm-tv-bug.svg"}
+        onLoadedMetadata={(e) => {
+          handleLoadedMetadata(e);
+          updateVideoStats(e.currentTarget);
+        }}
+        onTimeUpdate={(e) => updateVideoStats(e.currentTarget)}
+        onProgress={(e) => updateVideoStats(e.currentTarget)}
         onError={handleVideoError}
         onPlay={() => {
           setIsPlaying(true);
@@ -1912,7 +1813,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
           handleBufferingEvent(getUnixTimeMs());
         }}
         onPause={() => setIsPlaying(false)}
-        className="w-full h-full transition-all duration-300"
+        className="w-full h-full transition-all duration-300 cursor-pointer"
         style={getObjectFitStyle()}
         playsInline
         muted={isMuted}
@@ -1941,15 +1842,42 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         </div>
       )}
 
-      {/* Loading & Buffering Spinner HUD */}
+      {/* Poster artwork overlay during loading to prevent black flash */}
+      {isLoading && !mediaError && broadcastState?.currentProgram?.program.thumbnail && (
+        <div className="absolute inset-0 z-10 bg-black pointer-events-none">
+          <img 
+            src={broadcastState.currentProgram.program.thumbnail} 
+            alt={broadcastState.currentProgram.program.title} 
+            className="w-full h-full object-cover opacity-60"
+          />
+        </div>
+      )}
+
+      {/* Subtle Spinner only (No text) */}
       {(isLoading || isBuffering) && !mediaError && (
-        <div className="absolute inset-0 z-30 bg-black/40 flex items-center justify-center pointer-events-none">
-          <div className="flex flex-col items-center gap-3 bg-zinc-950/80 backdrop-blur-md px-6 py-4 rounded-2xl border border-zinc-800/80 shadow-2xl">
-            <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
-            <span className="text-xs font-bold tracking-widest text-zinc-300 uppercase">
-              {isLoading ? 'LOADING FEED...' : 'BUFFERING FEED...'}
-            </span>
+        <div className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
+          <div className="p-3 rounded-full bg-zinc-950/60 backdrop-blur-sm border border-zinc-800/40 shadow-lg">
+            <Loader2 className="w-6 h-6 text-amber-500 animate-spin" />
           </div>
+        </div>
+      )}
+
+      {/* Centered Pause Glass Overlay */}
+      {!isPlaying && !isLoading && !isBuffering && !mediaError && (
+        <div 
+          onClick={handlePlayPause}
+          className="absolute inset-0 z-35 bg-black/45 backdrop-blur-[2px] flex items-center justify-center cursor-pointer select-none"
+        >
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="flex items-center gap-3 bg-zinc-900/80 backdrop-blur-md px-6 py-3.5 rounded-2xl border border-zinc-850/80 shadow-2xl"
+          >
+            <span className="text-sm font-black text-white tracking-widest uppercase flex items-center gap-2">
+              <span>⏸</span>
+              <span>PAUSED</span>
+            </span>
+          </motion.div>
         </div>
       )}
 
@@ -2107,138 +2035,137 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
             {/* Top HUD Banner */}
             <div className="flex items-center justify-between pointer-events-auto">
               <div className="flex items-center space-x-3">
-                <span className="flex items-center gap-1.5 px-3 py-1 rounded bg-red-600 border border-red-500/40 text-[10px] font-black text-white tracking-widest uppercase">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
-                  LIVE
-                </span>
-                <span className="px-2 py-1 rounded bg-zinc-800 border border-zinc-700 text-[10px] font-bold text-zinc-300 tracking-wider">
-                  {hlsResolution !== 'N/A' && hlsResolution.includes('x') ? hlsResolution.split('x')[1] + 'P' : 'LIVE'}
-                </span>
-                <span className="hidden sm:inline text-xs text-zinc-400 font-medium">
+                <span className="text-xs text-zinc-300 font-black tracking-wide uppercase">
                   {channel.name} Network Feed
                 </span>
               </div>
-              <div className="flex items-center space-x-1.5 text-xs font-mono text-zinc-300 bg-black/40 border border-zinc-800/80 px-3 py-1 rounded">
-                <Wifi className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+              <div className="flex items-center space-x-1.5 text-[10px] font-mono text-zinc-400 bg-zinc-950/60 border border-zinc-900/80 px-2.5 py-1 rounded">
+                <Wifi className="w-3.5 h-3.5 text-red-500 animate-pulse" />
                 <span>UTC {formatLocalTime(localTimeMs).replace(/AM|PM/g, '')}</span>
               </div>
             </div>
 
             {/* Bottom Controls HUD */}
-            <div className="space-y-4 pointer-events-auto">
-              {/* Program Info (Only if playing main program) */}
+            <div className="space-y-4 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+              {/* Program Info: [LIVE ●] Program Title */}
               {broadcastState?.currentProgram && (
-                <div className="hidden sm:block max-w-xl text-left drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-                  <span className="text-[10px] font-bold text-amber-500 tracking-widest uppercase block mb-0.5">
-                    Now Broadcasting • {broadcastState.currentProgram.program.category}
+                <div className="flex items-center gap-2.5 text-left drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] mb-1">
+                  <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-red-600 text-[10px] font-black text-white tracking-widest uppercase">
+                    LIVE ●
                   </span>
-                  <h4 className="text-lg font-black text-white leading-tight">
+                  <span className="text-sm font-black text-white uppercase tracking-tight">
                     {broadcastState.currentProgram.program.title}
-                  </h4>
+                  </span>
                 </div>
               )}
 
-              {/* Progress Bar (Branded) */}
+              {/* Progress Bar (YouTube Live style) */}
               <div className="space-y-1.5">
-                <div className="w-full h-1.5 bg-zinc-800/80 rounded-full overflow-hidden">
+                <div 
+                  ref={progressBarRef}
+                  onClick={handleProgressBarClick}
+                  onMouseMove={handleProgressBarMouseMove}
+                  onMouseLeave={handleProgressBarMouseLeave}
+                  className="relative w-full h-2 bg-zinc-800/80 rounded-full cursor-pointer group"
+                >
+                  {/* Buffered track */}
                   <div 
-                    className="h-full bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 transition-all duration-1000 ease-linear rounded-full"
+                    className="absolute top-0 left-0 h-full bg-white/20 rounded-full pointer-events-none"
+                    style={{ width: `${bufferedPercent}%` }}
+                  />
+                  
+                  {/* Active progress (Red like YouTube Live) */}
+                  <div 
+                    className="absolute top-0 left-0 h-full bg-red-650 rounded-full pointer-events-none"
                     style={{ width: `${progressPercent}%` }}
                   />
+
+                  {/* Playhead thumb (grows on hover) */}
+                  <div 
+                    className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-red-650 border border-white/50 rounded-full scale-0 group-hover:scale-100 transition-transform pointer-events-none"
+                    style={{ left: `calc(${progressPercent}% - 6px)` }}
+                  />
+
+                  {/* Hover position line */}
+                  {hoverPosition !== null && (
+                    <div 
+                      className="absolute top-0 bottom-0 w-0.5 bg-white/40 pointer-events-none"
+                      style={{ left: `${hoverPosition}%` }}
+                    />
+                  )}
+
+                  {/* Hover time preview box */}
+                  {hoverPosition !== null && (
+                    <div 
+                      className="absolute -top-8 -translate-x-1/2 px-2 py-0.5 rounded bg-zinc-950/90 border border-zinc-800 text-[10px] text-white font-mono pointer-events-none"
+                      style={{ left: `${hoverPosition}%` }}
+                    >
+                      {hoverTimeStr}
+                    </div>
+                  )}
                 </div>
-                {broadcastState?.currentProgram && (
-                  <div className="flex justify-between items-center text-[10px] font-mono text-zinc-400">
+
+                {/* Timeline labels and Go Live / Live Status */}
+                <div className="flex justify-between items-center text-[10px] font-mono text-zinc-400">
+                  <div className="flex items-center space-x-3">
+                    {isBehindLive ? (
+                      <div className="flex items-center gap-2">
+                        <span className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-zinc-950 border border-zinc-900 text-red-500 font-black">
+                          {formattedDelay} LIVE
+                        </span>
+                        <button
+                          onClick={handleGoLive}
+                          className="px-2 py-1 rounded bg-red-600 hover:bg-red-700 text-white font-black uppercase text-[9px] tracking-wider animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.5)] transition-all cursor-pointer"
+                        >
+                          GO LIVE
+                        </button>
+                      </div>
+                    ) : (
+                      <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-red-600 text-[10px] font-black text-white uppercase tracking-wider">
+                        LIVE ●
+                      </span>
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
                     <span>
                       {new Date(Math.max(0, videoCurrentTime) * 1000).toISOString().substring(11, 19)}
                     </span>
+                    <span>/</span>
                     <span>
-                      {new Date(broadcastState.currentProgram.program.duration * 1000).toISOString().substring(11, 19)}
+                      {broadcastState?.currentProgram 
+                        ? new Date(broadcastState.currentProgram.program.duration * 1000).toISOString().substring(11, 19)
+                        : "00:00:00"
+                      }
                     </span>
                   </div>
-                )}
+                </div>
               </div>
 
               {/* Controls Action Panel */}
-              <div className="flex flex-col sm:flex-row gap-3 items-center justify-between pt-1">
-                {/* Left Side: Play/Pause and Volume */}
-                <div className="flex items-center space-x-3 w-full sm:w-auto justify-between sm:justify-start">
-                  <button
-                    onClick={handlePlayPause}
-                    className="px-3 py-1.5 rounded-lg bg-zinc-900/70 hover:bg-zinc-800/80 border border-zinc-800 text-white transition-colors cursor-pointer flex items-center justify-center min-w-[90px]"
-                    title={isPlaying ? 'Pause Broadcast' : 'Play Live Broadcast'}
-                  >
-                    {isPlaying ? (
-                      <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider">
-                        <span className="w-2.5 h-2.5 bg-red-600 border border-red-500/40 rounded-full animate-pulse"></span>
-                        PAUSE
-                      </span>
-                    ) : (
-                      <span className="flex items-center gap-1.5 text-[10px] font-black text-emerald-400 uppercase tracking-wider">
-                        <Play className="w-3.5 h-3.5 fill-emerald-400" />
-                        PLAY LIVE
-                      </span>
-                    )}
-                  </button>
-
-                  <div className="flex items-center space-x-2 bg-zinc-900/70 border border-zinc-800 rounded-lg px-2 py-1.5">
-                    <button 
-                      onClick={toggleMute}
-                      className="text-zinc-400 hover:text-white transition-colors cursor-pointer"
-                      title={isMuted ? 'Unmute' : 'Mute'}
-                    >
-                      {isMuted ? <VolumeX className="w-4 h-4 text-red-500" /> : <Volume2 className="w-4 h-4" />}
-                    </button>
-                    <input 
-                      type="range"
-                      min="0"
-                      max="1"
-                      step="0.05"
-                      value={isMuted ? 0 : volume}
-                      onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
-                      className="w-16 sm:w-20 accent-amber-500 h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer"
-                    />
-                  </div>
-                </div>
-
-                {/* Center Indicator */}
-                <div className="hidden md:flex items-center space-x-2 text-[10px] font-black text-zinc-400 uppercase tracking-widest bg-zinc-950/40 border border-zinc-900 px-3 py-1.5 rounded-lg">
-                  <Tv className="w-3.5 h-3.5 text-amber-500" />
-                  <span>ACM Live Broadcast Feed</span>
-                </div>
-
-                {/* Right Side: Aspect Selector, Info Toggle, Subtitles, Audio, PiP, Fullscreen */}
-                <div className="flex items-center space-x-2 w-full sm:w-auto justify-end">
-                  {/* Display Mode Dropdown */}
-                  <div className="relative">
-                    <select 
-                      value={displayMode}
-                      onChange={(e) => handleDisplayModeChange(e.target.value as 'Auto' | 'Contain' | 'Cover' | 'Fill' | 'Stretch')}
-                      className="bg-zinc-900/70 hover:bg-zinc-800/80 border border-zinc-800 rounded-lg px-2 py-1.5 text-[10px] text-white focus:outline-none cursor-pointer font-bold uppercase tracking-wider appearance-none pr-6 pl-2.5"
-                      style={{ 
-                        backgroundImage: 'url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns=\'http://www.w3.org/2500/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'white\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'M6 9l6 6 6-6\'/%3E%3C/svg%3E")', 
-                        backgroundRepeat: 'no-repeat', 
-                        backgroundPosition: 'right 6px center', 
-                        backgroundSize: '10px' 
-                      }}
-                      title="Aspect Ratio Display Mode"
-                    >
-                      <option value="Auto">Display: Auto</option>
-                      <option value="Contain">Display: Contain</option>
-                      <option value="Cover">Display: Cover</option>
-                      <option value="Fill">Display: Fill</option>
-                      <option value="Stretch">Display: Stretch</option>
-                    </select>
-                  </div>
-
-                  {/* Info Overlay Toggle */}
+              <div className="flex items-center justify-between pt-1">
+                {/* Left Side: Volume Control */}
+                <div className="flex items-center space-x-2 bg-zinc-900/70 border border-zinc-800/80 rounded-lg px-2.5 py-1.5 pointer-events-auto">
                   <button 
-                    onClick={handleToggleInfoOverlay}
-                    className={`p-2 rounded-lg bg-zinc-900/70 hover:bg-zinc-800/80 border text-white transition-colors cursor-pointer ${showInfoOverlay ? 'border-amber-500 text-amber-500' : 'border-zinc-800'}`}
-                    title="Toggle Channel Info Overlay"
+                    onClick={toggleMute}
+                    className="text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                    title={isMuted ? 'Unmute' : 'Mute'}
                   >
-                    <span className="text-xs font-black px-0.5">INFO</span>
+                    {isMuted ? <VolumeX className="w-4 h-4 text-red-500" /> : <Volume2 className="w-4 h-4" />}
                   </button>
+                  <input 
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.05"
+                    value={isMuted ? 0 : volume}
+                    onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+                    className="w-16 sm:w-20 accent-amber-500 h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer"
+                  />
+                </div>
 
+                {/* Right Side: Selectors, PiP, Fullscreen */}
+                <div className="flex items-center space-x-2 pointer-events-auto">
                   {/* Audio Track Selector */}
                   {audioTracks.length > 1 && (
                     <AudioTrackSelector
@@ -2267,18 +2194,6 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
                     </button>
                   )}
 
-                  {/* Diagnostics HUD Toggle */}
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowDiagnostics(!showDiagnostics);
-                    }}
-                    className={`p-2 rounded-lg bg-zinc-900/70 hover:bg-zinc-800/80 border text-white transition-colors cursor-pointer ${showDiagnostics ? 'border-amber-500 text-amber-500' : 'border-zinc-800'}`}
-                    title="Toggle Diagnostics HUD (Press 'D')"
-                  >
-                    <Activity className="w-4 h-4" />
-                  </button>
-
                   {/* Fullscreen Button */}
                   <button 
                     onClick={toggleFullscreen}
@@ -2292,65 +2207,6 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Diagnostics HUD Panel */}
-      {showDiagnostics && (
-        <div className="absolute top-4 left-4 z-40 max-w-sm w-80 p-4 rounded-xl bg-black/90 backdrop-blur-md border border-zinc-800 text-[10px] font-mono text-zinc-300 space-y-2 select-text pointer-events-auto">
-          <div className="flex items-center justify-between border-b border-zinc-800 pb-1.5 mb-1.5">
-            <span className="font-black text-amber-500 uppercase tracking-wider flex items-center gap-1.5">
-              <Activity className="w-3.5 h-3.5" />
-              <span>ACM Broadcast Quality Monitor</span>
-            </span>
-            <button 
-              onClick={() => setShowDiagnostics(false)}
-              className="text-zinc-500 hover:text-white cursor-pointer"
-            >
-              ✕
-            </button>
-          </div>
-          <div className="space-y-1">
-            {/* Health Score Panel */}
-            <div className="flex items-center justify-between bg-zinc-900/80 border border-zinc-850 p-2 rounded-lg mb-2">
-              <span className="text-zinc-500 font-bold uppercase text-[9px]">Playback Health:</span>
-              <span className={`font-black uppercase text-[10px] px-2 py-0.5 rounded border ${
-                playbackHealth === 'Excellent' ? 'bg-emerald-950/60 border-emerald-500/30 text-emerald-400' :
-                playbackHealth === 'Good' ? 'bg-green-950/60 border-green-500/30 text-green-400' :
-                playbackHealth === 'Fair' ? 'bg-amber-950/60 border-amber-500/30 text-amber-400' :
-                'bg-red-950/60 border-red-500/30 text-red-400'
-              }`}>
-                {playbackHealth}
-              </span>
-            </div>
-
-            <div><span className="text-zinc-500 font-bold">Active Program ID:</span> <span className="text-amber-400 font-bold">{broadcastState?.currentProgram?.program.id || 'N/A'}</span></div>
-            <div><span className="text-zinc-500 font-bold">Active Program Title:</span> <span className="text-white font-bold">{broadcastState?.currentProgram?.program.title || 'N/A'}</span></div>
-            <div><span className="text-zinc-500 font-bold">HLS Manifest URL:</span> <span className="text-zinc-400 break-all select-all font-bold">{hlsUrl || 'N/A'}</span></div>
-            <div><span className="text-zinc-500 font-bold">Display Mode:</span> <span className="text-zinc-300 font-bold">{displayMode} {displayMode === 'Auto' && `(${autoFit})`}</span></div>
-            
-            <div className="border-t border-zinc-800/60 my-1.5 pt-1.5"></div>
-            <div className="text-zinc-500 font-black uppercase text-[8px] tracking-wider mb-1">Quality Metrics</div>
-            <div><span className="text-zinc-500 font-bold">Resolution:</span> <span className="text-white font-bold">{hlsResolution}</span></div>
-            <div><span className="text-zinc-500 font-bold">Bitrate:</span> <span className="text-white font-bold">{hlsBitrate}</span></div>
-            <div><span className="text-zinc-500 font-bold">HLS Level:</span> <span className="text-white font-bold">{hlsLevelIndex}</span></div>
-            <div><span className="text-zinc-500 font-bold">Available Levels:</span> <span className="text-white font-bold">{hlsTotalLevels > 0 ? hlsTotalLevels : 'N/A'}</span></div>
-            <div><span className="text-zinc-500 font-bold">Dropped Frames:</span> <span className="text-red-400 font-bold">{droppedFrames}</span></div>
-            <div><span className="text-zinc-500 font-bold">Buffered Seconds:</span> <span className="text-emerald-400 font-bold">{bufferedSeconds.toFixed(1)}s</span></div>
-
-            <div className="border-t border-zinc-800/60 my-1.5 pt-1.5"></div>
-            <div className="text-zinc-500 font-black uppercase text-[8px] tracking-wider mb-1">Network & Player Status</div>
-            <div><span className="text-zinc-500 font-bold">video.readyState:</span> <span className="text-white font-bold">{getReadyStateLabel(videoReadyState)}</span></div>
-            <div><span className="text-zinc-500 font-bold">video.networkState:</span> <span className="text-white font-bold">{getNetworkStateLabel(videoNetworkState)}</span></div>
-            <div><span className="text-zinc-500 font-bold">Stalled State:</span> <span className={`font-bold ${hudStalledState ? 'text-red-500' : 'text-zinc-400'}`}>{hudStalledState ? 'STALLED (True)' : 'Normal (False)'}</span></div>
-            <div><span className="text-zinc-500 font-bold">Stall Ticks:</span> <span className="text-white font-bold">{hudStallCount}</span></div>
-            <div><span className="text-zinc-500 font-bold">Recovery Count:</span> <span className="text-amber-500 font-bold">{hudRecoveryCount}</span></div>
-            <div><span className="text-zinc-500 font-bold">video.error:</span> <span className="text-red-500 font-bold">{videoError}</span></div>
-            <div><span className="text-zinc-500 font-bold">Last Media Event:</span> <span className="text-white font-bold">{lastMediaEvent}</span></div>
-            {durationWarning && (
-              <div className="text-amber-500 font-bold border border-amber-900 bg-amber-950/40 p-1.5 rounded mt-1.5">{durationWarning}</div>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Tv, Play, Radio, Calendar, Flame, Library, Activity, Sparkles } from 'lucide-react';
+import { Play, Radio, Calendar, Activity, Sparkles } from 'lucide-react';
 import { Channel, BroadcastState } from '@/types';
 import { getBroadcastState, getRuntimeChannels } from '@/utils/scheduleEngine';
 import LiveNowCard from '@/components/LiveNowCard';
@@ -32,7 +32,7 @@ export default function Home() {
       channels.forEach(ch => {
         try {
           states[ch.id] = getBroadcastState(ch, now);
-        } catch (e) {
+        } catch {
           // Ignore
         }
       });
@@ -57,8 +57,7 @@ export default function Home() {
     );
   }
 
-  // Get all unique programs across channels for the Library highlights
-  const featuredPrograms = channels.flatMap(c => c.programs).slice(0, 3);
+
 
   return (
     <div className="pb-16 space-y-16">
@@ -73,7 +72,7 @@ export default function Home() {
         {/* Cinematic Backdrop Image */}
         <div className="absolute inset-0 bg-black">
           <img 
-            src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1600" 
+            src="/media/artwork/spiderman_trailer_1.png" 
             alt="ACM Cinematic Billboard"
             className="w-full h-full object-cover opacity-35 object-center"
           />

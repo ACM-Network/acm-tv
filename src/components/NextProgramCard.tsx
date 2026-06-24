@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, Clock, ShieldAlert } from 'lucide-react';
+import { ArrowRight, Clock } from 'lucide-react';
 import { ProgramInstance } from '../types';
 
 interface NextProgramCardProps {

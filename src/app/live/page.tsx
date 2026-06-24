@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Radio, Tv, Info, ExternalLink, CalendarDays, Share2, Flame } from 'lucide-react';
+import { Tv, Info, ExternalLink } from 'lucide-react';
 import { getRuntimeChannels } from '@/utils/scheduleEngine';
 import { Channel, BroadcastState } from '@/types';
 import TVPlayer from '@/components/TVPlayer';
@@ -13,10 +13,6 @@ function LiveTVClientContent() {
   const router = useRouter();
 
   const channels: Channel[] = getRuntimeChannels();
-  
-  // Find current channel based on search params, default to acm-tv
-  const channelIdParam = searchParams.get('channel') || 'acm-tv';
-  const initialChannel = channels.find(c => c.id === channelIdParam) || channels[0];
   
   const activeChannel = channels.find(c => c.id === (searchParams.get('channel') || 'acm-tv')) || channels[0];
   const [broadcastState, setBroadcastState] = useState<BroadcastState | null>(null);

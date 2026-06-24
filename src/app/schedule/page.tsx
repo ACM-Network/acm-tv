@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Calendar, Tv, Clock, Radio, Info } from 'lucide-react';
+import { Calendar, Clock } from 'lucide-react';
 import { getRuntimeChannels } from '@/utils/scheduleEngine';
 import { Channel } from '@/types';
 import TimelineGuide from '@/components/TimelineGuide';
@@ -12,10 +12,6 @@ function ScheduleClientContent() {
   const router = useRouter();
 
   const channels: Channel[] = getRuntimeChannels();
-  
-  // Find current channel based on search params, default to acm-tv
-  const channelIdParam = searchParams.get('channel') || 'acm-tv';
-  const initialChannel = channels.find(c => c.id === channelIdParam) || channels[0];
   
   const activeChannel = channels.find(c => c.id === (searchParams.get('channel') || 'acm-tv')) || channels[0];
 

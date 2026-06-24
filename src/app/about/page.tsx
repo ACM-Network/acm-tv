@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Info, Mail, Phone, MapPin, ShieldAlert, Cpu, Heart, CheckCircle } from 'lucide-react';
+import { Info, Mail, Phone, MapPin, Cpu, Heart, CheckCircle } from 'lucide-react';
 
 export default function AboutPage() {
   return (
