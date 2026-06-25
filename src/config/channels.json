@@ -50,56 +50,6 @@
           "type": "song",
           "category": "SONG",
           "thumbnail": "/media/artwork/dheema_song_artwork.png"
-        },
-        {
-          "id": "doraemon-s01e01",
-          "title": "Doraemon S01E01",
-          "description": "Episode 1 of Doraemon Season 1.",
-          "duration": 1218,
-          "videoUrl": "https://edge1-frankfurt-sprintcdn.owphbf24.com/hls2/06/10459/5y6wzmhd6fy2_x/index-v1-a3.m3u8?t=whMDlhFuN8FKpFHvM48CMW8IKbwIh4t40ct3jy-7FF8&s=1782290586&e=10800&f=52296787&srv=1070&asn=45609&sp=5500&p=0",
-          "type": "content",
-          "category": "Animation",
-          "thumbnail": "/media/artwork/doraemon_ep1.png"
-        },
-        {
-          "id": "doraemon-s01e02",
-          "title": "Doraemon S01E02",
-          "description": "Episode 2 of Doraemon Season 1.",
-          "duration": 608,
-          "videoUrl": "https://edge1-moscow-sprintcdn.owphbf24.com/hls2/05/10459/7wvbe65a0ieu_x/index-v1-a3.m3u8?t=qUiFBPVdc1nzpz1WdvRiz1Y9XK7qaC6KaSnnicxVe_Q&s=1782290919&e=10800&f=52296764&srv=1055&asn=45609&sp=5500&p=0",
-          "type": "content",
-          "category": "Animation",
-          "thumbnail": "/media/artwork/doraemon_ep2.png"
-        },
-        {
-          "id": "doraemon-s01e03",
-          "title": "Doraemon S01E03",
-          "description": "Episode 3 of Doraemon Season 1.",
-          "duration": 590,
-          "videoUrl": "https://edge1-frankfurt-sprintcdn.owphbf24.com/hls2/05/10459/evt45bw50j1n_x/index-v1-a3.m3u8?t=b5svbDhwpW0AWZaoMg0Xw7kl1LCuCpVRl-c38pTfdkE&s=1782291001&e=10800&f=52296762&srv=1055&asn=45609&sp=5500&p=0",
-          "type": "content",
-          "category": "Animation",
-          "thumbnail": "/media/artwork/doraemon_ep3.png"
-        },
-        {
-          "id": "doraemon-s01e04",
-          "title": "Doraemon S01E04",
-          "description": "Episode 4 of Doraemon Season 1.",
-          "duration": 1204,
-          "videoUrl": "https://edge1-waw-sprintcdn.r66nv9ed.com/hls2/09/10459/6uboj97kqy61_x/index-v1-a3.m3u8?t=bakAE-ppt9pVBHqPkICOuqX6mbDxwWSW9WKEq6pzX9o&s=1782291066&e=10800&f=52296784&srv=1065&asn=45609&sp=5500&p=0",
-          "type": "content",
-          "category": "Animation",
-          "thumbnail": "/media/artwork/doraemon_ep4.png"
-        },
-        {
-          "id": "doraemon-s01e05",
-          "title": "Doraemon S01E05",
-          "description": "Episode 5 of Doraemon Season 1.",
-          "duration": 642,
-          "videoUrl": "https://edge1-frankfurt-sprintcdn.owphbf24.com/hls2/06/10459/y9p00ed4u2cs_x/index-v1-a3.m3u8?t=bH4urXYaojha9sq23evNkAOOkRvjPaFZXEskdF3r5KU&s=1782291123&e=10800&f=52296768&srv=1050&asn=45609&sp=5500&p=0",
-          "type": "content",
-          "category": "Animation",
-          "thumbnail": "/media/artwork/doraemon_ep5.png"
         }
       ],
       "idents": [],
@@ -382,6 +332,256 @@
           "thumbnail": "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=400"
         }
       ]
+    },
+    {
+      "id": "ntv-telugu",
+      "name": "NTV Telugu",
+      "tagline": "Prathkshanam Janahitham",
+      "logoUrl": "/branding/ntv-telugu-logo.svg",
+      "bugUrl": "/branding/acm-tv-bug.svg",
+      "weaving": {
+        "insertIdentEveryNPrograms": 1,
+        "insertPromoEveryNPrograms": 1
+      },
+      "programs": [
+        {
+          "id": "ntv-telugu-live",
+          "title": "NTV Telugu Live",
+          "description": "NTV Telugu Live News Broadcast.",
+          "duration": 86400,
+          "videoUrl": "",
+          "type": "content",
+          "category": "News",
+          "thumbnail": "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=400"
+        }
+      ],
+      "idents": [],
+      "promos": []
+    },
+    {
+      "id": "tv9-telugu",
+      "name": "TV9 Telugu",
+      "tagline": "For a Better Society",
+      "logoUrl": "/branding/tv9-telugu-logo.svg",
+      "bugUrl": "/branding/acm-tv-bug.svg",
+      "weaving": {
+        "insertIdentEveryNPrograms": 1,
+        "insertPromoEveryNPrograms": 1
+      },
+      "programs": [
+        {
+          "id": "tv9-telugu-live",
+          "title": "TV9 Telugu Live",
+          "description": "TV9 Telugu Live News Broadcast.",
+          "duration": 86400,
+          "videoUrl": "",
+          "type": "content",
+          "category": "News",
+          "thumbnail": "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=400"
+        }
+      ],
+      "idents": [],
+      "promos": []
+    },
+    {
+      "id": "sakshi-tv",
+      "name": "Sakshi TV",
+      "tagline": "Sakshi TV News",
+      "logoUrl": "/branding/sakshi-tv-logo.svg",
+      "bugUrl": "/branding/acm-tv-bug.svg",
+      "weaving": {
+        "insertIdentEveryNPrograms": 1,
+        "insertPromoEveryNPrograms": 1
+      },
+      "programs": [
+        {
+          "id": "sakshi-tv-live",
+          "title": "Sakshi TV Live",
+          "description": "Sakshi TV Live News Broadcast.",
+          "duration": 86400,
+          "videoUrl": "",
+          "type": "content",
+          "category": "News",
+          "thumbnail": "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=400"
+        }
+      ],
+      "idents": [],
+      "promos": []
+    },
+    {
+      "id": "etv-andhra",
+      "name": "ETV Andhra Pradesh",
+      "tagline": "ETV Andhra Pradesh News",
+      "logoUrl": "/branding/etv-andhra-logo.svg",
+      "bugUrl": "/branding/acm-tv-bug.svg",
+      "weaving": {
+        "insertIdentEveryNPrograms": 1,
+        "insertPromoEveryNPrograms": 1
+      },
+      "programs": [
+        {
+          "id": "etv-andhra-live",
+          "title": "ETV Andhra Pradesh Live",
+          "description": "ETV Andhra Pradesh Live Broadcast.",
+          "duration": 86400,
+          "videoUrl": "",
+          "type": "content",
+          "category": "News",
+          "thumbnail": "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=400"
+        }
+      ],
+      "idents": [],
+      "promos": []
+    },
+    {
+      "id": "etv-telangana",
+      "name": "ETV Telangana",
+      "tagline": "ETV Telangana News",
+      "logoUrl": "/branding/etv-telangana-logo.svg",
+      "bugUrl": "/branding/acm-tv-bug.svg",
+      "weaving": {
+        "insertIdentEveryNPrograms": 1,
+        "insertPromoEveryNPrograms": 1
+      },
+      "programs": [
+        {
+          "id": "etv-telangana-live",
+          "title": "ETV Telangana Live",
+          "description": "ETV Telangana Live Broadcast.",
+          "duration": 86400,
+          "videoUrl": "",
+          "type": "content",
+          "category": "News",
+          "thumbnail": "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=400"
+        }
+      ],
+      "idents": [],
+      "promos": []
+    },
+    {
+      "id": "abn-andhra",
+      "name": "ABN Andhra Jyothy",
+      "tagline": "ABN Andhra Jyothy Live",
+      "logoUrl": "/branding/abn-andhra-logo.svg",
+      "bugUrl": "/branding/acm-tv-bug.svg",
+      "weaving": {
+        "insertIdentEveryNPrograms": 1,
+        "insertPromoEveryNPrograms": 1
+      },
+      "programs": [
+        {
+          "id": "abn-andhra-live",
+          "title": "ABN Andhra Jyothy Live",
+          "description": "ABN Andhra Jyothy Live News Broadcast.",
+          "duration": 86400,
+          "videoUrl": "",
+          "type": "content",
+          "category": "News",
+          "thumbnail": "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=400"
+        }
+      ],
+      "idents": [],
+      "promos": []
+    },
+    {
+      "id": "10tv",
+      "name": "10TV",
+      "tagline": "10TV News Live",
+      "logoUrl": "/branding/10tv-logo.svg",
+      "bugUrl": "/branding/acm-tv-bug.svg",
+      "weaving": {
+        "insertIdentEveryNPrograms": 1,
+        "insertPromoEveryNPrograms": 1
+      },
+      "programs": [
+        {
+          "id": "10tv-live",
+          "title": "10TV Live",
+          "description": "10TV Live News Broadcast.",
+          "duration": 86400,
+          "videoUrl": "",
+          "type": "content",
+          "category": "News",
+          "thumbnail": "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=400"
+        }
+      ],
+      "idents": [],
+      "promos": []
+    },
+    {
+      "id": "v6-news",
+      "name": "V6 News",
+      "tagline": "V6 News Live",
+      "logoUrl": "/branding/v6-news-logo.svg",
+      "bugUrl": "/branding/acm-tv-bug.svg",
+      "weaving": {
+        "insertIdentEveryNPrograms": 1,
+        "insertPromoEveryNPrograms": 1
+      },
+      "programs": [
+        {
+          "id": "v6-news-live",
+          "title": "V6 News Live",
+          "description": "V6 News Live Broadcast.",
+          "duration": 86400,
+          "videoUrl": "",
+          "type": "content",
+          "category": "News",
+          "thumbnail": "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=400"
+        }
+      ],
+      "idents": [],
+      "promos": []
+    },
+    {
+      "id": "t-news",
+      "name": "T News",
+      "tagline": "T News Live",
+      "logoUrl": "/branding/t-news-logo.svg",
+      "bugUrl": "/branding/acm-tv-bug.svg",
+      "weaving": {
+        "insertIdentEveryNPrograms": 1,
+        "insertPromoEveryNPrograms": 1
+      },
+      "programs": [
+        {
+          "id": "t-news-live",
+          "title": "T News Live",
+          "description": "T News Live Broadcast.",
+          "duration": 86400,
+          "videoUrl": "",
+          "type": "content",
+          "category": "News",
+          "thumbnail": "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=400"
+        }
+      ],
+      "idents": [],
+      "promos": []
+    },
+    {
+      "id": "cvr-news",
+      "name": "CVR News",
+      "tagline": "CVR News Live",
+      "logoUrl": "/branding/cvr-news-logo.svg",
+      "bugUrl": "/branding/acm-tv-bug.svg",
+      "weaving": {
+        "insertIdentEveryNPrograms": 1,
+        "insertPromoEveryNPrograms": 1
+      },
+      "programs": [
+        {
+          "id": "cvr-news-live",
+          "title": "CVR News Live",
+          "description": "CVR News Live Broadcast.",
+          "duration": 86400,
+          "videoUrl": "",
+          "type": "content",
+          "category": "News",
+          "thumbnail": "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=400"
+        }
+      ],
+      "idents": [],
+      "promos": []
     }
   ]
 }

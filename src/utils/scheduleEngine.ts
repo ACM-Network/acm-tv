@@ -21,17 +21,12 @@ export function getRuntimeChannels(): Channel[] {
   const masterChannel = allChannels.find(c => c.id === 'acm-tv');
   if (!masterChannel) return allChannels;
 
-  // Search across all channels in the database to find the real program objects for the 9 assets
+  // Search across all channels in the database to find the real program objects for the 4 assets
   const realProgramIds = [
     'x-men-6',
     'spiderman-brand-new-day-trailer-1',
     'spiderman-brand-new-day-trailer-2',
-    'neno-butterfly',
-    'doraemon-s01e01',
-    'doraemon-s01e02',
-    'doraemon-s01e03',
-    'doraemon-s01e04',
-    'doraemon-s01e05'
+    'neno-butterfly'
   ];
   const filteredPrograms: Program[] = [];
 
@@ -66,12 +61,7 @@ export function getProductionScheduleForDay(): ScheduleEntry[] {
     { programId: 'neno-butterfly', slotMinutes: 5 },
     { programId: 'spiderman-brand-new-day-trailer-1', slotMinutes: 3 },
     { programId: 'spiderman-brand-new-day-trailer-2', slotMinutes: 3 },
-    { programId: 'x-men-6', slotMinutes: 4 },
-    { programId: 'doraemon-s01e01', slotMinutes: 21 },
-    { programId: 'doraemon-s01e02', slotMinutes: 11 },
-    { programId: 'doraemon-s01e03', slotMinutes: 10 },
-    { programId: 'doraemon-s01e04', slotMinutes: 21 },
-    { programId: 'doraemon-s01e05', slotMinutes: 11 }
+    { programId: 'x-men-6', slotMinutes: 4 }
   ];
 
   let currentMin = 0;
@@ -186,6 +176,29 @@ export function getBroadcastState(channel: Channel, localTimestampMs: number): B
   const dailyEntries = getEntriesForDay(dayOfWeek);
 
   if (dailyEntries.length === 0) {
+    if (channel.programs && channel.programs.length > 0) {
+      const fallbackProg = channel.programs[0];
+      const fallbackInst: ProgramInstance = {
+        instanceId: `${fallbackProg.id}-${startOfTodayMs}`,
+        program: fallbackProg,
+        startTime: startOfTodayMs,
+        endTime: startOfTodayMs + 86400 * 1000,
+        startTimeFormatted: "12:00 AM",
+        endTimeFormatted: "12:00 AM"
+      };
+      return {
+        currentProgram: fallbackInst,
+        playbackPosition: currentSeconds % (fallbackProg.duration || 86400),
+        upNext: {
+          ...fallbackInst,
+          instanceId: `${fallbackProg.id}-${startOfTodayMs + 86400 * 1000}`,
+          startTime: startOfTodayMs + 86400 * 1000,
+          endTime: startOfTodayMs + 2 * 86400 * 1000
+        },
+        laterTonight: [],
+        serverTime: localTimestampMs
+      };
+    }
     throw new Error(`No scheduled programs for channel ${channel.name} on ${dayOfWeek}`);
   }
 
@@ -388,7 +401,19 @@ export function getDailyTimeline(channel: Channel, dayTimestampMs: number): Prog
     dailyEntries = channelSchedule[dayOfWeek] || [];
   }
 
-  if (dailyEntries.length === 0) return [];
+  if (dailyEntries.length === 0) {
+    if (channel.programs && channel.programs.length > 0) {
+      return [{
+        instanceId: `${channel.programs[0].id}-${startOfDayMs}`,
+        program: channel.programs[0],
+        startTime: startOfDayMs,
+        endTime: startOfDayMs + 86400 * 1000,
+        startTimeFormatted: "12:00 AM",
+        endTimeFormatted: "12:00 AM"
+      }];
+    }
+    return [];
+  }
 
   // Sort chronologically
   const sorted = [...dailyEntries].sort((a, b) => 

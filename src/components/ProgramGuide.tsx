@@ -12,8 +12,8 @@ interface ProgramGuideProps {
 export default function ProgramGuide({ broadcastState }: ProgramGuideProps) {
   if (!broadcastState) {
     return (
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 text-center animate-pulse text-zinc-400">
-        Loading program guide metadata...
+      <div className="bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-12 flex items-center justify-center text-zinc-500">
+        <div className="w-8 h-8 border-3 border-zinc-800 border-t-amber-500 rounded-full animate-spin"></div>
       </div>
     );
   }

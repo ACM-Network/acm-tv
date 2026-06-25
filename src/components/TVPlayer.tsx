@@ -96,7 +96,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isBuffering, setIsBuffering] = useState(false);
   const [mediaError, setMediaError] = useState<string | null>(null);
-  const [missingFilePath, setMissingFilePath] = useState<string | null>(null);
+
   
   const [isFallbackActive, setIsFallbackActive] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
@@ -1054,7 +1054,6 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     transitionTimer = setTimeout(() => {
       if (!active) return;
       setMediaError(null);
-      setMissingFilePath(null);
     }, 0);
     consecutiveErrorsRef.current = 0;
 
@@ -1073,6 +1072,11 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
     const loadMetadataAndSetup = async () => {
       const videoUrl = currentInst.program.videoUrl;
+      if (!videoUrl) {
+        setIsFallbackActive(true);
+        setIsLoading(false);
+        return;
+      }
       const targetSrc = getDirectVideoUrl(videoUrl);
 
       setIsLoading(true);
@@ -1552,7 +1556,6 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     setTimeout(() => {
       setIsFallbackActive(false);
       setMediaError(null);
-      setMissingFilePath(null);
       setIsRetrying(false);
       activeInstanceIdRef.current = ''; // Reset identifier to force reload
       updateBroadcastState(Date.now());
@@ -1841,7 +1844,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         />
       )}
 
-      {/* Custom Media / File Not Found Overlay (Validation Block) */}
+      {/* Custom Media / Signal Interruption Overlay */}
       {mediaError && !isFallbackActive && (
         <div className="absolute inset-0 z-40 bg-zinc-950 flex flex-col items-center justify-center overflow-hidden">
           {/* Subtle Branded Background */}
@@ -1852,44 +1855,27 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
             animate={{ opacity: 1, scale: 1 }}
             className="relative z-10 max-w-md w-full mx-4 p-8 rounded-2xl bg-zinc-900/90 backdrop-blur-xl border border-zinc-800 shadow-2xl text-center"
           >
-            <div className="flex justify-center mb-5 text-red-500">
+            <div className="flex justify-center mb-5 text-amber-500">
               <AlertTriangle className="w-12 h-12" />
             </div>
 
             <h3 className="text-xl font-black text-white uppercase tracking-tight mb-2">
-              {mediaError === "Media file not found" ? "Media File Not Found" : "Broadcast Outage"}
+              Signal Interruption
             </h3>
             
-            <p className="text-xs text-zinc-400 leading-relaxed mb-5">
-              {mediaError === "Media file not found"
-                ? "The schedule engine is running, but the media file is missing from the server storage."
-                : "The video player encountered a playback error while trying to stream this file."
-              }
+            <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed mb-6 px-4">
+              We are experiencing a brief interruption in the broadcast signal. The stream will resume shortly. Thank you for your patience.
             </p>
-
-            {/* Error Detail Display */}
-            {missingFilePath && (
-              <div className="bg-black/60 border border-zinc-800/60 rounded-xl p-3.5 mb-6 text-left">
-                <span className="text-[9px] font-black text-red-400 tracking-wider uppercase block mb-1">Target Path</span>
-                <code className="text-xs font-mono text-zinc-300 break-all select-all font-bold">
-                  {missingFilePath}
-                </code>
-              </div>
-            )}
 
             {/* Action items */}
             <div className="space-y-3">
               <button
                 onClick={handleReconnect}
                 disabled={isRetrying}
-                className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-bold text-xs tracking-wider uppercase transition-all"
+                className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-bold text-xs tracking-wider uppercase transition-all cursor-pointer"
               >
-                {isRetrying ? 'Checking Storage...' : 'RE-SYNC WITH STORAGE'}
+                {isRetrying ? 'RECONNECTING...' : 'RETRY CONNECTION'}
               </button>
-              
-              <div className="text-[10px] text-zinc-500">
-                Please check <code className="text-zinc-400">MEDIA_SETUP.md</code> to configure local files.
-              </div>
             </div>
           </motion.div>
         </div>
@@ -1996,12 +1982,9 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
             {/* Bottom Controls HUD */}
             <div className="space-y-4 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
-              {/* Program Info: [LIVE ●] Program Title */}
+              {/* Program Info: Program Title */}
               {broadcastState?.currentProgram && (
                 <div className="flex items-center gap-2.5 text-left drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] mb-1">
-                  <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-red-600 text-[10px] font-black text-white tracking-widest uppercase">
-                    LIVE ●
-                  </span>
                   <span className="text-sm font-black text-white uppercase tracking-tight">
                     {broadcastState.currentProgram.program.title}
                   </span>

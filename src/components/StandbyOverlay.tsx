@@ -20,6 +20,8 @@ export default function StandbyOverlay({
   onRetry,
   isRetrying
 }: StandbyOverlayProps) {
+  const isOffAir = !currentProgram?.program.videoUrl;
+
   return (
     <div className="absolute inset-0 z-40 bg-zinc-950 flex flex-col items-center justify-center overflow-hidden">
       {/* Broadcast Style Color Bars (Stylized Background) */}
@@ -51,18 +53,23 @@ export default function StandbyOverlay({
           />
         </div>
 
-        {/* Offline Badge */}
+        {/* Offline / Standby Badge */}
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-500 mb-6">
           <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-          <span className="text-[10px] font-bold tracking-widest uppercase">TEMPORARILY OFFLINE</span>
+          <span className="text-[10px] font-bold tracking-widest uppercase">
+            {isOffAir ? "CHANNEL STANDBY" : "TEMPORARILY OFFLINE"}
+          </span>
         </div>
 
         <h3 className="text-xl font-black text-white tracking-tight mb-3">
-          BROADCAST TEMPORARILY OFFLINE
+          {isOffAir ? "CHANNEL STANDBY" : "BROADCAST TEMPORARILY OFFLINE"}
         </h3>
         
         <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed mb-6 px-4">
-          We are experiencing a brief interruption in the stream. We will resume the broadcast shortly. Thank you for your patience.
+          {isOffAir 
+            ? "This broadcast channel is currently off the air. Program transmission will resume shortly."
+            : "We are experiencing a brief interruption in the stream. We will resume the broadcast shortly. Thank you for your patience."
+          }
         </p>
 
         {/* Current / Next Program Metadata */}
@@ -73,7 +80,7 @@ export default function StandbyOverlay({
               <span className="text-sm font-semibold text-zinc-200 block truncate">{currentProgram.program.title}</span>
             </div>
           )}
-          {upNext && (
+          {upNext && !isOffAir && (
             <div className="border-t border-zinc-900 pt-2 mt-2">
               <span className="text-[10px] font-bold text-zinc-500 tracking-wider uppercase block">Up Next</span>
               <span className="text-xs text-zinc-400 block truncate">
@@ -84,14 +91,16 @@ export default function StandbyOverlay({
         </div>
 
         {/* Retry Button */}
-        <button
-          onClick={onRetry}
-          disabled={isRetrying}
-          className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-bold text-sm transition-all shadow-lg shadow-amber-500/10 active:scale-[0.98] disabled:opacity-50"
-        >
-          <RefreshCw className={`w-4 h-4 ${isRetrying ? 'animate-spin' : ''}`} />
-          {isRetrying ? 'RETRIEVING FEED...' : 'RETRY CONNECTION'}
-        </button>
+        {!isOffAir && (
+          <button
+            onClick={onRetry}
+            disabled={isRetrying}
+            className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-bold text-sm transition-all shadow-lg shadow-amber-500/10 active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+          >
+            <RefreshCw className={`w-4 h-4 ${isRetrying ? 'animate-spin' : ''}`} />
+            {isRetrying ? 'RECONNECTING...' : 'RETRY CONNECTION'}
+          </button>
+        )}
       </motion.div>
 
       {/* Decorative corners */}

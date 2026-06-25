@@ -106,7 +106,7 @@ function LiveTVClientContent() {
               <div className="pt-6 border-t border-zinc-900 flex flex-wrap gap-6 items-center justify-between text-xs text-zinc-500">
                 <div className="flex items-center gap-2 font-mono">
                   <Info className="w-4 h-4 text-zinc-600" />
-                  <span>Quality: 1080P stream | Provider: Multi-CDN</span>
+                  <span>Broadcast Quality: 1080p HD</span>
                 </div>
                 
                 <div className="flex gap-4 font-bold text-zinc-400">
