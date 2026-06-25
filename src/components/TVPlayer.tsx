@@ -140,6 +140,9 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   const [showInfoOverlay, setShowInfoOverlay] = useState<boolean>(true);
   const infoOverlayTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Movie Title Card Overlay
+  const [showTitleCard, setShowTitleCard] = useState<boolean>(false);
+
   // Stability counters & safeguards
   const reloadTimestampsRef = useRef<number[]>([]);
   const downgradeTimestampsRef = useRef<number[]>([]);
@@ -928,6 +931,28 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       if (infoOverlayTimeoutRef.current) clearTimeout(infoOverlayTimeoutRef.current);
     };
   }, []);
+
+  // Trigger title card overlay on movie transitions
+  useEffect(() => {
+    const currentInst = broadcastState?.currentProgram;
+    if (currentInst && channel.id === 'acm-movies' && currentInst.program.type === 'content') {
+      const startTimer = setTimeout(() => {
+        setShowTitleCard(true);
+      }, 0);
+      const endTimer = setTimeout(() => {
+        setShowTitleCard(false);
+      }, 5000);
+      return () => {
+        clearTimeout(startTimer);
+        clearTimeout(endTimer);
+      };
+    } else {
+      const clearTimer = setTimeout(() => {
+        setShowTitleCard(false);
+      }, 0);
+      return () => clearTimeout(clearTimer);
+    }
+  }, [broadcastState?.currentProgram?.instanceId, broadcastState?.currentProgram, channel.id]);
 
   // Check native audioTracks API support on mount
   useEffect(() => {
@@ -1832,6 +1857,77 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
           </motion.div>
         </div>
       )}
+
+      {/* Movie Title Card Overlay */}
+      <AnimatePresence>
+        {showTitleCard && broadcastState?.currentProgram && channel.id === 'acm-movies' && broadcastState.currentProgram.program.type === 'content' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-35 bg-gradient-to-t from-zinc-950 via-zinc-950/95 to-zinc-950/70 flex flex-col justify-end p-8 sm:p-12 text-left"
+          >
+            {/* Ambient Background Poster Blur */}
+            {broadcastState.currentProgram.program.backdrop && (
+              <div 
+                className="absolute inset-0 opacity-20 bg-cover bg-center filter blur-xl scale-110"
+                style={{ backgroundImage: `url(${broadcastState.currentProgram.program.backdrop})` }}
+              />
+            )}
+            
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="relative z-10 max-w-2xl space-y-4"
+            >
+              <div className="flex items-center gap-3">
+                <span className="px-3 py-1 rounded bg-blue-600 text-[10px] font-black text-white uppercase tracking-widest">
+                  NOW SHOWING
+                </span>
+                {broadcastState.currentProgram.program.year && (
+                  <span className="text-zinc-400 text-sm font-semibold">
+                    {broadcastState.currentProgram.program.year}
+                  </span>
+                )}
+                <span className="text-zinc-500 font-bold">•</span>
+                <span className="text-zinc-400 text-sm font-semibold">
+                  {broadcastState.currentProgram.program.category}
+                </span>
+                {broadcastState.currentProgram.program.language && (
+                  <>
+                    <span className="text-zinc-500 font-bold">•</span>
+                    <span className="text-zinc-400 text-sm font-semibold">
+                      {broadcastState.currentProgram.program.language}
+                    </span>
+                  </>
+                )}
+              </div>
+              
+              <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-none drop-shadow-md">
+                {broadcastState.currentProgram.program.title}
+              </h1>
+              
+              <p className="text-sm sm:text-base text-zinc-300 leading-relaxed font-medium line-clamp-3">
+                {broadcastState.currentProgram.program.description}
+              </p>
+              
+              <div className="pt-2 flex items-center gap-6 text-xs text-zinc-400 font-mono">
+                <div>
+                  <span className="text-zinc-500 uppercase text-[9px] font-bold block mb-0.5">Runtime</span>
+                  <span className="text-white font-bold">{Math.round(broadcastState.currentProgram.program.duration / 60)} Minutes</span>
+                </div>
+                {broadcastState.upNext && (
+                  <div>
+                    <span className="text-zinc-500 uppercase text-[9px] font-bold block mb-0.5">Coming Up Next</span>
+                    <span className="text-blue-400 font-bold">{broadcastState.upNext.program.title}</span>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Branded Standby Slate / Technical Difficulties */}
       {isFallbackActive && (

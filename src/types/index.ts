@@ -29,6 +29,9 @@ export interface Program {
   subtitles?: MetadataSubtitle[];
   metadataUrl?: string;
   hls?: string | null;
+  year?: number;
+  language?: string;
+  backdrop?: string;
 }
 
 export interface WeavingConfig {
@@ -46,6 +49,11 @@ export interface Channel {
   idents: Program[];
   promos: Program[];
   weaving: WeavingConfig;
+  themeColor?: string;
+  category?: string;
+  description?: string;
+  channelNumber?: string | number;
+  standbyArtwork?: string;
 }
 
 export interface ProgramInstance {

@@ -6,6 +6,11 @@
       "tagline": "Entertainment Without Limits",
       "logoUrl": "/branding/acm-tv-logo.svg",
       "bugUrl": "/branding/acm-tv-bug.svg",
+      "themeColor": "#F59E0B",
+      "category": "General",
+      "description": "Entertainment Without Limits",
+      "channelNumber": 1,
+      "standbyArtwork": "/branding/acm-tv-logo.svg",
       "weaving": {
         "insertIdentEveryNPrograms": 1,
         "insertPromoEveryNPrograms": 2
@@ -61,30 +66,119 @@
       "tagline": "Your Premium Cinema Experience",
       "logoUrl": "/branding/acm-movies-logo.svg",
       "bugUrl": "/branding/acm-tv-bug.svg",
+      "themeColor": "#3B82F6",
+      "category": "Cinema",
+      "description": "Your Premium Cinema Experience",
+      "channelNumber": 2,
+      "standbyArtwork": "/branding/acm-movies-standby.svg",
       "weaving": {
         "insertIdentEveryNPrograms": 1,
         "insertPromoEveryNPrograms": 1
       },
       "programs": [
         {
-          "id": "prog-bunny-movie",
-          "title": "Big Buck Bunny - Animated Feature",
-          "description": "The giant, lovable forest rabbit Big Buck Bunny takes revenge on three pesky rodents who bully him and destroy his beloved butterflies.",
-          "duration": 596,
-          "videoUrl": "/media/acm-movies/bunny-movie.mp4",
+          "id": "yashoda",
+          "title": "Yashoda",
+          "description": "An innocent woman agrees to be a surrogate mother in exchange for money to find her missing sister. However, she soon finds herself trapped in a high-tech surrogacy facility where dark secrets are hidden.",
+          "duration": 7934,
+          "videoUrl": "https://d3sgzbosmwirao.cloudfront.net/video/1a19486eae6ec07925050cf1cf2f7586ceadbfb49b557a8cacd3cdd4578c7d0b/1/hls/h264_high.m3u8",
           "type": "content",
-          "category": "Comedy Animation",
-          "thumbnail": "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=400"
+          "category": "Thriller",
+          "thumbnail": "https://media.themoviedb.org/t/p/w500/irKSHLQLuIZs4Ug5sTvFZGOKGVg.jpg",
+          "year": 2022,
+          "language": "Telugu",
+          "backdrop": "https://media.themoviedb.org/t/p/w1280/irKSHLQLuIZs4Ug5sTvFZGOKGVg.jpg"
         },
         {
-          "id": "prog-tears-movie",
-          "title": "Tears of Steel - Remastered Cut",
-          "description": "A cinematic science-fiction action short showcasing dystopian robotics and deep neural overlays.",
-          "duration": 734,
-          "videoUrl": "/media/acm-movies/tears-movie.mp4",
+          "id": "jathi-ratnalu",
+          "title": "Jathi Ratnalu",
+          "description": "Three happy-go-lucky men leave their small town for the big city of Hyderabad to seek jobs and respect. However, they end up in prison after being wrongfully accused of a murder attempt on a politician.",
+          "duration": 8607,
+          "videoUrl": "https://d3sgzbosmwirao.cloudfront.net/video/b849e1f72e3e6063f4dbbe6fc3166b808579ec5847461d7e7eab613c93a4082b/1/hls/h264_high.m3u8",
           "type": "content",
-          "category": "Sci-Fi",
-          "thumbnail": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400"
+          "category": "Comedy",
+          "thumbnail": "https://media.themoviedb.org/t/p/w500/fxQazusEog5kLxxmkJ6og5lCkYn.jpg",
+          "year": 2021,
+          "language": "Telugu",
+          "backdrop": "https://media.themoviedb.org/t/p/w1280/fxQazusEog5kLxxmkJ6og5lCkYn.jpg"
+        },
+        {
+          "id": "maharshi",
+          "title": "Maharshi",
+          "description": "Rishi, a billionaire businessman, returns to India to help his college friend Ravi, who is fighting against a greedy corporation exploiting poor farmers in a small village.",
+          "duration": 10626,
+          "videoUrl": "https://d3sgzbosmwirao.cloudfront.net/video/5e373d61f1604e87cab5b861fab15c4351b7edf7be3896e4871432bcff227aa7/1/hls/h264_high.m3u8",
+          "type": "content",
+          "category": "Drama",
+          "thumbnail": "https://media.themoviedb.org/t/p/w500/pV6xLQh54ga8oaQqJtUqLp12LwQ.jpg",
+          "year": 2019,
+          "language": "Telugu",
+          "backdrop": "https://image.tmdb.org/t/p/w1280/giVZsq8aBKd8C7Fd9NyzOOE7jmI.jpg"
+        },
+        {
+          "id": "varasudu",
+          "title": "Varasudu",
+          "description": "Vijay Rajendran, the estranged youngest son of a billionaire businessman, is forced to take over the family empire and protect it from ruthless competitors while trying to mend broken family ties.",
+          "duration": 10145,
+          "videoUrl": "https://d3sgzbosmwirao.cloudfront.net/video/13c16a3ae3cf9ae873fc6d63ee70f75819876ffad030142d866c6d2f1347d31d/3/hls/h264_720_high_3000k.m3u8",
+          "type": "content",
+          "category": "Action",
+          "thumbnail": "https://media.themoviedb.org/t/p/w500/iMUIsV6u0pPqfv1j8tGxbJw40sw.jpg",
+          "year": 2023,
+          "language": "Telugu",
+          "backdrop": "https://image.tmdb.org/t/p/w1280/fjd6RKx4Zh8UKQfjpSSkM53eJw6.jpg"
+        },
+        {
+          "id": "paagal",
+          "title": "Paagal",
+          "description": "A young man who has lost his mother seeks pure maternal love from other women, proposing to them in a series of comedic misadventures, until he falls in love for real.",
+          "duration": 8132,
+          "videoUrl": "https://d3sgzbosmwirao.cloudfront.net/video/ce7e5f1351ebbc47fe284a7acf4bd6c1d898aa6f8a14efac7b2d5acde08fa7ee/3/hls/h264_720_high_3000k.m3u8",
+          "type": "content",
+          "category": "Romance",
+          "thumbnail": "https://media.themoviedb.org/t/p/w500/rBWzAtvqJwIgqppO2FlOVd2i1vh.jpg",
+          "year": 2021,
+          "language": "Telugu",
+          "backdrop": "https://image.tmdb.org/t/p/w1280/rBWzAtvqJwIgqppO2FlOVd2i1vh.jpg"
+        },
+        {
+          "id": "vakeel-saab",
+          "title": "Vakeel Saab",
+          "description": "A retired, alcoholic defense lawyer returns to the courtroom to defend three young women who have been falsely accused of a crime after resisting sexual harassment by a politician's son.",
+          "duration": 9196,
+          "videoUrl": "https://d3sgzbosmwirao.cloudfront.net/video/bc5477a2aa440ee48b7a786829f8751bc032e0ec288b4997e545124b5692053d/1/hls/h264_720_high_3000k.m3u8",
+          "type": "content",
+          "category": "Drama",
+          "thumbnail": "https://media.themoviedb.org/t/p/w500/ni8GiwJbhFBMmlDCWWXz8TKtxPk.jpg",
+          "year": 2021,
+          "language": "Telugu",
+          "backdrop": "https://media.themoviedb.org/t/p/w1280/ni8GiwJbhFBMmlDCWWXz8TKtxPk.jpg"
+        },
+        {
+          "id": "hit-first-case",
+          "title": "HIT: The First Case",
+          "description": "Vikram, an officer in the Homicide Intervention Team (HIT), battles PTSD while investigating the mysterious disappearance of a young girl named Preethi and his own girlfriend, Neha.",
+          "duration": 7688,
+          "videoUrl": "https://d3sgzbosmwirao.cloudfront.net/video/26710cbfb243d3c4ef929e48fbfb9d81ef36289620b6a8bdecf4081b6c17ebd9/1/hls/h264_high.m3u8",
+          "type": "content",
+          "category": "Mystery",
+          "thumbnail": "https://image.tmdb.org/t/p/w500/iQJ31iW9o1H6yQj1b64iY8g93y7.jpg",
+          "year": 2020,
+          "language": "Telugu",
+          "backdrop": "https://image.tmdb.org/t/p/w1280/iQJ31iW9o1H6yQj1b64iY8g93y7.jpg"
+        },
+        {
+          "id": "whistle",
+          "title": "Whistle",
+          "description": "Michael, a former football player and the son of a local crime boss, decides to coach a women's football team after their head coach is injured. He faces corruption and personal demons to lead the team to victory.",
+          "duration": 10653,
+          "videoUrl": "https://d3sgzbosmwirao.cloudfront.net/video/652177483a08e5ba7c4caa8042b9ae32a394549fc8c92c00db02ea3f5444dfbc/1/hls/h264_high.m3u8",
+          "type": "content",
+          "category": "Sports",
+          "thumbnail": "https://media.themoviedb.org/t/p/w500/w6Jk8BHohhoKBUcxGeSyDQGWGWc.jpg",
+          "year": 2019,
+          "language": "Telugu",
+          "backdrop": "https://image.tmdb.org/t/p/w1280/5ZSwZPKgcTJJwhxjbOHeoBTVaKh.jpg"
         }
       ],
       "idents": [
@@ -96,7 +190,7 @@
           "videoUrl": "/media/acm-movies/ident-movies.mp4",
           "type": "ident",
           "category": "Idents",
-          "thumbnail": "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=400"
+          "thumbnail": "/branding/acm-movies-logo.svg"
         }
       ],
       "promos": [
@@ -108,7 +202,7 @@
           "videoUrl": "/media/acm-movies/promo-movies.mp4",
           "type": "promo",
           "category": "Promos",
-          "thumbnail": "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=400"
+          "thumbnail": "/branding/acm-movies-logo.svg"
         }
       ]
     },
@@ -118,6 +212,11 @@
       "tagline": "Non-Stop Hits & Anthems",
       "logoUrl": "/branding/acm-music-logo.svg",
       "bugUrl": "/branding/acm-tv-bug.svg",
+      "themeColor": "#EC4899",
+      "category": "Music",
+      "description": "Non-Stop Hits & Anthems",
+      "channelNumber": 3,
+      "standbyArtwork": "/branding/acm-music-logo.svg",
       "weaving": {
         "insertIdentEveryNPrograms": 2,
         "insertPromoEveryNPrograms": 2
@@ -131,7 +230,7 @@
           "videoUrl": "/media/acm-music/music-bunny.mp4",
           "type": "song",
           "category": "Pop Beats",
-          "thumbnail": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=400"
+          "thumbnail": "/branding/acm-music-logo.svg"
         },
         {
           "id": "prog-music-steel",
@@ -141,7 +240,7 @@
           "videoUrl": "/media/acm-music/music-steel.mp4",
           "type": "song",
           "category": "Synthwave",
-          "thumbnail": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=400"
+          "thumbnail": "/branding/acm-music-logo.svg"
         }
       ],
       "idents": [
@@ -153,7 +252,7 @@
           "videoUrl": "/media/acm-music/ident-music.mp4",
           "type": "ident",
           "category": "Idents",
-          "thumbnail": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=400"
+          "thumbnail": "/branding/acm-music-logo.svg"
         }
       ],
       "promos": [
@@ -165,7 +264,7 @@
           "videoUrl": "/media/acm-music/promo-music.mp4",
           "type": "promo",
           "category": "Promos",
-          "thumbnail": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=400"
+          "thumbnail": "/branding/acm-music-logo.svg"
         }
       ]
     },
@@ -175,6 +274,11 @@
       "tagline": "Sneak Peeks & First Looks",
       "logoUrl": "/branding/acm-trailers-logo.svg",
       "bugUrl": "/branding/acm-tv-bug.svg",
+      "themeColor": "#10B981",
+      "category": "Trailers",
+      "description": "Sneak Peeks & First Looks",
+      "channelNumber": 4,
+      "standbyArtwork": "/branding/acm-trailers-logo.svg",
       "weaving": {
         "insertIdentEveryNPrograms": 1,
         "insertPromoEveryNPrograms": 3
@@ -188,7 +292,7 @@
           "videoUrl": "/media/acm-trailers/trailer-sintel.mp4",
           "type": "trailer",
           "category": "Trailers",
-          "thumbnail": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400"
+          "thumbnail": "/branding/acm-trailers-logo.svg"
         },
         {
           "id": "prog-trailer-steel",
@@ -198,7 +302,7 @@
           "videoUrl": "/media/acm-trailers/trailer-steel.mp4",
           "type": "trailer",
           "category": "Trailers",
-          "thumbnail": "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=400"
+          "thumbnail": "/branding/acm-trailers-logo.svg"
         },
         {
           "id": "spiderman-brand-new-day-trailer-1",
@@ -250,7 +354,7 @@
           "videoUrl": "/media/acm-trailers/ident-trailers.mp4",
           "type": "ident",
           "category": "Idents",
-          "thumbnail": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400"
+          "thumbnail": "/branding/acm-trailers-logo.svg"
         }
       ],
       "promos": [
@@ -262,7 +366,7 @@
           "videoUrl": "/media/acm-trailers/promo-trailers.mp4",
           "type": "promo",
           "category": "Promos",
-          "thumbnail": "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=400"
+          "thumbnail": "/branding/acm-trailers-logo.svg"
         }
       ]
     },
@@ -272,6 +376,11 @@
       "tagline": "Realm Cinematic Universe Network",
       "logoUrl": "/branding/acm-rcu-logo.svg",
       "bugUrl": "/branding/acm-tv-bug.svg",
+      "themeColor": "#F97316",
+      "category": "RCU",
+      "description": "Realm Cinematic Universe Network",
+      "channelNumber": 5,
+      "standbyArtwork": "/branding/acm-rcu-logo.svg",
       "weaving": {
         "insertIdentEveryNPrograms": 1,
         "insertPromoEveryNPrograms": 1
@@ -285,7 +394,7 @@
           "videoUrl": "/media/acm-rcu/rcu-blazes.mp4",
           "type": "promo",
           "category": "RCU Promos",
-          "thumbnail": "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=400"
+          "thumbnail": "/branding/acm-rcu-logo.svg"
         },
         {
           "id": "prog-rcu-escapes",
@@ -295,7 +404,7 @@
           "videoUrl": "/media/acm-rcu/rcu-escapes.mp4",
           "type": "promo",
           "category": "RCU Promos",
-          "thumbnail": "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=400"
+          "thumbnail": "/branding/acm-rcu-logo.svg"
         },
         {
           "id": "prog-rcu-meltdown",
@@ -305,7 +414,7 @@
           "videoUrl": "/media/acm-rcu/rcu-meltdown.mp4",
           "type": "trailer",
           "category": "RCU Trailiers",
-          "thumbnail": "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=400"
+          "thumbnail": "/branding/acm-rcu-logo.svg"
         }
       ],
       "idents": [
@@ -317,7 +426,7 @@
           "videoUrl": "/media/acm-rcu/ident-rcu-logo.mp4",
           "type": "ident",
           "category": "Idents",
-          "thumbnail": "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=400"
+          "thumbnail": "/branding/acm-rcu-logo.svg"
         }
       ],
       "promos": [
@@ -329,7 +438,7 @@
           "videoUrl": "/media/acm-rcu/promo-rcu-phase5.mp4",
           "type": "promo",
           "category": "Promos",
-          "thumbnail": "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=400"
+          "thumbnail": "/branding/acm-rcu-logo.svg"
         }
       ]
     },
@@ -339,6 +448,11 @@
       "tagline": "Prathkshanam Janahitham",
       "logoUrl": "/branding/ntv-telugu-logo.svg",
       "bugUrl": "/branding/acm-tv-bug.svg",
+      "themeColor": "#EA580C",
+      "category": "News",
+      "description": "NTV Telugu Live News Broadcast.",
+      "channelNumber": 6,
+      "standbyArtwork": "/branding/ntv-telugu-standby.svg",
       "weaving": {
         "insertIdentEveryNPrograms": 1,
         "insertPromoEveryNPrograms": 1
@@ -349,10 +463,10 @@
           "title": "NTV Telugu Live",
           "description": "NTV Telugu Live News Broadcast.",
           "duration": 86400,
-          "videoUrl": "",
+          "videoUrl": "https://yuppmedtaorire.akamaized.net/v1/manifest/a0d007312bfd99c47f76b77ae26b1ccdaae76cb1/ntv_nim_https/67bd6de4-25de-44b3-a242-e446154979ac/0.m3u8",
           "type": "content",
           "category": "News",
-          "thumbnail": "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=400"
+          "thumbnail": "/branding/ntv-telugu-standby.svg"
         }
       ],
       "idents": [],
@@ -364,6 +478,11 @@
       "tagline": "For a Better Society",
       "logoUrl": "/branding/tv9-telugu-logo.svg",
       "bugUrl": "/branding/acm-tv-bug.svg",
+      "themeColor": "#EF4444",
+      "category": "News",
+      "description": "TV9 Telugu Live News Broadcast.",
+      "channelNumber": 7,
+      "standbyArtwork": "/branding/tv9-telugu-standby.svg",
       "weaving": {
         "insertIdentEveryNPrograms": 1,
         "insertPromoEveryNPrograms": 1
@@ -374,110 +493,10 @@
           "title": "TV9 Telugu Live",
           "description": "TV9 Telugu Live News Broadcast.",
           "duration": 86400,
-          "videoUrl": "",
+          "videoUrl": "https://dyjmyiv3bp2ez.cloudfront.net/pub-iotv9telcmjhcs/liveabr/playlist.m3u8",
           "type": "content",
           "category": "News",
-          "thumbnail": "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=400"
-        }
-      ],
-      "idents": [],
-      "promos": []
-    },
-    {
-      "id": "sakshi-tv",
-      "name": "Sakshi TV",
-      "tagline": "Sakshi TV News",
-      "logoUrl": "/branding/sakshi-tv-logo.svg",
-      "bugUrl": "/branding/acm-tv-bug.svg",
-      "weaving": {
-        "insertIdentEveryNPrograms": 1,
-        "insertPromoEveryNPrograms": 1
-      },
-      "programs": [
-        {
-          "id": "sakshi-tv-live",
-          "title": "Sakshi TV Live",
-          "description": "Sakshi TV Live News Broadcast.",
-          "duration": 86400,
-          "videoUrl": "",
-          "type": "content",
-          "category": "News",
-          "thumbnail": "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=400"
-        }
-      ],
-      "idents": [],
-      "promos": []
-    },
-    {
-      "id": "etv-andhra",
-      "name": "ETV Andhra Pradesh",
-      "tagline": "ETV Andhra Pradesh News",
-      "logoUrl": "/branding/etv-andhra-logo.svg",
-      "bugUrl": "/branding/acm-tv-bug.svg",
-      "weaving": {
-        "insertIdentEveryNPrograms": 1,
-        "insertPromoEveryNPrograms": 1
-      },
-      "programs": [
-        {
-          "id": "etv-andhra-live",
-          "title": "ETV Andhra Pradesh Live",
-          "description": "ETV Andhra Pradesh Live Broadcast.",
-          "duration": 86400,
-          "videoUrl": "",
-          "type": "content",
-          "category": "News",
-          "thumbnail": "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=400"
-        }
-      ],
-      "idents": [],
-      "promos": []
-    },
-    {
-      "id": "etv-telangana",
-      "name": "ETV Telangana",
-      "tagline": "ETV Telangana News",
-      "logoUrl": "/branding/etv-telangana-logo.svg",
-      "bugUrl": "/branding/acm-tv-bug.svg",
-      "weaving": {
-        "insertIdentEveryNPrograms": 1,
-        "insertPromoEveryNPrograms": 1
-      },
-      "programs": [
-        {
-          "id": "etv-telangana-live",
-          "title": "ETV Telangana Live",
-          "description": "ETV Telangana Live Broadcast.",
-          "duration": 86400,
-          "videoUrl": "",
-          "type": "content",
-          "category": "News",
-          "thumbnail": "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=400"
-        }
-      ],
-      "idents": [],
-      "promos": []
-    },
-    {
-      "id": "abn-andhra",
-      "name": "ABN Andhra Jyothy",
-      "tagline": "ABN Andhra Jyothy Live",
-      "logoUrl": "/branding/abn-andhra-logo.svg",
-      "bugUrl": "/branding/acm-tv-bug.svg",
-      "weaving": {
-        "insertIdentEveryNPrograms": 1,
-        "insertPromoEveryNPrograms": 1
-      },
-      "programs": [
-        {
-          "id": "abn-andhra-live",
-          "title": "ABN Andhra Jyothy Live",
-          "description": "ABN Andhra Jyothy Live News Broadcast.",
-          "duration": 86400,
-          "videoUrl": "",
-          "type": "content",
-          "category": "News",
-          "thumbnail": "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=400"
+          "thumbnail": "/branding/tv9-telugu-standby.svg"
         }
       ],
       "idents": [],
@@ -489,6 +508,11 @@
       "tagline": "10TV News Live",
       "logoUrl": "/branding/10tv-logo.svg",
       "bugUrl": "/branding/acm-tv-bug.svg",
+      "themeColor": "#06B6D4",
+      "category": "News",
+      "description": "10TV Live News Broadcast.",
+      "channelNumber": 8,
+      "standbyArtwork": "/branding/10tv-standby.svg",
       "weaving": {
         "insertIdentEveryNPrograms": 1,
         "insertPromoEveryNPrograms": 1
@@ -499,85 +523,130 @@
           "title": "10TV Live",
           "description": "10TV Live News Broadcast.",
           "duration": 86400,
-          "videoUrl": "",
+          "videoUrl": "https://d2gvyg6lvauoko.cloudfront.net/230226/10tv/chunks.m3u8",
           "type": "content",
           "category": "News",
-          "thumbnail": "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=400"
+          "thumbnail": "/branding/10tv-standby.svg"
         }
       ],
       "idents": [],
       "promos": []
     },
     {
-      "id": "v6-news",
-      "name": "V6 News",
-      "tagline": "V6 News Live",
-      "logoUrl": "/branding/v6-news-logo.svg",
+      "id": "telugu-one",
+      "name": "Telugu One",
+      "tagline": "Entertainment Without Pause",
+      "logoUrl": "/branding/telugu-one-logo.svg",
       "bugUrl": "/branding/acm-tv-bug.svg",
+      "themeColor": "#F59E0B",
+      "category": "Entertainment",
+      "description": "Telugu One Live Entertainment Broadcast.",
+      "channelNumber": 9,
+      "standbyArtwork": "/branding/telugu-one-standby.svg",
       "weaving": {
         "insertIdentEveryNPrograms": 1,
         "insertPromoEveryNPrograms": 1
       },
       "programs": [
         {
-          "id": "v6-news-live",
-          "title": "V6 News Live",
-          "description": "V6 News Live Broadcast.",
+          "id": "telugu-one-live",
+          "title": "Telugu One Live",
+          "description": "Telugu One Live Entertainment Broadcast.",
           "duration": 86400,
-          "videoUrl": "",
+          "videoUrl": "https://vglivessai.akamaized.net/sg/v1/manifest/611d79b11b77e2f571934fd80ca1413453772ac7/4eda1f4a-c0ee-4273-adfe-17afc51977fc/38b0a0b4-6ec8-432d-8e56-48ef8ab046e6/1.m3u8",
           "type": "content",
-          "category": "News",
-          "thumbnail": "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=400"
+          "category": "Entertainment",
+          "thumbnail": "/branding/telugu-one-standby.svg"
         }
       ],
       "idents": [],
       "promos": []
     },
     {
-      "id": "t-news",
-      "name": "T News",
-      "tagline": "T News Live",
-      "logoUrl": "/branding/t-news-logo.svg",
+      "id": "mahaa-max",
+      "name": "Mahaa Max",
+      "tagline": "Maximum Entertainment",
+      "logoUrl": "/branding/mahaa-max-logo.svg",
       "bugUrl": "/branding/acm-tv-bug.svg",
+      "themeColor": "#DC2626",
+      "category": "Entertainment",
+      "description": "Mahaa Max Live Movies & Shows Broadcast.",
+      "channelNumber": 10,
+      "standbyArtwork": "/branding/mahaa-max-standby.svg",
       "weaving": {
         "insertIdentEveryNPrograms": 1,
         "insertPromoEveryNPrograms": 1
       },
       "programs": [
         {
-          "id": "t-news-live",
-          "title": "T News Live",
-          "description": "T News Live Broadcast.",
+          "id": "mahaa-max-live",
+          "title": "Mahaa Max Live",
+          "description": "Mahaa Max Live Movies & Shows Broadcast.",
           "duration": 86400,
-          "videoUrl": "",
+          "videoUrl": "https://d1msejlow1t3l4.cloudfront.net/fta/mahaamax/chunks.m3u8",
           "type": "content",
-          "category": "News",
-          "thumbnail": "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=400"
+          "category": "Entertainment",
+          "thumbnail": "/branding/mahaa-max-standby.svg"
         }
       ],
       "idents": [],
       "promos": []
     },
     {
-      "id": "cvr-news",
-      "name": "CVR News",
-      "tagline": "CVR News Live",
-      "logoUrl": "/branding/cvr-news-logo.svg",
+      "id": "studio-yuva",
+      "name": "Studio Yuva",
+      "tagline": "Youth & Entertainment",
+      "logoUrl": "/branding/studio-yuva-logo.svg",
       "bugUrl": "/branding/acm-tv-bug.svg",
+      "themeColor": "#84CC16",
+      "category": "Entertainment",
+      "description": "Studio Yuva Live Youth & Hits Broadcast.",
+      "channelNumber": 11,
+      "standbyArtwork": "/branding/studio-yuva-standby.svg",
       "weaving": {
         "insertIdentEveryNPrograms": 1,
         "insertPromoEveryNPrograms": 1
       },
       "programs": [
         {
-          "id": "cvr-news-live",
-          "title": "CVR News Live",
-          "description": "CVR News Live Broadcast.",
+          "id": "studio-yuva-live",
+          "title": "Studio Yuva Live",
+          "description": "Studio Yuva Live Youth & Hits Broadcast.",
           "duration": 86400,
-          "videoUrl": "",
+          "videoUrl": "https://d2gvyg6lvauoko.cloudfront.net/230226/studioyuva/chunks.m3u8",
           "type": "content",
-          "category": "News",
-          "thumbnail": "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=400"
+          "category": "Entertainment",
+          "thumbnail": "/branding/studio-yuva-standby.svg"
+        }
+      ],
+      "idents": [],
+      "promos": []
+    },
+    {
+      "id": "tolly-tv",
+      "name": "Tolly TV",
+      "tagline": "Cinema Hub & Music",
+      "logoUrl": "/branding/tolly-tv-logo.svg",
+      "bugUrl": "/branding/acm-tv-bug.svg",
+      "themeColor": "#EC4899",
+      "category": "Entertainment",
+      "description": "Tolly TV Live Movies & Music Broadcast.",
+      "channelNumber": 12,
+      "standbyArtwork": "/branding/tolly-tv-standby.svg",
+      "weaving": {
+        "insertIdentEveryNPrograms": 1,
+        "insertPromoEveryNPrograms": 1
+      },
+      "programs": [
+        {
+          "id": "tolly-tv-live",
+          "title": "Tolly TV Live",
+          "description": "Tolly TV Live Movies & Music Broadcast.",
+          "duration": 86400,
+          "videoUrl": "https://streams2.sofast.tv/ptnr-yupptv/title-TOLLY-TV-TEL_yupptv/v1/manifest/611d79b11b77e2f571934fd80ca1413453772ac7/13b5735d-52c3-4be0-853d-e0ec0127e708/b4dec3fe-fa4d-4ab9-9e81-75a8fbb9922b/1.m3u8",
+          "type": "content",
+          "category": "Entertainment",
+          "thumbnail": "/branding/tolly-tv-standby.svg"
         }
       ],
       "idents": [],

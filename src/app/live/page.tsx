@@ -25,15 +25,6 @@ function LiveTVClientContent() {
     setBroadcastState(state);
   };
 
-  // Color classes for active state
-  const borderColors: { [key: string]: string } = {
-    'acm-tv': 'border-amber-500 text-amber-500 bg-amber-500/5',
-    'acm-movies': 'border-blue-500 text-blue-500 bg-blue-500/5',
-    'acm-music': 'border-pink-500 text-pink-500 bg-pink-500/5',
-    'acm-trailers': 'border-emerald-500 text-emerald-500 bg-emerald-500/5',
-    'acm-rcu': 'border-orange-500 text-orange-500 bg-orange-500/5',
-  };
-
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       
@@ -51,9 +42,14 @@ function LiveTVClientContent() {
               onClick={() => handleChannelSwitch(ch.id)}
               className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all border ${
                 isActive
-                  ? borderColors[ch.id] || 'border-amber-500 text-amber-500'
+                  ? ''
                   : 'bg-zinc-950 text-zinc-400 border-zinc-800 hover:text-white hover:bg-zinc-900'
               }`}
+              style={isActive ? {
+                borderColor: ch.themeColor || '#f59e0b',
+                color: ch.themeColor || '#f59e0b',
+                backgroundColor: ch.themeColor ? `${ch.themeColor}10` : 'rgba(245, 158, 11, 0.05)'
+              } : undefined}
             >
               {ch.name}
             </button>
@@ -78,13 +74,27 @@ function LiveTVClientContent() {
             <div className="bg-zinc-950/40 border border-zinc-900 rounded-2xl p-6 sm:p-8 space-y-6">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="space-y-2">
-                  <div className="flex items-center gap-3">
-                    <span className="px-2.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-[10px] font-bold text-amber-500 uppercase tracking-wider">
-                      {activeChannel.name} Broadcast
+                  <div className="flex items-center gap-3 animate-fade-in">
+                    {activeChannel.channelNumber && (
+                      <span className="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-[10px] font-mono font-bold text-zinc-400">
+                        Ch {activeChannel.channelNumber}
+                      </span>
+                    )}
+                    <span 
+                      className="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border"
+                      style={{
+                        backgroundColor: activeChannel.themeColor ? `${activeChannel.themeColor}10` : 'rgba(245, 158, 11, 0.1)',
+                        borderColor: activeChannel.themeColor ? `${activeChannel.themeColor}30` : 'rgba(245, 158, 11, 0.2)',
+                        color: activeChannel.themeColor || '#f59e0b'
+                      }}
+                    >
+                      {activeChannel.name}
                     </span>
-                    <span className="text-xs text-zinc-400 font-semibold">
-                      {broadcastState.currentProgram.program.category}
-                    </span>
+                    {(activeChannel.category || broadcastState.currentProgram.program.category) && (
+                      <span className="text-xs text-zinc-500 font-bold uppercase tracking-wide">
+                        {activeChannel.category || broadcastState.currentProgram.program.category}
+                      </span>
+                    )}
                   </div>
                   <h2 className="text-xl sm:text-3xl font-black text-white tracking-tight leading-tight">
                     {broadcastState.currentProgram.program.title}
@@ -99,7 +109,7 @@ function LiveTVClientContent() {
               </div>
 
               <p className="text-sm text-zinc-300 font-medium leading-relaxed">
-                {broadcastState.currentProgram.program.description}
+                {broadcastState.currentProgram.program.description || activeChannel.description}
               </p>
 
               {/* Feed Details & Share link */}

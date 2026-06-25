@@ -1,413 +1,1994 @@
 {
   "acm-tv": {
     "monday": [
-      { "startTime": "00:00", "programId": "prog-showcase" },
-      { "startTime": "03:00", "programId": "ident-acm-classic" },
-      { "startTime": "03:15", "programId": "neno-butterfly" },
-      { "startTime": "06:00", "programId": "x-men-6" },
-      { "startTime": "10:00", "programId": "ident-acm-gold" },
-      { "startTime": "10:15", "programId": "promo-acm-action" },
-      { "startTime": "12:00", "programId": "prog-showcase" },
-      { "startTime": "15:00", "programId": "neno-butterfly" },
-      { "startTime": "18:00", "programId": "promo-acm-late" },
-      { "startTime": "18:15", "programId": "prog-sintel-trailer" },
-      { "startTime": "21:00", "programId": "x-men-6" },
-      { "startTime": "23:00", "programId": "ident-acm-classic" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-showcase"
+      },
+      {
+        "startTime": "03:00",
+        "programId": "ident-acm-classic"
+      },
+      {
+        "startTime": "03:15",
+        "programId": "neno-butterfly"
+      },
+      {
+        "startTime": "06:00",
+        "programId": "x-men-6"
+      },
+      {
+        "startTime": "10:00",
+        "programId": "ident-acm-gold"
+      },
+      {
+        "startTime": "10:15",
+        "programId": "promo-acm-action"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "prog-showcase"
+      },
+      {
+        "startTime": "15:00",
+        "programId": "neno-butterfly"
+      },
+      {
+        "startTime": "18:00",
+        "programId": "promo-acm-late"
+      },
+      {
+        "startTime": "18:15",
+        "programId": "prog-sintel-trailer"
+      },
+      {
+        "startTime": "21:00",
+        "programId": "x-men-6"
+      },
+      {
+        "startTime": "23:00",
+        "programId": "ident-acm-classic"
+      }
     ],
     "tuesday": [
-      { "startTime": "00:00", "programId": "prog-sintel-trailer" },
-      { "startTime": "04:00", "programId": "ident-acm-gold" },
-      { "startTime": "04:15", "programId": "prog-showcase" },
-      { "startTime": "08:00", "programId": "x-men-6" },
-      { "startTime": "12:00", "programId": "promo-acm-action" },
-      { "startTime": "12:15", "programId": "prog-sintel-trailer" },
-      { "startTime": "16:00", "programId": "ident-acm-classic" },
-      { "startTime": "16:15", "programId": "prog-showcase" },
-      { "startTime": "20:00", "programId": "neno-butterfly" },
-      { "startTime": "22:00", "programId": "promo-acm-late" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-sintel-trailer"
+      },
+      {
+        "startTime": "04:00",
+        "programId": "ident-acm-gold"
+      },
+      {
+        "startTime": "04:15",
+        "programId": "prog-showcase"
+      },
+      {
+        "startTime": "08:00",
+        "programId": "x-men-6"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "promo-acm-action"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "prog-sintel-trailer"
+      },
+      {
+        "startTime": "16:00",
+        "programId": "ident-acm-classic"
+      },
+      {
+        "startTime": "16:15",
+        "programId": "prog-showcase"
+      },
+      {
+        "startTime": "20:00",
+        "programId": "neno-butterfly"
+      },
+      {
+        "startTime": "22:00",
+        "programId": "promo-acm-late"
+      }
     ],
     "wednesday": [
-      { "startTime": "00:00", "programId": "prog-showcase" },
-      { "startTime": "03:00", "programId": "neno-butterfly" },
-      { "startTime": "07:00", "programId": "prog-sintel-trailer" },
-      { "startTime": "11:00", "programId": "ident-acm-gold" },
-      { "startTime": "11:15", "programId": "promo-acm-action" },
-      { "startTime": "13:00", "programId": "prog-showcase" },
-      { "startTime": "16:00", "programId": "neno-butterfly" },
-      { "startTime": "19:00", "programId": "promo-acm-late" },
-      { "startTime": "19:15", "programId": "prog-sintel-trailer" },
-      { "startTime": "22:00", "programId": "ident-acm-classic" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-showcase"
+      },
+      {
+        "startTime": "03:00",
+        "programId": "neno-butterfly"
+      },
+      {
+        "startTime": "07:00",
+        "programId": "prog-sintel-trailer"
+      },
+      {
+        "startTime": "11:00",
+        "programId": "ident-acm-gold"
+      },
+      {
+        "startTime": "11:15",
+        "programId": "promo-acm-action"
+      },
+      {
+        "startTime": "13:00",
+        "programId": "prog-showcase"
+      },
+      {
+        "startTime": "16:00",
+        "programId": "neno-butterfly"
+      },
+      {
+        "startTime": "19:00",
+        "programId": "promo-acm-late"
+      },
+      {
+        "startTime": "19:15",
+        "programId": "prog-sintel-trailer"
+      },
+      {
+        "startTime": "22:00",
+        "programId": "ident-acm-classic"
+      }
     ],
     "thursday": [
-      { "startTime": "00:00", "programId": "prog-sintel-trailer" },
-      { "startTime": "05:00", "programId": "ident-acm-classic" },
-      { "startTime": "05:15", "programId": "prog-showcase" },
-      { "startTime": "09:00", "programId": "neno-butterfly" },
-      { "startTime": "13:00", "programId": "promo-acm-action" },
-      { "startTime": "13:15", "programId": "prog-sintel-trailer" },
-      { "startTime": "17:00", "programId": "ident-acm-gold" },
-      { "startTime": "17:15", "programId": "prog-showcase" },
-      { "startTime": "21:00", "programId": "neno-butterfly" },
-      { "startTime": "23:00", "programId": "promo-acm-late" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-sintel-trailer"
+      },
+      {
+        "startTime": "05:00",
+        "programId": "ident-acm-classic"
+      },
+      {
+        "startTime": "05:15",
+        "programId": "prog-showcase"
+      },
+      {
+        "startTime": "09:00",
+        "programId": "neno-butterfly"
+      },
+      {
+        "startTime": "13:00",
+        "programId": "promo-acm-action"
+      },
+      {
+        "startTime": "13:15",
+        "programId": "prog-sintel-trailer"
+      },
+      {
+        "startTime": "17:00",
+        "programId": "ident-acm-gold"
+      },
+      {
+        "startTime": "17:15",
+        "programId": "prog-showcase"
+      },
+      {
+        "startTime": "21:00",
+        "programId": "neno-butterfly"
+      },
+      {
+        "startTime": "23:00",
+        "programId": "promo-acm-late"
+      }
     ],
     "friday": [
-      { "startTime": "00:00", "programId": "prog-showcase" },
-      { "startTime": "03:00", "programId": "ident-acm-classic" },
-      { "startTime": "03:15", "programId": "neno-butterfly" },
-      { "startTime": "06:00", "programId": "prog-sintel-trailer" },
-      { "startTime": "10:00", "programId": "ident-acm-gold" },
-      { "startTime": "10:15", "programId": "promo-acm-action" },
-      { "startTime": "12:00", "programId": "prog-showcase" },
-      { "startTime": "15:00", "programId": "neno-butterfly" },
-      { "startTime": "18:00", "programId": "promo-acm-late" },
-      { "startTime": "18:15", "programId": "prog-sintel-trailer" },
-      { "startTime": "21:00", "programId": "neno-butterfly" },
-      { "startTime": "23:00", "programId": "ident-acm-classic" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-showcase"
+      },
+      {
+        "startTime": "03:00",
+        "programId": "ident-acm-classic"
+      },
+      {
+        "startTime": "03:15",
+        "programId": "neno-butterfly"
+      },
+      {
+        "startTime": "06:00",
+        "programId": "prog-sintel-trailer"
+      },
+      {
+        "startTime": "10:00",
+        "programId": "ident-acm-gold"
+      },
+      {
+        "startTime": "10:15",
+        "programId": "promo-acm-action"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "prog-showcase"
+      },
+      {
+        "startTime": "15:00",
+        "programId": "neno-butterfly"
+      },
+      {
+        "startTime": "18:00",
+        "programId": "promo-acm-late"
+      },
+      {
+        "startTime": "18:15",
+        "programId": "prog-sintel-trailer"
+      },
+      {
+        "startTime": "21:00",
+        "programId": "neno-butterfly"
+      },
+      {
+        "startTime": "23:00",
+        "programId": "ident-acm-classic"
+      }
     ],
     "saturday": [
-      { "startTime": "00:00", "programId": "prog-sintel-trailer" },
-      { "startTime": "06:00", "programId": "ident-acm-gold" },
-      { "startTime": "06:15", "programId": "prog-showcase" },
-      { "startTime": "12:00", "programId": "neno-butterfly" },
-      { "startTime": "15:00", "programId": "promo-acm-action" },
-      { "startTime": "15:15", "programId": "prog-sintel-trailer" },
-      { "startTime": "20:00", "programId": "ident-acm-classic" },
-      { "startTime": "20:15", "programId": "prog-showcase" },
-      { "startTime": "23:00", "programId": "promo-acm-late" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-sintel-trailer"
+      },
+      {
+        "startTime": "06:00",
+        "programId": "ident-acm-gold"
+      },
+      {
+        "startTime": "06:15",
+        "programId": "prog-showcase"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "neno-butterfly"
+      },
+      {
+        "startTime": "15:00",
+        "programId": "promo-acm-action"
+      },
+      {
+        "startTime": "15:15",
+        "programId": "prog-sintel-trailer"
+      },
+      {
+        "startTime": "20:00",
+        "programId": "ident-acm-classic"
+      },
+      {
+        "startTime": "20:15",
+        "programId": "prog-showcase"
+      },
+      {
+        "startTime": "23:00",
+        "programId": "promo-acm-late"
+      }
     ],
     "sunday": [
-      { "startTime": "00:00", "programId": "prog-showcase" },
-      { "startTime": "05:00", "programId": "neno-butterfly" },
-      { "startTime": "09:00", "programId": "prog-sintel-trailer" },
-      { "startTime": "14:00", "programId": "ident-acm-classic" },
-      { "startTime": "14:15", "programId": "promo-acm-action" },
-      { "startTime": "15:00", "programId": "prog-showcase" },
-      { "startTime": "19:00", "programId": "neno-butterfly" },
-      { "startTime": "22:00", "programId": "prog-sintel-trailer" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-showcase"
+      },
+      {
+        "startTime": "05:00",
+        "programId": "neno-butterfly"
+      },
+      {
+        "startTime": "09:00",
+        "programId": "prog-sintel-trailer"
+      },
+      {
+        "startTime": "14:00",
+        "programId": "ident-acm-classic"
+      },
+      {
+        "startTime": "14:15",
+        "programId": "promo-acm-action"
+      },
+      {
+        "startTime": "15:00",
+        "programId": "prog-showcase"
+      },
+      {
+        "startTime": "19:00",
+        "programId": "neno-butterfly"
+      },
+      {
+        "startTime": "22:00",
+        "programId": "prog-sintel-trailer"
+      }
     ]
   },
   "acm-movies": {
     "monday": [
-      { "startTime": "00:00", "programId": "prog-bunny-movie" },
-      { "startTime": "06:00", "programId": "ident-movies-1" },
-      { "startTime": "06:15", "programId": "prog-tears-movie" },
-      { "startTime": "12:00", "programId": "promo-movies-1" },
-      { "startTime": "12:15", "programId": "prog-bunny-movie" },
-      { "startTime": "18:00", "programId": "ident-movies-1" },
-      { "startTime": "18:15", "programId": "prog-tears-movie" }
+      {
+        "startTime": "00:00",
+        "programId": "hit-first-case"
+      },
+      {
+        "startTime": "02:08",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "02:10",
+        "programId": "yashoda"
+      },
+      {
+        "startTime": "04:22",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "04:24",
+        "programId": "hit-first-case"
+      },
+      {
+        "startTime": "06:00",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "06:05",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "06:10",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "06:15",
+        "programId": "jathi-ratnalu"
+      },
+      {
+        "startTime": "08:38",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "08:40",
+        "programId": "paagal"
+      },
+      {
+        "startTime": "10:55",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "10:57",
+        "programId": "jathi-ratnalu"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "12:05",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "12:10",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "varasudu"
+      },
+      {
+        "startTime": "15:04",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "15:06",
+        "programId": "maharshi"
+      },
+      {
+        "startTime": "18:00",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "18:03",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "18:05",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "18:10",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "18:15",
+        "programId": "vakeel-saab"
+      },
+      {
+        "startTime": "20:48",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "20:50",
+        "programId": "whistle"
+      },
+      {
+        "startTime": "23:47",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "23:49",
+        "programId": "vakeel-saab"
+      }
     ],
     "tuesday": [
-      { "startTime": "00:00", "programId": "prog-tears-movie" },
-      { "startTime": "06:00", "programId": "ident-movies-1" },
-      { "startTime": "06:15", "programId": "prog-bunny-movie" },
-      { "startTime": "12:00", "programId": "promo-movies-1" },
-      { "startTime": "12:15", "programId": "prog-tears-movie" },
-      { "startTime": "18:00", "programId": "ident-movies-1" },
-      { "startTime": "18:15", "programId": "prog-bunny-movie" }
+      {
+        "startTime": "00:00",
+        "programId": "yashoda"
+      },
+      {
+        "startTime": "02:12",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "02:14",
+        "programId": "hit-first-case"
+      },
+      {
+        "startTime": "04:22",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "04:24",
+        "programId": "yashoda"
+      },
+      {
+        "startTime": "06:00",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "06:05",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "06:10",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "06:15",
+        "programId": "paagal"
+      },
+      {
+        "startTime": "08:30",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "08:32",
+        "programId": "jathi-ratnalu"
+      },
+      {
+        "startTime": "10:55",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "10:57",
+        "programId": "paagal"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "12:05",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "12:10",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "maharshi"
+      },
+      {
+        "startTime": "15:12",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "15:14",
+        "programId": "varasudu"
+      },
+      {
+        "startTime": "18:00",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "18:03",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "18:05",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "18:10",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "18:15",
+        "programId": "whistle"
+      },
+      {
+        "startTime": "21:12",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "21:14",
+        "programId": "vakeel-saab"
+      },
+      {
+        "startTime": "23:47",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "23:49",
+        "programId": "whistle"
+      }
     ],
     "wednesday": [
-      { "startTime": "00:00", "programId": "prog-bunny-movie" },
-      { "startTime": "06:00", "programId": "ident-movies-1" },
-      { "startTime": "06:15", "programId": "prog-tears-movie" },
-      { "startTime": "12:00", "programId": "promo-movies-1" },
-      { "startTime": "12:15", "programId": "prog-bunny-movie" },
-      { "startTime": "18:00", "programId": "ident-movies-1" },
-      { "startTime": "18:15", "programId": "prog-tears-movie" }
+      {
+        "startTime": "00:00",
+        "programId": "hit-first-case"
+      },
+      {
+        "startTime": "02:08",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "02:10",
+        "programId": "yashoda"
+      },
+      {
+        "startTime": "04:22",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "04:24",
+        "programId": "hit-first-case"
+      },
+      {
+        "startTime": "06:00",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "06:05",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "06:10",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "06:15",
+        "programId": "jathi-ratnalu"
+      },
+      {
+        "startTime": "08:38",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "08:40",
+        "programId": "paagal"
+      },
+      {
+        "startTime": "10:55",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "10:57",
+        "programId": "jathi-ratnalu"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "12:05",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "12:10",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "varasudu"
+      },
+      {
+        "startTime": "15:04",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "15:06",
+        "programId": "maharshi"
+      },
+      {
+        "startTime": "18:00",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "18:03",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "18:05",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "18:10",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "18:15",
+        "programId": "vakeel-saab"
+      },
+      {
+        "startTime": "20:48",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "20:50",
+        "programId": "whistle"
+      },
+      {
+        "startTime": "23:47",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "23:49",
+        "programId": "vakeel-saab"
+      }
     ],
     "thursday": [
-      { "startTime": "00:00", "programId": "prog-tears-movie" },
-      { "startTime": "06:00", "programId": "ident-movies-1" },
-      { "startTime": "06:15", "programId": "prog-bunny-movie" },
-      { "startTime": "12:00", "programId": "promo-movies-1" },
-      { "startTime": "12:15", "programId": "prog-tears-movie" },
-      { "startTime": "18:00", "programId": "ident-movies-1" },
-      { "startTime": "18:15", "programId": "prog-bunny-movie" }
+      {
+        "startTime": "00:00",
+        "programId": "yashoda"
+      },
+      {
+        "startTime": "02:12",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "02:14",
+        "programId": "hit-first-case"
+      },
+      {
+        "startTime": "04:22",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "04:24",
+        "programId": "yashoda"
+      },
+      {
+        "startTime": "06:00",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "06:05",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "06:10",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "06:15",
+        "programId": "paagal"
+      },
+      {
+        "startTime": "08:30",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "08:32",
+        "programId": "jathi-ratnalu"
+      },
+      {
+        "startTime": "10:55",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "10:57",
+        "programId": "paagal"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "12:05",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "12:10",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "maharshi"
+      },
+      {
+        "startTime": "15:12",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "15:14",
+        "programId": "varasudu"
+      },
+      {
+        "startTime": "18:00",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "18:03",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "18:05",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "18:10",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "18:15",
+        "programId": "whistle"
+      },
+      {
+        "startTime": "21:12",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "21:14",
+        "programId": "vakeel-saab"
+      },
+      {
+        "startTime": "23:47",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "23:49",
+        "programId": "whistle"
+      }
     ],
     "friday": [
-      { "startTime": "00:00", "programId": "prog-bunny-movie" },
-      { "startTime": "06:00", "programId": "ident-movies-1" },
-      { "startTime": "06:15", "programId": "prog-tears-movie" },
-      { "startTime": "12:00", "programId": "promo-movies-1" },
-      { "startTime": "12:15", "programId": "prog-bunny-movie" },
-      { "startTime": "18:00", "programId": "ident-movies-1" },
-      { "startTime": "18:15", "programId": "prog-tears-movie" }
+      {
+        "startTime": "00:00",
+        "programId": "hit-first-case"
+      },
+      {
+        "startTime": "02:08",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "02:10",
+        "programId": "yashoda"
+      },
+      {
+        "startTime": "04:22",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "04:24",
+        "programId": "hit-first-case"
+      },
+      {
+        "startTime": "06:00",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "06:05",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "06:10",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "06:15",
+        "programId": "jathi-ratnalu"
+      },
+      {
+        "startTime": "08:38",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "08:40",
+        "programId": "paagal"
+      },
+      {
+        "startTime": "10:55",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "10:57",
+        "programId": "jathi-ratnalu"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "12:05",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "12:10",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "varasudu"
+      },
+      {
+        "startTime": "15:04",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "15:06",
+        "programId": "maharshi"
+      },
+      {
+        "startTime": "18:00",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "18:03",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "18:05",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "18:10",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "18:15",
+        "programId": "vakeel-saab"
+      },
+      {
+        "startTime": "20:48",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "20:50",
+        "programId": "whistle"
+      },
+      {
+        "startTime": "23:47",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "23:49",
+        "programId": "vakeel-saab"
+      }
     ],
     "saturday": [
-      { "startTime": "00:00", "programId": "prog-bunny-movie" },
-      { "startTime": "08:00", "programId": "ident-movies-1" },
-      { "startTime": "08:15", "programId": "prog-tears-movie" },
-      { "startTime": "15:00", "programId": "promo-movies-1" },
-      { "startTime": "15:15", "programId": "prog-bunny-movie" },
-      { "startTime": "21:00", "programId": "ident-movies-1" },
-      { "startTime": "21:15", "programId": "prog-tears-movie" }
+      {
+        "startTime": "00:00",
+        "programId": "yashoda"
+      },
+      {
+        "startTime": "02:12",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "02:14",
+        "programId": "hit-first-case"
+      },
+      {
+        "startTime": "04:22",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "04:24",
+        "programId": "yashoda"
+      },
+      {
+        "startTime": "06:00",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "06:05",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "06:10",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "06:15",
+        "programId": "paagal"
+      },
+      {
+        "startTime": "08:30",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "08:32",
+        "programId": "jathi-ratnalu"
+      },
+      {
+        "startTime": "10:55",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "10:57",
+        "programId": "paagal"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "12:05",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "12:10",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "maharshi"
+      },
+      {
+        "startTime": "15:12",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "15:14",
+        "programId": "varasudu"
+      },
+      {
+        "startTime": "18:00",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "18:03",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "18:05",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "18:10",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "18:15",
+        "programId": "whistle"
+      },
+      {
+        "startTime": "21:12",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "21:14",
+        "programId": "vakeel-saab"
+      },
+      {
+        "startTime": "23:47",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "23:49",
+        "programId": "whistle"
+      }
     ],
     "sunday": [
-      { "startTime": "00:00", "programId": "prog-tears-movie" },
-      { "startTime": "08:00", "programId": "ident-movies-1" },
-      { "startTime": "08:15", "programId": "prog-bunny-movie" },
-      { "startTime": "15:00", "programId": "promo-movies-1" },
-      { "startTime": "15:15", "programId": "prog-tears-movie" },
-      { "startTime": "21:00", "programId": "ident-movies-1" },
-      { "startTime": "21:15", "programId": "prog-bunny-movie" }
+      {
+        "startTime": "00:00",
+        "programId": "hit-first-case"
+      },
+      {
+        "startTime": "02:08",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "02:10",
+        "programId": "yashoda"
+      },
+      {
+        "startTime": "04:22",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "04:24",
+        "programId": "hit-first-case"
+      },
+      {
+        "startTime": "06:00",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "06:05",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "06:10",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "06:15",
+        "programId": "jathi-ratnalu"
+      },
+      {
+        "startTime": "08:38",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "08:40",
+        "programId": "paagal"
+      },
+      {
+        "startTime": "10:55",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "10:57",
+        "programId": "jathi-ratnalu"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "12:05",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "12:10",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "varasudu"
+      },
+      {
+        "startTime": "15:04",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "15:06",
+        "programId": "maharshi"
+      },
+      {
+        "startTime": "18:00",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "18:03",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "18:05",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "18:10",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "18:15",
+        "programId": "vakeel-saab"
+      },
+      {
+        "startTime": "20:48",
+        "programId": "promo-movies-1"
+      },
+      {
+        "startTime": "20:50",
+        "programId": "whistle"
+      },
+      {
+        "startTime": "23:47",
+        "programId": "ident-movies-1"
+      },
+      {
+        "startTime": "23:49",
+        "programId": "vakeel-saab"
+      }
     ]
   },
   "acm-music": {
     "monday": [
-      { "startTime": "00:00", "programId": "prog-music-bunny" },
-      { "startTime": "04:00", "programId": "ident-music-1" },
-      { "startTime": "04:15", "programId": "prog-music-steel" },
-      { "startTime": "08:00", "programId": "promo-music-1" },
-      { "startTime": "08:15", "programId": "prog-music-bunny" },
-      { "startTime": "12:00", "programId": "ident-music-1" },
-      { "startTime": "12:15", "programId": "prog-music-steel" },
-      { "startTime": "16:00", "programId": "promo-music-1" },
-      { "startTime": "16:15", "programId": "prog-music-bunny" },
-      { "startTime": "20:00", "programId": "ident-music-1" },
-      { "startTime": "20:15", "programId": "prog-music-steel" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-music-bunny"
+      },
+      {
+        "startTime": "04:00",
+        "programId": "ident-music-1"
+      },
+      {
+        "startTime": "04:15",
+        "programId": "prog-music-steel"
+      },
+      {
+        "startTime": "08:00",
+        "programId": "promo-music-1"
+      },
+      {
+        "startTime": "08:15",
+        "programId": "prog-music-bunny"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "ident-music-1"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "prog-music-steel"
+      },
+      {
+        "startTime": "16:00",
+        "programId": "promo-music-1"
+      },
+      {
+        "startTime": "16:15",
+        "programId": "prog-music-bunny"
+      },
+      {
+        "startTime": "20:00",
+        "programId": "ident-music-1"
+      },
+      {
+        "startTime": "20:15",
+        "programId": "prog-music-steel"
+      }
     ],
     "tuesday": [
-      { "startTime": "00:00", "programId": "prog-music-steel" },
-      { "startTime": "04:00", "programId": "ident-music-1" },
-      { "startTime": "04:15", "programId": "prog-music-bunny" },
-      { "startTime": "08:00", "programId": "promo-music-1" },
-      { "startTime": "08:15", "programId": "prog-music-steel" },
-      { "startTime": "12:00", "programId": "ident-music-1" },
-      { "startTime": "12:15", "programId": "prog-music-bunny" },
-      { "startTime": "16:00", "programId": "promo-music-1" },
-      { "startTime": "16:15", "programId": "prog-music-steel" },
-      { "startTime": "20:00", "programId": "ident-music-1" },
-      { "startTime": "20:15", "programId": "prog-music-bunny" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-music-steel"
+      },
+      {
+        "startTime": "04:00",
+        "programId": "ident-music-1"
+      },
+      {
+        "startTime": "04:15",
+        "programId": "prog-music-bunny"
+      },
+      {
+        "startTime": "08:00",
+        "programId": "promo-music-1"
+      },
+      {
+        "startTime": "08:15",
+        "programId": "prog-music-steel"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "ident-music-1"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "prog-music-bunny"
+      },
+      {
+        "startTime": "16:00",
+        "programId": "promo-music-1"
+      },
+      {
+        "startTime": "16:15",
+        "programId": "prog-music-steel"
+      },
+      {
+        "startTime": "20:00",
+        "programId": "ident-music-1"
+      },
+      {
+        "startTime": "20:15",
+        "programId": "prog-music-bunny"
+      }
     ],
     "wednesday": [
-      { "startTime": "00:00", "programId": "prog-music-bunny" },
-      { "startTime": "04:00", "programId": "ident-music-1" },
-      { "startTime": "04:15", "programId": "prog-music-steel" },
-      { "startTime": "08:00", "programId": "promo-music-1" },
-      { "startTime": "08:15", "programId": "prog-music-bunny" },
-      { "startTime": "12:00", "programId": "ident-music-1" },
-      { "startTime": "12:15", "programId": "prog-music-steel" },
-      { "startTime": "16:00", "programId": "promo-music-1" },
-      { "startTime": "16:15", "programId": "prog-music-bunny" },
-      { "startTime": "20:00", "programId": "ident-music-1" },
-      { "startTime": "20:15", "programId": "prog-music-steel" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-music-bunny"
+      },
+      {
+        "startTime": "04:00",
+        "programId": "ident-music-1"
+      },
+      {
+        "startTime": "04:15",
+        "programId": "prog-music-steel"
+      },
+      {
+        "startTime": "08:00",
+        "programId": "promo-music-1"
+      },
+      {
+        "startTime": "08:15",
+        "programId": "prog-music-bunny"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "ident-music-1"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "prog-music-steel"
+      },
+      {
+        "startTime": "16:00",
+        "programId": "promo-music-1"
+      },
+      {
+        "startTime": "16:15",
+        "programId": "prog-music-bunny"
+      },
+      {
+        "startTime": "20:00",
+        "programId": "ident-music-1"
+      },
+      {
+        "startTime": "20:15",
+        "programId": "prog-music-steel"
+      }
     ],
     "thursday": [
-      { "startTime": "00:00", "programId": "prog-music-steel" },
-      { "startTime": "04:00", "programId": "ident-music-1" },
-      { "startTime": "04:15", "programId": "prog-music-bunny" },
-      { "startTime": "08:00", "programId": "promo-music-1" },
-      { "startTime": "08:15", "programId": "prog-music-steel" },
-      { "startTime": "12:00", "programId": "ident-music-1" },
-      { "startTime": "12:15", "programId": "prog-music-bunny" },
-      { "startTime": "16:00", "programId": "promo-music-1" },
-      { "startTime": "16:15", "programId": "prog-music-steel" },
-      { "startTime": "20:00", "programId": "ident-music-1" },
-      { "startTime": "20:15", "programId": "prog-music-bunny" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-music-steel"
+      },
+      {
+        "startTime": "04:00",
+        "programId": "ident-music-1"
+      },
+      {
+        "startTime": "04:15",
+        "programId": "prog-music-bunny"
+      },
+      {
+        "startTime": "08:00",
+        "programId": "promo-music-1"
+      },
+      {
+        "startTime": "08:15",
+        "programId": "prog-music-steel"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "ident-music-1"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "prog-music-bunny"
+      },
+      {
+        "startTime": "16:00",
+        "programId": "promo-music-1"
+      },
+      {
+        "startTime": "16:15",
+        "programId": "prog-music-steel"
+      },
+      {
+        "startTime": "20:00",
+        "programId": "ident-music-1"
+      },
+      {
+        "startTime": "20:15",
+        "programId": "prog-music-bunny"
+      }
     ],
     "friday": [
-      { "startTime": "00:00", "programId": "prog-music-bunny" },
-      { "startTime": "04:00", "programId": "ident-music-1" },
-      { "startTime": "04:15", "programId": "prog-music-steel" },
-      { "startTime": "08:00", "programId": "promo-music-1" },
-      { "startTime": "08:15", "programId": "prog-music-bunny" },
-      { "startTime": "12:00", "programId": "ident-music-1" },
-      { "startTime": "12:15", "programId": "prog-music-steel" },
-      { "startTime": "16:00", "programId": "promo-music-1" },
-      { "startTime": "16:15", "programId": "prog-music-bunny" },
-      { "startTime": "20:00", "programId": "ident-music-1" },
-      { "startTime": "20:15", "programId": "prog-music-steel" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-music-bunny"
+      },
+      {
+        "startTime": "04:00",
+        "programId": "ident-music-1"
+      },
+      {
+        "startTime": "04:15",
+        "programId": "prog-music-steel"
+      },
+      {
+        "startTime": "08:00",
+        "programId": "promo-music-1"
+      },
+      {
+        "startTime": "08:15",
+        "programId": "prog-music-bunny"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "ident-music-1"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "prog-music-steel"
+      },
+      {
+        "startTime": "16:00",
+        "programId": "promo-music-1"
+      },
+      {
+        "startTime": "16:15",
+        "programId": "prog-music-bunny"
+      },
+      {
+        "startTime": "20:00",
+        "programId": "ident-music-1"
+      },
+      {
+        "startTime": "20:15",
+        "programId": "prog-music-steel"
+      }
     ],
     "saturday": [
-      { "startTime": "00:00", "programId": "prog-music-bunny" },
-      { "startTime": "06:00", "programId": "ident-music-1" },
-      { "startTime": "06:15", "programId": "prog-music-steel" },
-      { "startTime": "12:00", "programId": "promo-music-1" },
-      { "startTime": "12:15", "programId": "prog-music-bunny" },
-      { "startTime": "18:00", "programId": "ident-music-1" },
-      { "startTime": "18:15", "programId": "prog-music-steel" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-music-bunny"
+      },
+      {
+        "startTime": "06:00",
+        "programId": "ident-music-1"
+      },
+      {
+        "startTime": "06:15",
+        "programId": "prog-music-steel"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "promo-music-1"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "prog-music-bunny"
+      },
+      {
+        "startTime": "18:00",
+        "programId": "ident-music-1"
+      },
+      {
+        "startTime": "18:15",
+        "programId": "prog-music-steel"
+      }
     ],
     "sunday": [
-      { "startTime": "00:00", "programId": "prog-music-steel" },
-      { "startTime": "06:00", "programId": "ident-music-1" },
-      { "startTime": "06:15", "programId": "prog-music-bunny" },
-      { "startTime": "12:00", "programId": "promo-music-1" },
-      { "startTime": "12:15", "programId": "prog-music-steel" },
-      { "startTime": "18:00", "programId": "ident-music-1" },
-      { "startTime": "18:15", "programId": "prog-music-bunny" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-music-steel"
+      },
+      {
+        "startTime": "06:00",
+        "programId": "ident-music-1"
+      },
+      {
+        "startTime": "06:15",
+        "programId": "prog-music-bunny"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "promo-music-1"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "prog-music-steel"
+      },
+      {
+        "startTime": "18:00",
+        "programId": "ident-music-1"
+      },
+      {
+        "startTime": "18:15",
+        "programId": "prog-music-bunny"
+      }
     ]
   },
   "acm-trailers": {
     "monday": [
-      { "startTime": "00:00", "programId": "prog-trailer-sintel" },
-      { "startTime": "04:00", "programId": "ident-trailers-1" },
-      { "startTime": "04:15", "programId": "prog-trailer-steel" },
-      { "startTime": "08:00", "programId": "promo-trailers-1" },
-      { "startTime": "08:15", "programId": "spiderman-brand-new-day-trailer-1" },
-      { "startTime": "12:00", "programId": "ident-trailers-1" },
-      { "startTime": "12:15", "programId": "spiderman-brand-new-day-trailer-2" },
-      { "startTime": "16:00", "programId": "spiderman-brand-new-day-trailer-1" },
-      { "startTime": "16:15", "programId": "spiderman-brand-new-day-trailer-2" },
-      { "startTime": "20:00", "programId": "ident-trailers-1" },
-      { "startTime": "20:15", "programId": "prog-trailer-steel" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-trailer-sintel"
+      },
+      {
+        "startTime": "04:00",
+        "programId": "ident-trailers-1"
+      },
+      {
+        "startTime": "04:15",
+        "programId": "prog-trailer-steel"
+      },
+      {
+        "startTime": "08:00",
+        "programId": "promo-trailers-1"
+      },
+      {
+        "startTime": "08:15",
+        "programId": "spiderman-brand-new-day-trailer-1"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "ident-trailers-1"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "spiderman-brand-new-day-trailer-2"
+      },
+      {
+        "startTime": "16:00",
+        "programId": "spiderman-brand-new-day-trailer-1"
+      },
+      {
+        "startTime": "16:15",
+        "programId": "spiderman-brand-new-day-trailer-2"
+      },
+      {
+        "startTime": "20:00",
+        "programId": "ident-trailers-1"
+      },
+      {
+        "startTime": "20:15",
+        "programId": "prog-trailer-steel"
+      }
     ],
     "tuesday": [
-      { "startTime": "00:00", "programId": "prog-trailer-steel" },
-      { "startTime": "04:00", "programId": "ident-trailers-1" },
-      { "startTime": "04:15", "programId": "prog-trailer-sintel" },
-      { "startTime": "08:00", "programId": "promo-trailers-1" },
-      { "startTime": "08:15", "programId": "spiderman-brand-new-day-trailer-1" },
-      { "startTime": "12:00", "programId": "ident-trailers-1" },
-      { "startTime": "12:15", "programId": "spiderman-brand-new-day-trailer-1" },
-      { "startTime": "16:00", "programId": "spiderman-brand-new-day-trailer-2" },
-      { "startTime": "16:15", "programId": "spiderman-brand-new-day-trailer-2" },
-      { "startTime": "20:00", "programId": "ident-trailers-1" },
-      { "startTime": "20:15", "programId": "prog-trailer-sintel" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-trailer-steel"
+      },
+      {
+        "startTime": "04:00",
+        "programId": "ident-trailers-1"
+      },
+      {
+        "startTime": "04:15",
+        "programId": "prog-trailer-sintel"
+      },
+      {
+        "startTime": "08:00",
+        "programId": "promo-trailers-1"
+      },
+      {
+        "startTime": "08:15",
+        "programId": "spiderman-brand-new-day-trailer-1"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "ident-trailers-1"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "spiderman-brand-new-day-trailer-1"
+      },
+      {
+        "startTime": "16:00",
+        "programId": "spiderman-brand-new-day-trailer-2"
+      },
+      {
+        "startTime": "16:15",
+        "programId": "spiderman-brand-new-day-trailer-2"
+      },
+      {
+        "startTime": "20:00",
+        "programId": "ident-trailers-1"
+      },
+      {
+        "startTime": "20:15",
+        "programId": "prog-trailer-sintel"
+      }
     ],
     "wednesday": [
-      { "startTime": "00:00", "programId": "prog-trailer-sintel" },
-      { "startTime": "04:00", "programId": "ident-trailers-1" },
-      { "startTime": "04:15", "programId": "prog-trailer-steel" },
-      { "startTime": "08:00", "programId": "promo-trailers-1" },
-      { "startTime": "08:15", "programId": "spiderman-brand-new-day-trailer-1" },
-      { "startTime": "12:00", "programId": "ident-trailers-1" },
-      { "startTime": "12:15", "programId": "prog-trailer-steel" },
-      { "startTime": "16:00", "programId": "promo-trailers-1" },
-      { "startTime": "16:15", "programId": "spiderman-brand-new-day-trailer-2" },
-      { "startTime": "20:00", "programId": "ident-trailers-1" },
-      { "startTime": "20:15", "programId": "prog-trailer-steel" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-trailer-sintel"
+      },
+      {
+        "startTime": "04:00",
+        "programId": "ident-trailers-1"
+      },
+      {
+        "startTime": "04:15",
+        "programId": "prog-trailer-steel"
+      },
+      {
+        "startTime": "08:00",
+        "programId": "promo-trailers-1"
+      },
+      {
+        "startTime": "08:15",
+        "programId": "spiderman-brand-new-day-trailer-1"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "ident-trailers-1"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "prog-trailer-steel"
+      },
+      {
+        "startTime": "16:00",
+        "programId": "promo-trailers-1"
+      },
+      {
+        "startTime": "16:15",
+        "programId": "spiderman-brand-new-day-trailer-2"
+      },
+      {
+        "startTime": "20:00",
+        "programId": "ident-trailers-1"
+      },
+      {
+        "startTime": "20:15",
+        "programId": "prog-trailer-steel"
+      }
     ],
     "thursday": [
-      { "startTime": "00:00", "programId": "prog-trailer-steel" },
-      { "startTime": "04:00", "programId": "ident-trailers-1" },
-      { "startTime": "04:15", "programId": "prog-trailer-sintel" },
-      { "startTime": "08:00", "programId": "promo-trailers-1" },
-      { "startTime": "08:15", "programId": "spiderman-brand-new-day-trailer-1" },
-      { "startTime": "12:00", "programId": "ident-trailers-1" },
-      { "startTime": "12:15", "programId": "prog-trailer-sintel" },
-      { "startTime": "16:00", "programId": "promo-trailers-1" },
-      { "startTime": "16:15", "programId": "spiderman-brand-new-day-trailer-2" },
-      { "startTime": "20:00", "programId": "ident-trailers-1" },
-      { "startTime": "20:15", "programId": "prog-trailer-sintel" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-trailer-steel"
+      },
+      {
+        "startTime": "04:00",
+        "programId": "ident-trailers-1"
+      },
+      {
+        "startTime": "04:15",
+        "programId": "prog-trailer-sintel"
+      },
+      {
+        "startTime": "08:00",
+        "programId": "promo-trailers-1"
+      },
+      {
+        "startTime": "08:15",
+        "programId": "spiderman-brand-new-day-trailer-1"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "ident-trailers-1"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "prog-trailer-sintel"
+      },
+      {
+        "startTime": "16:00",
+        "programId": "promo-trailers-1"
+      },
+      {
+        "startTime": "16:15",
+        "programId": "spiderman-brand-new-day-trailer-2"
+      },
+      {
+        "startTime": "20:00",
+        "programId": "ident-trailers-1"
+      },
+      {
+        "startTime": "20:15",
+        "programId": "prog-trailer-sintel"
+      }
     ],
     "friday": [
-      { "startTime": "00:00", "programId": "prog-trailer-sintel" },
-      { "startTime": "04:00", "programId": "ident-trailers-1" },
-      { "startTime": "04:15", "programId": "prog-trailer-steel" },
-      { "startTime": "08:00", "programId": "promo-trailers-1" },
-      { "startTime": "08:15", "programId": "spiderman-brand-new-day-trailer-1" },
-      { "startTime": "12:00", "programId": "ident-trailers-1" },
-      { "startTime": "12:15", "programId": "prog-trailer-steel" },
-      { "startTime": "16:00", "programId": "promo-trailers-1" },
-      { "startTime": "16:15", "programId": "spiderman-brand-new-day-trailer-2" },
-      { "startTime": "20:00", "programId": "ident-trailers-1" },
-      { "startTime": "20:15", "programId": "prog-trailer-steel" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-trailer-sintel"
+      },
+      {
+        "startTime": "04:00",
+        "programId": "ident-trailers-1"
+      },
+      {
+        "startTime": "04:15",
+        "programId": "prog-trailer-steel"
+      },
+      {
+        "startTime": "08:00",
+        "programId": "promo-trailers-1"
+      },
+      {
+        "startTime": "08:15",
+        "programId": "spiderman-brand-new-day-trailer-1"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "ident-trailers-1"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "prog-trailer-steel"
+      },
+      {
+        "startTime": "16:00",
+        "programId": "promo-trailers-1"
+      },
+      {
+        "startTime": "16:15",
+        "programId": "spiderman-brand-new-day-trailer-2"
+      },
+      {
+        "startTime": "20:00",
+        "programId": "ident-trailers-1"
+      },
+      {
+        "startTime": "20:15",
+        "programId": "prog-trailer-steel"
+      }
     ],
     "saturday": [
-      { "startTime": "00:00", "programId": "prog-trailer-sintel" },
-      { "startTime": "06:00", "programId": "ident-trailers-1" },
-      { "startTime": "06:15", "programId": "prog-trailer-steel" },
-      { "startTime": "12:00", "programId": "promo-trailers-1" },
-      { "startTime": "12:15", "programId": "spiderman-brand-new-day-trailer-1" },
-      { "startTime": "18:00", "programId": "ident-trailers-1" },
-      { "startTime": "18:15", "programId": "prog-trailer-steel" },
-      { "startTime": "21:00", "programId": "ident-trailers-1" },
-      { "startTime": "21:15", "programId": "spiderman-brand-new-day-trailer-2" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-trailer-sintel"
+      },
+      {
+        "startTime": "06:00",
+        "programId": "ident-trailers-1"
+      },
+      {
+        "startTime": "06:15",
+        "programId": "prog-trailer-steel"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "promo-trailers-1"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "spiderman-brand-new-day-trailer-1"
+      },
+      {
+        "startTime": "18:00",
+        "programId": "ident-trailers-1"
+      },
+      {
+        "startTime": "18:15",
+        "programId": "prog-trailer-steel"
+      },
+      {
+        "startTime": "21:00",
+        "programId": "ident-trailers-1"
+      },
+      {
+        "startTime": "21:15",
+        "programId": "spiderman-brand-new-day-trailer-2"
+      }
     ],
     "sunday": [
-      { "startTime": "00:00", "programId": "prog-trailer-steel" },
-      { "startTime": "06:00", "programId": "ident-trailers-1" },
-      { "startTime": "06:15", "programId": "prog-trailer-sintel" },
-      { "startTime": "12:00", "programId": "promo-trailers-1" },
-      { "startTime": "12:15", "programId": "spiderman-brand-new-day-trailer-1" },
-      { "startTime": "18:00", "programId": "ident-trailers-1" },
-      { "startTime": "18:15", "programId": "prog-trailer-sintel" },
-      { "startTime": "21:00", "programId": "ident-trailers-1" },
-      { "startTime": "21:15", "programId": "spiderman-brand-new-day-trailer-2" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-trailer-steel"
+      },
+      {
+        "startTime": "06:00",
+        "programId": "ident-trailers-1"
+      },
+      {
+        "startTime": "06:15",
+        "programId": "prog-trailer-sintel"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "promo-trailers-1"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "spiderman-brand-new-day-trailer-1"
+      },
+      {
+        "startTime": "18:00",
+        "programId": "ident-trailers-1"
+      },
+      {
+        "startTime": "18:15",
+        "programId": "prog-trailer-sintel"
+      },
+      {
+        "startTime": "21:00",
+        "programId": "ident-trailers-1"
+      },
+      {
+        "startTime": "21:15",
+        "programId": "spiderman-brand-new-day-trailer-2"
+      }
     ]
   },
   "acm-rcu": {
     "monday": [
-      { "startTime": "00:00", "programId": "prog-rcu-blazes" },
-      { "startTime": "04:00", "programId": "ident-rcu-logo" },
-      { "startTime": "04:15", "programId": "prog-rcu-escapes" },
-      { "startTime": "08:00", "programId": "promo-rcu-phase5" },
-      { "startTime": "08:15", "programId": "prog-rcu-meltdown" },
-      { "startTime": "12:00", "programId": "ident-rcu-logo" },
-      { "startTime": "12:15", "programId": "prog-rcu-blazes" },
-      { "startTime": "16:00", "programId": "promo-rcu-phase5" },
-      { "startTime": "16:15", "programId": "prog-rcu-escapes" },
-      { "startTime": "20:00", "programId": "ident-rcu-logo" },
-      { "startTime": "20:15", "programId": "prog-rcu-meltdown" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-rcu-blazes"
+      },
+      {
+        "startTime": "04:00",
+        "programId": "ident-rcu-logo"
+      },
+      {
+        "startTime": "04:15",
+        "programId": "prog-rcu-escapes"
+      },
+      {
+        "startTime": "08:00",
+        "programId": "promo-rcu-phase5"
+      },
+      {
+        "startTime": "08:15",
+        "programId": "prog-rcu-meltdown"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "ident-rcu-logo"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "prog-rcu-blazes"
+      },
+      {
+        "startTime": "16:00",
+        "programId": "promo-rcu-phase5"
+      },
+      {
+        "startTime": "16:15",
+        "programId": "prog-rcu-escapes"
+      },
+      {
+        "startTime": "20:00",
+        "programId": "ident-rcu-logo"
+      },
+      {
+        "startTime": "20:15",
+        "programId": "prog-rcu-meltdown"
+      }
     ],
     "tuesday": [
-      { "startTime": "00:00", "programId": "prog-rcu-escapes" },
-      { "startTime": "04:00", "programId": "ident-rcu-logo" },
-      { "startTime": "04:15", "programId": "prog-rcu-blazes" },
-      { "startTime": "08:00", "programId": "promo-rcu-phase5" },
-      { "startTime": "08:15", "programId": "prog-rcu-meltdown" },
-      { "startTime": "12:00", "programId": "ident-rcu-logo" },
-      { "startTime": "12:15", "programId": "prog-rcu-escapes" },
-      { "startTime": "16:00", "programId": "promo-rcu-phase5" },
-      { "startTime": "16:15", "programId": "prog-rcu-blazes" },
-      { "startTime": "20:00", "programId": "ident-rcu-logo" },
-      { "startTime": "20:15", "programId": "prog-rcu-meltdown" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-rcu-escapes"
+      },
+      {
+        "startTime": "04:00",
+        "programId": "ident-rcu-logo"
+      },
+      {
+        "startTime": "04:15",
+        "programId": "prog-rcu-blazes"
+      },
+      {
+        "startTime": "08:00",
+        "programId": "promo-rcu-phase5"
+      },
+      {
+        "startTime": "08:15",
+        "programId": "prog-rcu-meltdown"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "ident-rcu-logo"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "prog-rcu-escapes"
+      },
+      {
+        "startTime": "16:00",
+        "programId": "promo-rcu-phase5"
+      },
+      {
+        "startTime": "16:15",
+        "programId": "prog-rcu-blazes"
+      },
+      {
+        "startTime": "20:00",
+        "programId": "ident-rcu-logo"
+      },
+      {
+        "startTime": "20:15",
+        "programId": "prog-rcu-meltdown"
+      }
     ],
     "wednesday": [
-      { "startTime": "00:00", "programId": "prog-rcu-meltdown" },
-      { "startTime": "04:00", "programId": "ident-rcu-logo" },
-      { "startTime": "04:15", "programId": "prog-rcu-blazes" },
-      { "startTime": "08:00", "programId": "promo-rcu-phase5" },
-      { "startTime": "08:15", "programId": "prog-rcu-escapes" },
-      { "startTime": "12:00", "programId": "ident-rcu-logo" },
-      { "startTime": "12:15", "programId": "prog-rcu-meltdown" },
-      { "startTime": "16:00", "programId": "promo-rcu-phase5" },
-      { "startTime": "16:15", "programId": "prog-rcu-blazes" },
-      { "startTime": "20:00", "programId": "ident-rcu-logo" },
-      { "startTime": "20:15", "programId": "prog-rcu-escapes" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-rcu-meltdown"
+      },
+      {
+        "startTime": "04:00",
+        "programId": "ident-rcu-logo"
+      },
+      {
+        "startTime": "04:15",
+        "programId": "prog-rcu-blazes"
+      },
+      {
+        "startTime": "08:00",
+        "programId": "promo-rcu-phase5"
+      },
+      {
+        "startTime": "08:15",
+        "programId": "prog-rcu-escapes"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "ident-rcu-logo"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "prog-rcu-meltdown"
+      },
+      {
+        "startTime": "16:00",
+        "programId": "promo-rcu-phase5"
+      },
+      {
+        "startTime": "16:15",
+        "programId": "prog-rcu-blazes"
+      },
+      {
+        "startTime": "20:00",
+        "programId": "ident-rcu-logo"
+      },
+      {
+        "startTime": "20:15",
+        "programId": "prog-rcu-escapes"
+      }
     ],
     "thursday": [
-      { "startTime": "00:00", "programId": "prog-rcu-blazes" },
-      { "startTime": "04:00", "programId": "ident-rcu-logo" },
-      { "startTime": "04:15", "programId": "prog-rcu-escapes" },
-      { "startTime": "08:00", "programId": "promo-rcu-phase5" },
-      { "startTime": "08:15", "programId": "prog-rcu-meltdown" },
-      { "startTime": "12:00", "programId": "ident-rcu-logo" },
-      { "startTime": "12:15", "programId": "prog-rcu-blazes" },
-      { "startTime": "16:00", "programId": "promo-rcu-phase5" },
-      { "startTime": "16:15", "programId": "prog-rcu-escapes" },
-      { "startTime": "20:00", "programId": "ident-rcu-logo" },
-      { "startTime": "20:15", "programId": "prog-rcu-meltdown" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-rcu-blazes"
+      },
+      {
+        "startTime": "04:00",
+        "programId": "ident-rcu-logo"
+      },
+      {
+        "startTime": "04:15",
+        "programId": "prog-rcu-escapes"
+      },
+      {
+        "startTime": "08:00",
+        "programId": "promo-rcu-phase5"
+      },
+      {
+        "startTime": "08:15",
+        "programId": "prog-rcu-meltdown"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "ident-rcu-logo"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "prog-rcu-blazes"
+      },
+      {
+        "startTime": "16:00",
+        "programId": "promo-rcu-phase5"
+      },
+      {
+        "startTime": "16:15",
+        "programId": "prog-rcu-escapes"
+      },
+      {
+        "startTime": "20:00",
+        "programId": "ident-rcu-logo"
+      },
+      {
+        "startTime": "20:15",
+        "programId": "prog-rcu-meltdown"
+      }
     ],
     "friday": [
-      { "startTime": "00:00", "programId": "prog-rcu-escapes" },
-      { "startTime": "04:00", "programId": "ident-rcu-logo" },
-      { "startTime": "04:15", "programId": "prog-rcu-blazes" },
-      { "startTime": "08:00", "programId": "promo-rcu-phase5" },
-      { "startTime": "08:15", "programId": "prog-rcu-meltdown" },
-      { "startTime": "12:00", "programId": "ident-rcu-logo" },
-      { "startTime": "12:15", "programId": "prog-rcu-escapes" },
-      { "startTime": "16:00", "programId": "promo-rcu-phase5" },
-      { "startTime": "16:15", "programId": "prog-rcu-blazes" },
-      { "startTime": "20:00", "programId": "ident-rcu-logo" },
-      { "startTime": "20:15", "programId": "prog-rcu-meltdown" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-rcu-escapes"
+      },
+      {
+        "startTime": "04:00",
+        "programId": "ident-rcu-logo"
+      },
+      {
+        "startTime": "04:15",
+        "programId": "prog-rcu-blazes"
+      },
+      {
+        "startTime": "08:00",
+        "programId": "promo-rcu-phase5"
+      },
+      {
+        "startTime": "08:15",
+        "programId": "prog-rcu-meltdown"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "ident-rcu-logo"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "prog-rcu-escapes"
+      },
+      {
+        "startTime": "16:00",
+        "programId": "promo-rcu-phase5"
+      },
+      {
+        "startTime": "16:15",
+        "programId": "prog-rcu-blazes"
+      },
+      {
+        "startTime": "20:00",
+        "programId": "ident-rcu-logo"
+      },
+      {
+        "startTime": "20:15",
+        "programId": "prog-rcu-meltdown"
+      }
     ],
     "saturday": [
-      { "startTime": "00:00", "programId": "prog-rcu-blazes" },
-      { "startTime": "06:00", "programId": "ident-rcu-logo" },
-      { "startTime": "06:15", "programId": "prog-rcu-escapes" },
-      { "startTime": "12:00", "programId": "promo-rcu-phase5" },
-      { "startTime": "12:15", "programId": "prog-rcu-meltdown" },
-      { "startTime": "18:00", "programId": "ident-rcu-logo" },
-      { "startTime": "18:15", "programId": "prog-rcu-blazes" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-rcu-blazes"
+      },
+      {
+        "startTime": "06:00",
+        "programId": "ident-rcu-logo"
+      },
+      {
+        "startTime": "06:15",
+        "programId": "prog-rcu-escapes"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "promo-rcu-phase5"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "prog-rcu-meltdown"
+      },
+      {
+        "startTime": "18:00",
+        "programId": "ident-rcu-logo"
+      },
+      {
+        "startTime": "18:15",
+        "programId": "prog-rcu-blazes"
+      }
     ],
     "sunday": [
-      { "startTime": "00:00", "programId": "prog-rcu-meltdown" },
-      { "startTime": "06:00", "programId": "ident-rcu-logo" },
-      { "startTime": "06:15", "programId": "prog-rcu-escapes" },
-      { "startTime": "12:00", "programId": "promo-rcu-phase5" },
-      { "startTime": "12:15", "programId": "prog-rcu-blazes" },
-      { "startTime": "18:00", "programId": "ident-rcu-logo" },
-      { "startTime": "18:15", "programId": "prog-rcu-meltdown" }
+      {
+        "startTime": "00:00",
+        "programId": "prog-rcu-meltdown"
+      },
+      {
+        "startTime": "06:00",
+        "programId": "ident-rcu-logo"
+      },
+      {
+        "startTime": "06:15",
+        "programId": "prog-rcu-escapes"
+      },
+      {
+        "startTime": "12:00",
+        "programId": "promo-rcu-phase5"
+      },
+      {
+        "startTime": "12:15",
+        "programId": "prog-rcu-blazes"
+      },
+      {
+        "startTime": "18:00",
+        "programId": "ident-rcu-logo"
+      },
+      {
+        "startTime": "18:15",
+        "programId": "prog-rcu-meltdown"
+      }
     ]
   }
 }
