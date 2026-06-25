@@ -595,7 +595,6 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
     // Destroy existing HLS instance
     destroyHls();
-    setDurationWarning(null);
 
     // Setup 20-second startup timeout for HLS or standard content
     if (loadingTimeoutRef.current) {
@@ -610,16 +609,6 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     }, 20000);
 
     if (isHlsUrl) {
-      setHlsUrl(src);
-      setHlsManifestStatus('Loading');
-
-      // Check if token seems present/expired
-      const hasToken = src.includes('t=') || src.includes('s=') || src.includes('e=');
-      if (hasToken) {
-        setTokenExpiryStatus('Valid');
-      } else {
-        setTokenExpiryStatus('N/A');
-      }
 
       if (Hls.isSupported()) {
         console.log(`[ACM TV] Initializing hls.js for source: ${src}`);
@@ -646,15 +635,8 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
           hls.loadSource(src);
         });
 
-        hls.on(Hls.Events.MANIFEST_LOADED, () => {
-          setHlsManifestStatus('Loaded');
-          setHlsPlaybackState('Loaded Manifest');
-        });
-
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
           console.log('[ACM TV] Hls manifest parsed. Level count:', hls.levels.length);
-          setHlsPlaybackState('Parsed');
-          setHlsTotalLevels(hls.levels.length);
 
           // Always start and lock to highest available quality level
           let highestLevelIdx = hls.levels.length - 1;
@@ -678,7 +660,6 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
             .then(() => {
               setIsPlaying(true);
               setIsLoading(false);
-              setHlsPlaybackState('Playing');
               consecutiveErrorsRef.current = 0;
               if (loadingTimeoutRef.current) {
                 clearTimeout(loadingTimeoutRef.current);
@@ -698,23 +679,11 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
             });
         });
 
-        hls.on(Hls.Events.LEVEL_SWITCHED, (event, data) => {
-          const levelIdx = data.level;
-          const level = hls.levels[levelIdx];
-          if (level) {
-            setHlsQualityLevel(`${level.height || level.width || levelIdx}p`);
-            setHlsResolution(`${level.width}x${level.height}`);
-            setHlsBitrate(`${(level.bitrate / 1000).toFixed(0)} kbps`);
-            setHlsLevelIndex(levelIdx === -1 ? 'Auto' : `Level ${levelIdx + 1}`);
-          } else {
-            setHlsQualityLevel(`Level ${levelIdx}`);
-          }
-        });
+
 
         hls.on(Hls.Events.ERROR, (event, data) => {
           if (data.fatal) {
             console.error(`[ACM TV] Fatal HLS error: ${data.type} - ${data.details}`);
-            setHlsFatalError(`Fatal: ${data.details}`);
             
             const responseCode = data.response?.code;
             const is404 = responseCode === 404;
@@ -752,8 +721,6 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         });
       } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
         console.log(`[ACM TV] Native HLS supported. Loading URL: ${src}`);
-        setHlsManifestStatus('Native (Safari)');
-        setHlsQualityLevel('Auto (Native)');
         
         video.src = src;
         video.load();
@@ -782,18 +749,11 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         video.addEventListener('loadedmetadata', playNative);
       } else {
         console.error('[ACM TV] HLS is not supported in this browser!');
-        setHlsManifestStatus('Unsupported Browser');
         if (currentInst) {
           updateFailedProgram(currentInst.instanceId, getUnixTimeMs());
         }
       }
     } else {
-      setHlsUrl(null);
-      setHlsManifestStatus('N/A');
-      setHlsQualityLevel('N/A (MP4)');
-      setHlsPlaybackState('Playing (MP4)');
-      setHlsFatalError('None');
-      setTokenExpiryStatus('N/A');
 
       if (video.src !== src && !video.src.endsWith(src)) {
         console.log(`[ACM TV] Loading standard source: ${src}`);
@@ -1116,15 +1076,12 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       const targetSrc = getDirectVideoUrl(videoUrl);
 
       setIsLoading(true);
-      setValidationResult('Validating...');
 
       // 1. Verify remote URL before assigning it
       console.log(`[ACM TV][VALIDATION] Validating remote source: ${targetSrc}`);
       const valRes = await validateRemoteUrl(targetSrc);
       console.log(`[ACM TV][VALIDATION RESULT] Success: ${valRes.success}, Reason: ${valRes.reason || 'None'}`);
       if (!valRes.success) {
-        const reason = `Validation failed: ${valRes.reason || 'Unknown error'}`;
-        setValidationResult(`Failed: ${reason}`);
         if (valRes.reason?.includes("404")) {
           console.warn(`[ACM TV][VALIDATION] Definitive 404 detected. Skipping program.`);
           updateFailedProgram(currentInst.instanceId, getUnixTimeMs());
@@ -1144,15 +1101,10 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       // 3. Verify duration > 0 (fallback to program default if metadata missing)
       const duration = metadata?.duration || currentInst.program.duration;
       if (!(duration > 0)) {
-        const reason = `Invalid duration: ${duration}s (must be > 0)`;
-        setValidationResult(`Failed: ${reason}`);
         updateFailedProgram(currentInst.instanceId, getUnixTimeMs());
         setIsLoading(false);
         return;
       }
-
-      // Validation passed
-      setValidationResult('Passed');
 
       // Setup audio tracks (fallback to program defaults first, then native)
       const audioTracksSource = (metadata && Array.isArray(metadata.audioTracks) && metadata.audioTracks.length > 0)
@@ -1509,9 +1461,6 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         if (diff > 2) {
           const warning = `Duration mismatch: Configured ${configuredDuration}s vs Actual ${actualDuration.toFixed(1)}s`;
           console.warn(warning);
-          setDurationWarning(warning);
-        } else {
-          setDurationWarning(null);
         }
       }
 
@@ -1795,7 +1744,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         onClick={handlePlayPause}
         poster={broadcastState?.currentProgram?.program.thumbnail || "/branding/acm-tv-bug.svg"}
         onLoadedMetadata={(e) => {
-          handleLoadedMetadata(e);
+          handleLoadedMetadata();
           updateVideoStats(e.currentTarget);
         }}
         onTimeUpdate={(e) => updateVideoStats(e.currentTarget)}
