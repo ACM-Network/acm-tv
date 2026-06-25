@@ -274,6 +274,11 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   const metadataCacheRef = useRef<Record<string, CachedMetadata>>({});
   const fileExistenceCacheRef = useRef<Record<string, boolean>>({});
 
+  const onStateChangeRef = useRef(onStateChange);
+  useEffect(() => {
+    onStateChangeRef.current = onStateChange;
+  }, [onStateChange]);
+
   const lastTimeRef = useRef<number>(-1);
   const stallCountRef = useRef<number>(0);
   const isStalledState = useRef<boolean>(false);
@@ -537,7 +542,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
                   if (hlsRef.current) {
                     console.log("[ACM TV] Recovery: Re-creating Hls instance.");
                     destroyHls();
-                    loadAndPlaySource(videoSrc, newSeek);
+                    loadAndPlaySource(videoSrc, newSeek, currentInst.instanceId);
                   } else {
                     video.load();
                     video.currentTime = newSeek;
@@ -589,11 +594,10 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   };
 
   // Helper to load and play the video source
-  const loadAndPlaySource = (src: string, seekOffset: number) => {
+  const loadAndPlaySource = (src: string, seekOffset: number, instId: string) => {
     const video = videoRef.current;
     if (!video) return;
 
-    const currentInst = broadcastState?.currentProgram;
     const isHlsUrl = src.includes('.m3u8');
 
     // Destroy existing HLS instance
@@ -605,9 +609,9 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       loadingTimeoutRef.current = null;
     }
     loadingTimeoutRef.current = setTimeout(() => {
-      if (activeInstanceIdRef.current === currentInst?.instanceId) {
-        console.error(`[ACM TV] Loading/manifest startup timeout (20s) exceeded for: ${currentInst.program.title}`);
-        markProgramUnhealthyAndSkip(getUnixTimeMs());
+      if (activeInstanceIdRef.current === instId) {
+        console.error(`[ACM TV] Loading/manifest startup timeout (20s) exceeded for instance: ${instId}`);
+        updateFailedProgram(instId, getUnixTimeMs());
       }
     }, 20000);
 
@@ -693,14 +697,14 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
             if (is404) {
               console.warn(`[ACM TV] Fatal 404 error detected. Skipping program.`);
-              markProgramUnhealthyAndSkip(getUnixTimeMs());
+              updateFailedProgram(instId, getUnixTimeMs());
             } else {
               // Rate limit reloads to 3 within 60 seconds
               const now = getUnixTimeMs();
               reloadTimestampsRef.current = reloadTimestampsRef.current.filter(t => now - t < 60000);
               if (reloadTimestampsRef.current.length >= 3) {
                 console.error("[ACM TV] Stability Manager: Fatal HLS error reload limit exceeded. Skipping program.");
-                markProgramUnhealthyAndSkip(now);
+                updateFailedProgram(instId, now);
                 return;
               }
               reloadTimestampsRef.current.push(now);
@@ -712,7 +716,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
                 hls.startLoad();
               } else {
                 setTimeout(() => {
-                  if (activeInstanceIdRef.current === currentInst?.instanceId) {
+                  if (activeInstanceIdRef.current === instId) {
                     hls.startLoad();
                   }
                 }, 3000);
@@ -752,8 +756,8 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         video.addEventListener('loadedmetadata', playNative);
       } else {
         console.error('[ACM TV] HLS is not supported in this browser!');
-        if (currentInst) {
-          updateFailedProgram(currentInst.instanceId, getUnixTimeMs());
+        if (instId) {
+          updateFailedProgram(instId, getUnixTimeMs());
         }
       }
     } else {
@@ -952,7 +956,8 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       }, 0);
       return () => clearTimeout(clearTimer);
     }
-  }, [broadcastState?.currentProgram?.instanceId, broadcastState?.currentProgram, channel.id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [broadcastState?.currentProgram?.instanceId, channel.id]);
 
   // Check native audioTracks API support on mount
   useEffect(() => {
@@ -1067,10 +1072,103 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     }
   }, [broadcastState?.currentProgram?.instanceId, isFallbackActive]);
 
-  // Main Effect: Switch programs, load metadata, filter missing files, apply defaults
+  // Reset all states and destroy playback session when channel changes (Root Cause isolation)
+  useEffect(() => {
+    console.log(`[ACM TV] Channel changed to: ${channel.name} (${channel.id}). Performing complete teardown.`);
+    
+    // 1. Destroy HLS session
+    destroyHls();
+
+    // 2. Pause and reset HTML5 video/audio elements to clear buffers
+    const video = videoRef.current;
+    if (video) {
+      video.pause();
+      video.src = '';
+      video.removeAttribute('src');
+      try {
+        video.load();
+      } catch {}
+    }
+    const audio = audioRef.current;
+    if (audio) {
+      audio.pause();
+      audio.src = '';
+      audio.removeAttribute('src');
+      try {
+        audio.load();
+      } catch {}
+    }
+
+    // 3. Clear all active timeouts & state trackers
+    if (loadingTimeoutRef.current) {
+      clearTimeout(loadingTimeoutRef.current);
+      loadingTimeoutRef.current = null;
+    }
+    if (infoOverlayTimeoutRef.current) {
+      clearTimeout(infoOverlayTimeoutRef.current);
+      infoOverlayTimeoutRef.current = null;
+    }
+    if (controlsTimeoutRef.current) {
+      clearTimeout(controlsTimeoutRef.current);
+      controlsTimeoutRef.current = null;
+    }
+    activeInstanceIdRef.current = '';
+    maxLevelCapRef.current = -1;
+    stablePlaybackSecondsRef.current = 0;
+    reloadTimestampsRef.current = [];
+    downgradeTimestampsRef.current = [];
+    consecutiveErrorsRef.current = 0;
+    driftExceededStartRef.current = null;
+    stallCountRef.current = 0;
+    isStalledState.current = false;
+    lastTimeRef.current = -1;
+
+    // 4. Reset all React player and UI states asynchronously
+    const timer = setTimeout(() => {
+      setIsLoading(true);
+      setIsBuffering(false);
+      setIsPlaying(false);
+      setMediaError(null);
+      setIsFallbackActive(false);
+      setIsRetrying(false);
+      setVideoSrc('');
+      setAudioTracks([]);
+      setSubtitles([]);
+      setVideoCurrentTime(0);
+      setVideoDuration(0);
+      setBufferedPercent(0);
+      setShowTitleCard(false);
+
+      // 5. Calculate and dispatch initial state for new channel to parent
+      const initialState = getBroadcastState(channel, getUnixTimeMs());
+      setBroadcastState(initialState);
+      onStateChangeRef.current?.(initialState);
+    }, 0);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [channel, onStateChangeRef]);
+
   useEffect(() => {
     const currentInst = broadcastState?.currentProgram;
     if (!currentInst) return;
+
+    // Verify correct data source: Ensure the state's channelId matches the active channel
+    if (broadcastState.channelId !== channel.id) {
+      console.warn(`[ACM TV] Data source mismatch: expected channel ${channel.id}, got state channel ${broadcastState.channelId}. Skipping program load.`);
+      return;
+    }
+
+    // Root Cause Validation: Ensure the current program belongs to the active channel
+    const programExistsInChannel = channel.programs.some(p => p.id === currentInst.program.id) ||
+                                  (channel.idents && channel.idents.some(p => p.id === currentInst.program.id)) ||
+                                  (channel.promos && channel.promos.some(p => p.id === currentInst.program.id));
+
+    if (!programExistsInChannel) {
+      console.warn(`[ACM TV] Mismatch detected: Program ${currentInst.program.title} (${currentInst.program.id}) does not exist in channel ${channel.name} (${channel.id}). Skipping load.`);
+      return;
+    }
 
     let active = true;
     let transitionTimer: NodeJS.Timeout | null = null;
@@ -1220,7 +1318,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         console.log(`[ACM TV] Switching Program Source to: ${videoSource} (Seek offset: ${broadcastState?.playbackPosition || 0}s)`);
         activeInstanceIdRef.current = currentInst.instanceId;
         setVideoSrc(videoSource);
-        loadAndPlaySource(videoSource, broadcastState?.playbackPosition || 0);
+        loadAndPlaySource(videoSource, broadcastState?.playbackPosition || 0, currentInst.instanceId);
       } else {
         setIsLoading(false);
       }

@@ -1,12 +1,14 @@
 "use client";
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, Suspense, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Tv, Info, ExternalLink } from 'lucide-react';
-import { getRuntimeChannels } from '@/utils/scheduleEngine';
+import { getRuntimeChannels, getBroadcastState } from '@/utils/scheduleEngine';
 import { Channel, BroadcastState } from '@/types';
 import TVPlayer from '@/components/TVPlayer';
 import ProgramGuide from '@/components/ProgramGuide';
+
+const getUnixTimeMs = () => Date.now();
 
 function LiveTVClientContent() {
   const searchParams = useSearchParams();
@@ -17,13 +19,25 @@ function LiveTVClientContent() {
   const activeChannel = channels.find(c => c.id === (searchParams.get('channel') || 'acm-tv')) || channels[0];
   const [broadcastState, setBroadcastState] = useState<BroadcastState | null>(null);
 
+  // Synchronize broadcast state immediately when active channel changes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setBroadcastState(getBroadcastState(activeChannel, getUnixTimeMs()));
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [activeChannel]);
+
   const handleChannelSwitch = (channelId: string) => {
     router.push(`/live?channel=${channelId}`);
   };
 
   const handleStateChange = (state: BroadcastState) => {
-    setBroadcastState(state);
+    if (state.channelId === activeChannel.id) {
+      setBroadcastState(state);
+    }
   };
+
+  const isStateMatching = broadcastState && broadcastState.channelId === activeChannel.id;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -65,12 +79,13 @@ function LiveTVClientContent() {
           
           {/* TV Player */}
           <TVPlayer 
+            key={activeChannel.id}
             channel={activeChannel} 
             onStateChange={handleStateChange} 
           />
 
           {/* Current Program Details */}
-          {broadcastState?.currentProgram && (
+          {isStateMatching && broadcastState?.currentProgram && (
             <div className="bg-zinc-950/40 border border-zinc-900 rounded-2xl p-6 sm:p-8 space-y-6">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="space-y-2">
@@ -137,7 +152,7 @@ function LiveTVClientContent() {
 
         {/* Right Column: Combined Program Guide */}
         <div className="lg:col-span-1 bg-zinc-950/20 border border-zinc-900 rounded-3xl p-6 shadow-2xl">
-          <ProgramGuide broadcastState={broadcastState} />
+          <ProgramGuide broadcastState={isStateMatching ? broadcastState : null} />
         </div>
 
       </div>

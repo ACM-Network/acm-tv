@@ -66,6 +66,7 @@ export interface ProgramInstance {
 }
 
 export interface BroadcastState {
+  channelId: string;
   currentProgram: ProgramInstance;
   playbackPosition: number; // Current seek time in seconds
   upNext: ProgramInstance | null;

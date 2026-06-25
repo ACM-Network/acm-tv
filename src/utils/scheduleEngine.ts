@@ -187,6 +187,7 @@ export function getBroadcastState(channel: Channel, localTimestampMs: number): B
         endTimeFormatted: "12:00 AM"
       };
       return {
+        channelId: channel.id,
         currentProgram: fallbackInst,
         playbackPosition: currentSeconds % (fallbackProg.duration || 86400),
         upNext: {
@@ -372,6 +373,7 @@ export function getBroadcastState(channel: Channel, localTimestampMs: number): B
   }
 
   return {
+    channelId: channel.id,
     currentProgram,
     playbackPosition,
     upNext,
