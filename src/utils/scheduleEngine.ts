@@ -151,224 +151,159 @@ export function formatSecondsToTime(seconds: number): string {
 /**
  * Calculates the exact state of the broadcast for a given channel at a specific local time.
  */
-export function getBroadcastState(channel: Channel, localTimestampMs: number): BroadcastState {
+
+/**
+ * Stitch 3 days of schedule (yesterday, today, tomorrow) into absolute seconds relative to startOfTodayMs.
+ */
+function getStitchedEntries(channel: Channel, localTimestampMs: number) {
   const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
   const date = new Date(localTimestampMs);
-  const dayOfWeek = days[date.getDay()];
   
-  // Find start of today in milliseconds
   const startOfToday = new Date(localTimestampMs);
   startOfToday.setHours(0, 0, 0, 0);
   const startOfTodayMs = startOfToday.getTime();
 
-  // Current local time in seconds since midnight
-  const currentSeconds = Math.floor((localTimestampMs - startOfTodayMs) / 1000);
-
-  // Helper to get daily schedule entries
-  const getEntriesForDay = (dayName: string): ScheduleEntry[] => {
-    if (channel.id === 'acm-tv') {
-      return getProductionScheduleForDay();
-    }
+  const getEntriesForDay = (dayName: string) => {
+    if (channel.id === 'acm-tv') return getProductionScheduleForDay();
+    const typedSchedule = scheduleData as any;
     const channelSchedule = typedSchedule[channel.id] || {};
     return channelSchedule[dayName] || [];
   };
 
-  const dailyEntries = getEntriesForDay(dayOfWeek);
-
-  if (dailyEntries.length === 0) {
-    if (channel.programs && channel.programs.length > 0) {
-      const fallbackProg = channel.programs[0];
-      const fallbackInst: ProgramInstance = {
-        instanceId: `${fallbackProg.id}-${startOfTodayMs}`,
-        program: fallbackProg,
-        startTime: startOfTodayMs,
-        endTime: startOfTodayMs + 86400 * 1000,
-        startTimeFormatted: "12:00 AM",
-        endTimeFormatted: "12:00 AM"
-      };
-      return {
-        channelId: channel.id,
-        currentProgram: fallbackInst,
-        playbackPosition: currentSeconds % (fallbackProg.duration || 86400),
-        upNext: {
-          ...fallbackInst,
-          instanceId: `${fallbackProg.id}-${startOfTodayMs + 86400 * 1000}`,
-          startTime: startOfTodayMs + 86400 * 1000,
-          endTime: startOfTodayMs + 2 * 86400 * 1000
-        },
-        laterTonight: [],
-        serverTime: localTimestampMs
-      };
-    }
-    throw new Error(`No scheduled programs for channel ${channel.name} on ${dayOfWeek}`);
+  const stitched: { programId: string, startMs: number, endMs: number, startTimeStr: string, isFallback?: boolean }[] = [];
+  
+  // We span dayOffset -1 (yesterday) to +7 (next week) to be absolutely safe for any lookaheads
+  let currentAbsoluteMs = 0;
+  
+  for (let dayOffset = -1; dayOffset <= 2; dayOffset++) {
+    const targetDate = new Date(startOfTodayMs);
+    targetDate.setDate(targetDate.getDate() + dayOffset);
+    const targetDayName = days[targetDate.getDay()];
+    const entries = getEntriesForDay(targetDayName);
+    
+    // Sort just in case
+    const sorted = [...entries].sort((a, b) => timeStringToSeconds(a.startTime) - timeStringToSeconds(b.startTime));
+    
+    sorted.forEach((entry, idx) => {
+      const startSec = timeStringToSeconds(entry.startTime);
+      const startMs = targetDate.getTime() + startSec * 1000;
+      
+      const prog = findProgramById(entry.programId, channel);
+      const durationMs = (prog.duration || 3600) * 1000;
+      const endMs = startMs + durationMs;
+      
+      stitched.push({
+        programId: entry.programId,
+        startMs,
+        endMs,
+        startTimeStr: entry.startTime
+      });
+    });
   }
+  
+  // Sort the massive stitched array
+  stitched.sort((a, b) => a.startMs - b.startMs);
+  
+  // Fix end times to eliminate ANY gaps or overlaps mathematically.
+  // The schedule generation should be perfect, but this guarantees the player never glitches.
+  for (let i = 0; i < stitched.length - 1; i++) {
+    stitched[i].endMs = stitched[i + 1].startMs;
+  }
+  
+  return stitched;
+}
 
-  // Sort entries chronologically by start time
-  const sortedEntries = [...dailyEntries].sort((a, b) => 
-    timeStringToSeconds(a.startTime) - timeStringToSeconds(b.startTime)
-  );
+export function getBroadcastState(channel: Channel, localTimestampMs: number): BroadcastState {
+  const startOfToday = new Date(localTimestampMs);
+  startOfToday.setHours(0, 0, 0, 0);
+  
+  const stitched = getStitchedEntries(channel, localTimestampMs);
+  
+  if (stitched.length === 0) {
+      if (channel.programs && channel.programs.length > 0) {
+        const fallbackProg = channel.programs[0];
+        const startOfTodayMs = startOfToday.getTime();
+        const fallbackInst: ProgramInstance = {
+          instanceId: `${fallbackProg.id}-${startOfTodayMs}`,
+          program: fallbackProg,
+          startTime: startOfTodayMs,
+          endTime: startOfTodayMs + 86400 * 1000,
+          startTimeFormatted: "12:00 AM",
+          endTimeFormatted: "12:00 AM"
+        };
+        return {
+          channelId: channel.id,
+          currentProgram: fallbackInst,
+          playbackPosition: Math.floor((localTimestampMs - startOfTodayMs)/1000) % (fallbackProg.duration || 86400),
+          upNext: {
+            ...fallbackInst,
+            instanceId: `${fallbackProg.id}-${startOfTodayMs + 86400 * 1000}`,
+            startTime: startOfTodayMs + 86400 * 1000,
+            endTime: startOfTodayMs + 2 * 86400 * 1000
+          },
+          laterTonight: [],
+          serverTime: localTimestampMs
+        };
+      }
+      throw new Error(`No scheduled programs for channel ${channel.name}`);
+  }
 
   // Find active program
   let activeIndex = -1;
-  for (let i = 0; i < sortedEntries.length; i++) {
-    const entryStart = timeStringToSeconds(sortedEntries[i].startTime);
-    const entryEnd = i < sortedEntries.length - 1 
-      ? timeStringToSeconds(sortedEntries[i + 1].startTime) 
-      : 86400; // Last entry runs until midnight (86400s)
-    
-    if (currentSeconds >= entryStart && currentSeconds < entryEnd) {
+  for (let i = 0; i < stitched.length; i++) {
+    if (localTimestampMs >= stitched[i].startMs && localTimestampMs < stitched[i].endMs) {
       activeIndex = i;
       break;
     }
   }
 
-  // Fallback if current time is before the first entry (should not happen if first entry is 00:00)
   if (activeIndex === -1) {
-    activeIndex = 0;
+    // If we somehow missed it, find the closest one
+    activeIndex = stitched.findIndex(s => s.startMs > localTimestampMs) - 1;
+    if (activeIndex < 0) activeIndex = 0;
   }
 
-  const activeEntry = sortedEntries[activeIndex];
+  const activeEntry = stitched[activeIndex];
   const program = findProgramById(activeEntry.programId, channel);
 
-  // Calculate concrete slot start/end timestamps
-  const slotStartMs = startOfTodayMs + timeStringToSeconds(activeEntry.startTime) * 1000;
-  const slotEndSec = activeIndex < sortedEntries.length - 1 
-    ? timeStringToSeconds(sortedEntries[activeIndex + 1].startTime)
-    : 86400;
-  const slotEndMs = startOfTodayMs + slotEndSec * 1000;
+  // Playback position
+  const elapsedSeconds = (localTimestampMs - activeEntry.startMs) / 1000;
+  const playbackPosition = Math.max(0, elapsedSeconds);
 
-  // Calculate playback position (loop within the assigned slot to fill gaps)
-  const elapsedSeconds = (localTimestampMs - slotStartMs) / 1000;
-  const playbackPosition = Math.max(0, elapsedSeconds) % (program.duration || 1);
-
+  // We map the activeEntry to a ProgramInstance
   const currentProgram: ProgramInstance = {
-    instanceId: `${activeEntry.programId}-${slotStartMs}`,
+    instanceId: `${activeEntry.programId}-${activeEntry.startMs}`,
     program,
-    startTime: slotStartMs,
-    endTime: slotEndMs,
-    startTimeFormatted: formatSecondsToTime(timeStringToSeconds(activeEntry.startTime)),
-    endTimeFormatted: formatSecondsToTime(slotEndSec)
+    startTime: activeEntry.startMs,
+    endTime: activeEntry.endMs,
+    startTimeFormatted: formatSecondsToTime(Math.floor((activeEntry.startMs - startOfToday.getTime())/1000)),
+    endTimeFormatted: formatSecondsToTime(Math.floor((activeEntry.endMs - startOfToday.getTime())/1000))
   };
 
-  // Calculate UP NEXT
-  let upNextEntry: ScheduleEntry;
-  let upNextStartMs: number;
-  let upNextEndMs: number;
-  let upNextStartSec: number;
-  let upNextEndSec: number;
-
-  if (activeIndex < sortedEntries.length - 1) {
-    // Next entry is on the same day
-    upNextEntry = sortedEntries[activeIndex + 1];
-    upNextStartSec = timeStringToSeconds(upNextEntry.startTime);
-    upNextEndSec = activeIndex + 2 < sortedEntries.length
-      ? timeStringToSeconds(sortedEntries[activeIndex + 2].startTime)
-      : 86400;
-
-    upNextStartMs = startOfTodayMs + upNextStartSec * 1000;
-    upNextEndMs = startOfTodayMs + upNextEndSec * 1000;
-  } else {
-    // Next entry is the first program of tomorrow
-    const tomorrowIndex = (date.getDay() + 1) % 7;
-    const tomorrowDay = days[tomorrowIndex];
-    const tomorrowEntries = getEntriesForDay(tomorrowDay);
-    const tomorrowSorted = [...tomorrowEntries].sort((a, b) => 
-      timeStringToSeconds(a.startTime) - timeStringToSeconds(b.startTime)
-    );
-
-    upNextEntry = tomorrowSorted[0] || { startTime: "00:00", programId: activeEntry.programId };
-    upNextStartSec = timeStringToSeconds(upNextEntry.startTime);
-    upNextEndSec = tomorrowSorted.length > 1
-      ? timeStringToSeconds(tomorrowSorted[1].startTime)
-      : 86400;
-
-    const tomorrow = new Date(startOfTodayMs);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const startOfTomorrowMs = tomorrow.getTime();
-    upNextStartMs = startOfTomorrowMs + upNextStartSec * 1000;
-    upNextEndMs = startOfTomorrowMs + upNextEndSec * 1000;
-  }
-
-  const upNextProgramDef = findProgramById(upNextEntry.programId, channel);
+  // UP NEXT
+  const upNextEntry = stitched[activeIndex + 1] || stitched[activeIndex];
+  const upNextProg = findProgramById(upNextEntry.programId, channel);
   const upNext: ProgramInstance = {
-    instanceId: `${upNextEntry.programId}-${upNextStartMs}`,
-    program: upNextProgramDef,
-    startTime: upNextStartMs,
-    endTime: upNextEndMs,
-    startTimeFormatted: formatSecondsToTime(upNextStartSec),
-    endTimeFormatted: formatSecondsToTime(upNextEndSec)
+    instanceId: `${upNextEntry.programId}-${upNextEntry.startMs}`,
+    program: upNextProg,
+    startTime: upNextEntry.startMs,
+    endTime: upNextEntry.endMs,
+    startTimeFormatted: formatSecondsToTime(Math.floor((upNextEntry.startMs - startOfToday.getTime())/1000)),
+    endTimeFormatted: formatSecondsToTime(Math.floor((upNextEntry.endMs - startOfToday.getTime())/1000))
   };
 
-  // Calculate LATER TONIGHT (up to 8 slots)
+  // LATER TONIGHT
   const laterTonight: ProgramInstance[] = [];
-  let currentIdx = activeIndex + 2;
-  let runningDayOffsetDays = 0;
-
-  for (let i = 0; i < 8; i++) {
-    let entry: ScheduleEntry;
-    let startSec: number;
-    let endSec: number;
-    let startMs: number;
-    let endMs: number;
-
-    const currentDayIndex = (date.getDay() + runningDayOffsetDays) % 7;
-    const currentDay = days[currentDayIndex];
-    const entries = getEntriesForDay(currentDay);
-    const sorted = [...entries].sort((a, b) => 
-      timeStringToSeconds(a.startTime) - timeStringToSeconds(b.startTime)
-    );
-
-    if (currentIdx < sorted.length) {
-      entry = sorted[currentIdx];
-      startSec = timeStringToSeconds(entry.startTime);
-      endSec = currentIdx + 1 < sorted.length
-        ? timeStringToSeconds(sorted[currentIdx + 1].startTime)
-        : 86400;
-
-      const targetDay = new Date(startOfTodayMs);
-      targetDay.setDate(targetDay.getDate() + runningDayOffsetDays);
-      const targetDayMs = targetDay.getTime();
-      startMs = targetDayMs + startSec * 1000;
-      endMs = targetDayMs + endSec * 1000;
-      
-      currentIdx++;
-    } else {
-      // Roll over to next day
-      runningDayOffsetDays++;
-      currentIdx = 0;
-      
-      const nextDayIndex = (date.getDay() + runningDayOffsetDays) % 7;
-      const nextDay = days[nextDayIndex];
-      const nextEntries = getEntriesForDay(nextDay);
-      const nextSorted = [...nextEntries].sort((a, b) => 
-        timeStringToSeconds(a.startTime) - timeStringToSeconds(b.startTime)
-      );
-
-      if (nextSorted.length === 0) break; // Safeguard
-
-      entry = nextSorted[currentIdx];
-      startSec = timeStringToSeconds(entry.startTime);
-      endSec = nextSorted.length > 1
-        ? timeStringToSeconds(nextSorted[1].startTime)
-        : 86400;
-
-      const targetDay = new Date(startOfTodayMs);
-      targetDay.setDate(targetDay.getDate() + runningDayOffsetDays);
-      const targetDayMs = targetDay.getTime();
-      startMs = targetDayMs + startSec * 1000;
-      endMs = targetDayMs + endSec * 1000;
-
-      currentIdx = 1;
-    }
-
-    const progDef = findProgramById(entry.programId, channel);
+  for (let i = activeIndex + 2; i < activeIndex + 10 && i < stitched.length; i++) {
+    const lEntry = stitched[i];
+    const lProg = findProgramById(lEntry.programId, channel);
     laterTonight.push({
-      instanceId: `${entry.programId}-${startMs}`,
-      program: progDef,
-      startTime: startMs,
-      endTime: endMs,
-      startTimeFormatted: formatSecondsToTime(startSec),
-      endTimeFormatted: formatSecondsToTime(endSec)
+      instanceId: `${lEntry.programId}-${lEntry.startMs}`,
+      program: lProg,
+      startTime: lEntry.startMs,
+      endTime: lEntry.endMs,
+      startTimeFormatted: formatSecondsToTime(Math.floor((lEntry.startMs - startOfToday.getTime())/1000)),
+      endTimeFormatted: formatSecondsToTime(Math.floor((lEntry.endMs - startOfToday.getTime())/1000))
     });
   }
 
@@ -382,64 +317,30 @@ export function getBroadcastState(channel: Channel, localTimestampMs: number): B
   };
 }
 
-/**
- * Generates the EPG daily schedule timeline (00:00 to 24:00) for the Schedule Guide Page.
- */
 export function getDailyTimeline(channel: Channel, dayTimestampMs: number): ProgramInstance[] {
-  const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
-  const targetDate = new Date(dayTimestampMs);
-  const dayOfWeek = days[targetDate.getDay()];
-
-  // Start of target day in milliseconds
   const startOfDay = new Date(dayTimestampMs);
   startOfDay.setHours(0, 0, 0, 0);
   const startOfDayMs = startOfDay.getTime();
-
-  let dailyEntries: ScheduleEntry[] = [];
-  if (channel.id === 'acm-tv') {
-    dailyEntries = getProductionScheduleForDay();
-  } else {
-    const channelSchedule = typedSchedule[channel.id] || {};
-    dailyEntries = channelSchedule[dayOfWeek] || [];
-  }
-
-  if (dailyEntries.length === 0) {
-    if (channel.programs && channel.programs.length > 0) {
-      return [{
-        instanceId: `${channel.programs[0].id}-${startOfDayMs}`,
-        program: channel.programs[0],
-        startTime: startOfDayMs,
-        endTime: startOfDayMs + 86400 * 1000,
-        startTimeFormatted: "12:00 AM",
-        endTimeFormatted: "12:00 AM"
-      }];
+  const endOfDayMs = startOfDayMs + 86400 * 1000;
+  
+  const stitched = getStitchedEntries(channel, dayTimestampMs);
+  
+  const timeline: ProgramInstance[] = [];
+  
+  for (const entry of stitched) {
+    // Only include entries that overlap with this day
+    if (entry.endMs > startOfDayMs && entry.startMs < endOfDayMs) {
+      const prog = findProgramById(entry.programId, channel);
+      timeline.push({
+        instanceId: `${entry.programId}-${entry.startMs}`,
+        program: prog,
+        startTime: entry.startMs,
+        endTime: entry.endMs,
+        startTimeFormatted: formatSecondsToTime(Math.floor((entry.startMs - startOfDayMs)/1000)),
+        endTimeFormatted: formatSecondsToTime(Math.floor((entry.endMs - startOfDayMs)/1000))
+      });
     }
-    return [];
   }
-
-  // Sort chronologically
-  const sorted = [...dailyEntries].sort((a, b) => 
-    timeStringToSeconds(a.startTime) - timeStringToSeconds(b.startTime)
-  );
-
-  return sorted.map((entry, idx) => {
-    const startSec = timeStringToSeconds(entry.startTime);
-    const endSec = idx < sorted.length - 1
-      ? timeStringToSeconds(sorted[idx + 1].startTime)
-      : 86400;
-
-    const startMs = startOfDayMs + startSec * 1000;
-    const endMs = startOfDayMs + endSec * 1000;
-
-    const program = findProgramById(entry.programId, channel);
-
-    return {
-      instanceId: `${entry.programId}-${startMs}`,
-      program,
-      startTime: startMs,
-      endTime: endMs,
-      startTimeFormatted: formatSecondsToTime(startSec),
-      endTimeFormatted: formatSecondsToTime(endSec)
-    };
-  });
+  
+  return timeline;
 }

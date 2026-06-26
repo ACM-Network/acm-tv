@@ -300,802 +300,282 @@
     ]
   },
   "acm-movies": {
-    "monday": [
+    "sunday": [
       {
         "startTime": "00:00",
-        "programId": "hit-first-case"
-      },
-      {
-        "startTime": "02:08",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "02:10",
         "programId": "yashoda"
       },
       {
-        "startTime": "04:22",
-        "programId": "promo-movies-1"
+        "startTime": "02:13",
+        "programId": "radhe-shyam"
       },
       {
-        "startTime": "04:24",
+        "startTime": "04:31",
         "programId": "hit-first-case"
       },
       {
-        "startTime": "06:00",
-        "programId": "ident-movies-1"
+        "startTime": "06:40",
+        "programId": "sarkaru-vaari-paata"
       },
       {
-        "startTime": "06:05",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "06:10",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "06:15",
+        "startTime": "09:21",
         "programId": "jathi-ratnalu"
       },
       {
-        "startTime": "08:38",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "08:40",
-        "programId": "paagal"
-      },
-      {
-        "startTime": "10:55",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "10:57",
-        "programId": "jathi-ratnalu"
-      },
-      {
-        "startTime": "12:00",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "12:05",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "12:10",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "12:15",
-        "programId": "varasudu"
-      },
-      {
-        "startTime": "15:04",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "15:06",
-        "programId": "maharshi"
-      },
-      {
-        "startTime": "18:00",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "18:03",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "18:05",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "18:10",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "18:15",
-        "programId": "vakeel-saab"
-      },
-      {
-        "startTime": "20:48",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "20:50",
+        "startTime": "11:45",
         "programId": "whistle"
       },
       {
-        "startTime": "23:47",
-        "programId": "ident-movies-1"
+        "startTime": "14:43",
+        "programId": "acharya"
       },
       {
-        "startTime": "23:49",
+        "startTime": "17:17",
+        "programId": "sita-ramam"
+      },
+      {
+        "startTime": "20:00",
+        "programId": "maharshi"
+      },
+      {
+        "startTime": "22:58",
         "programId": "vakeel-saab"
+      }
+    ],
+    "monday": [
+      {
+        "startTime": "01:32",
+        "programId": "radhe-shyam"
+      },
+      {
+        "startTime": "03:50",
+        "programId": "paagal"
+      },
+      {
+        "startTime": "06:06",
+        "programId": "varasudu"
+      },
+      {
+        "startTime": "08:56",
+        "programId": "sarkaru-vaari-paata"
+      },
+      {
+        "startTime": "11:37",
+        "programId": "whistle"
+      },
+      {
+        "startTime": "14:35",
+        "programId": "acharya"
+      },
+      {
+        "startTime": "17:09",
+        "programId": "sita-ramam"
+      },
+      {
+        "startTime": "19:52",
+        "programId": "yashoda"
+      },
+      {
+        "startTime": "22:05",
+        "programId": "jailer"
       }
     ],
     "tuesday": [
       {
-        "startTime": "00:00",
-        "programId": "yashoda"
-      },
-      {
-        "startTime": "02:12",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "02:14",
+        "startTime": "00:53",
         "programId": "hit-first-case"
       },
       {
-        "startTime": "04:22",
-        "programId": "promo-movies-1"
+        "startTime": "03:02",
+        "programId": "radhe-shyam"
       },
       {
-        "startTime": "04:24",
-        "programId": "yashoda"
-      },
-      {
-        "startTime": "06:00",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "06:05",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "06:10",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "06:15",
+        "startTime": "05:20",
         "programId": "paagal"
       },
       {
-        "startTime": "08:30",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "08:32",
-        "programId": "jathi-ratnalu"
-      },
-      {
-        "startTime": "10:55",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "10:57",
-        "programId": "paagal"
-      },
-      {
-        "startTime": "12:00",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "12:05",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "12:10",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "12:15",
-        "programId": "maharshi"
-      },
-      {
-        "startTime": "15:12",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "15:14",
+        "startTime": "07:36",
         "programId": "varasudu"
       },
       {
-        "startTime": "18:00",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "18:03",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "18:05",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "18:10",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "18:15",
+        "startTime": "10:26",
         "programId": "whistle"
       },
       {
-        "startTime": "21:12",
-        "programId": "promo-movies-1"
+        "startTime": "13:24",
+        "programId": "acharya"
       },
       {
-        "startTime": "21:14",
-        "programId": "vakeel-saab"
+        "startTime": "15:58",
+        "programId": "maharshi"
       },
       {
-        "startTime": "23:47",
-        "programId": "ident-movies-1"
+        "startTime": "18:56",
+        "programId": "sarkaru-vaari-paata"
       },
       {
-        "startTime": "23:49",
-        "programId": "whistle"
+        "startTime": "21:37",
+        "programId": "yashoda"
+      },
+      {
+        "startTime": "23:50",
+        "programId": "hit-first-case"
       }
     ],
     "wednesday": [
       {
-        "startTime": "00:00",
-        "programId": "hit-first-case"
+        "startTime": "01:59",
+        "programId": "radhe-shyam"
       },
       {
-        "startTime": "02:08",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "02:10",
-        "programId": "yashoda"
-      },
-      {
-        "startTime": "04:22",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "04:24",
-        "programId": "hit-first-case"
-      },
-      {
-        "startTime": "06:00",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "06:05",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "06:10",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "06:15",
-        "programId": "jathi-ratnalu"
-      },
-      {
-        "startTime": "08:38",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "08:40",
+        "startTime": "04:17",
         "programId": "paagal"
       },
       {
-        "startTime": "10:55",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "10:57",
+        "startTime": "06:33",
         "programId": "jathi-ratnalu"
       },
       {
-        "startTime": "12:00",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "12:05",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "12:10",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "12:15",
-        "programId": "varasudu"
-      },
-      {
-        "startTime": "15:04",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "15:06",
-        "programId": "maharshi"
-      },
-      {
-        "startTime": "18:00",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "18:03",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "18:05",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "18:10",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "18:15",
-        "programId": "vakeel-saab"
-      },
-      {
-        "startTime": "20:48",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "20:50",
+        "startTime": "08:57",
         "programId": "whistle"
       },
       {
-        "startTime": "23:47",
-        "programId": "ident-movies-1"
+        "startTime": "11:55",
+        "programId": "varasudu"
       },
       {
-        "startTime": "23:49",
-        "programId": "vakeel-saab"
+        "startTime": "14:45",
+        "programId": "maharshi"
+      },
+      {
+        "startTime": "17:43",
+        "programId": "sita-ramam"
+      },
+      {
+        "startTime": "20:26",
+        "programId": "sarkaru-vaari-paata"
+      },
+      {
+        "startTime": "23:07",
+        "programId": "hit-first-case"
       }
     ],
     "thursday": [
       {
-        "startTime": "00:00",
+        "startTime": "01:16",
+        "programId": "radhe-shyam"
+      },
+      {
+        "startTime": "03:34",
         "programId": "yashoda"
       },
       {
-        "startTime": "02:12",
-        "programId": "ident-movies-1"
+        "startTime": "05:47",
+        "programId": "acharya"
       },
       {
-        "startTime": "02:14",
-        "programId": "hit-first-case"
-      },
-      {
-        "startTime": "04:22",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "04:24",
-        "programId": "yashoda"
-      },
-      {
-        "startTime": "06:00",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "06:05",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "06:10",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "06:15",
-        "programId": "paagal"
-      },
-      {
-        "startTime": "08:30",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "08:32",
+        "startTime": "08:21",
         "programId": "jathi-ratnalu"
       },
       {
-        "startTime": "10:55",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "10:57",
-        "programId": "paagal"
-      },
-      {
-        "startTime": "12:00",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "12:05",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "12:10",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "12:15",
-        "programId": "maharshi"
-      },
-      {
-        "startTime": "15:12",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "15:14",
+        "startTime": "10:45",
         "programId": "varasudu"
       },
       {
-        "startTime": "18:00",
-        "programId": "ident-movies-1"
+        "startTime": "13:35",
+        "programId": "maharshi"
       },
       {
-        "startTime": "18:03",
-        "programId": "promo-movies-1"
+        "startTime": "16:33",
+        "programId": "sita-ramam"
       },
       {
-        "startTime": "18:05",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "18:10",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "18:15",
+        "startTime": "19:16",
         "programId": "whistle"
       },
       {
-        "startTime": "21:12",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "21:14",
-        "programId": "vakeel-saab"
-      },
-      {
-        "startTime": "23:47",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "23:49",
-        "programId": "whistle"
+        "startTime": "22:14",
+        "programId": "sarkaru-vaari-paata"
       }
     ],
     "friday": [
       {
-        "startTime": "00:00",
+        "startTime": "00:55",
+        "programId": "radhe-shyam"
+      },
+      {
+        "startTime": "03:13",
         "programId": "hit-first-case"
       },
       {
-        "startTime": "02:08",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "02:10",
+        "startTime": "05:22",
         "programId": "yashoda"
       },
       {
-        "startTime": "04:22",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "04:24",
-        "programId": "hit-first-case"
-      },
-      {
-        "startTime": "06:00",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "06:05",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "06:10",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "06:15",
+        "startTime": "07:35",
         "programId": "jathi-ratnalu"
       },
       {
-        "startTime": "08:38",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "08:40",
-        "programId": "paagal"
-      },
-      {
-        "startTime": "10:55",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "10:57",
-        "programId": "jathi-ratnalu"
-      },
-      {
-        "startTime": "12:00",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "12:05",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "12:10",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "12:15",
+        "startTime": "09:59",
         "programId": "varasudu"
       },
       {
-        "startTime": "15:04",
-        "programId": "ident-movies-1"
+        "startTime": "12:49",
+        "programId": "acharya"
       },
       {
-        "startTime": "15:06",
-        "programId": "maharshi"
+        "startTime": "15:23",
+        "programId": "sita-ramam"
       },
       {
-        "startTime": "18:00",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "18:03",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "18:05",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "18:10",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "18:15",
-        "programId": "vakeel-saab"
-      },
-      {
-        "startTime": "20:48",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "20:50",
+        "startTime": "18:06",
         "programId": "whistle"
       },
       {
-        "startTime": "23:47",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "23:49",
-        "programId": "vakeel-saab"
+        "startTime": "21:04",
+        "programId": "maharshi"
       }
     ],
     "saturday": [
       {
-        "startTime": "00:00",
-        "programId": "yashoda"
+        "startTime": "00:02",
+        "programId": "paagal"
       },
       {
-        "startTime": "02:12",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "02:14",
+        "startTime": "02:18",
         "programId": "hit-first-case"
       },
       {
-        "startTime": "04:22",
-        "programId": "promo-movies-1"
+        "startTime": "04:27",
+        "programId": "radhe-shyam"
       },
       {
-        "startTime": "04:24",
-        "programId": "yashoda"
-      },
-      {
-        "startTime": "06:00",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "06:05",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "06:10",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "06:15",
-        "programId": "paagal"
-      },
-      {
-        "startTime": "08:30",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "08:32",
+        "startTime": "06:45",
         "programId": "jathi-ratnalu"
       },
       {
-        "startTime": "10:55",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "10:57",
-        "programId": "paagal"
-      },
-      {
-        "startTime": "12:00",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "12:05",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "12:10",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "12:15",
-        "programId": "maharshi"
-      },
-      {
-        "startTime": "15:12",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "15:14",
+        "startTime": "09:09",
         "programId": "varasudu"
       },
       {
-        "startTime": "18:00",
-        "programId": "ident-movies-1"
+        "startTime": "11:59",
+        "programId": "sarkaru-vaari-paata"
       },
       {
-        "startTime": "18:03",
-        "programId": "promo-movies-1"
+        "startTime": "14:40",
+        "programId": "sita-ramam"
       },
       {
-        "startTime": "18:05",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "18:10",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "18:15",
+        "startTime": "17:23",
         "programId": "whistle"
       },
       {
-        "startTime": "21:12",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "21:14",
-        "programId": "vakeel-saab"
-      },
-      {
-        "startTime": "23:47",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "23:49",
-        "programId": "whistle"
-      }
-    ],
-    "sunday": [
-      {
-        "startTime": "00:00",
-        "programId": "hit-first-case"
-      },
-      {
-        "startTime": "02:08",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "02:10",
-        "programId": "yashoda"
-      },
-      {
-        "startTime": "04:22",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "04:24",
-        "programId": "hit-first-case"
-      },
-      {
-        "startTime": "06:00",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "06:05",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "06:10",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "06:15",
-        "programId": "jathi-ratnalu"
-      },
-      {
-        "startTime": "08:38",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "08:40",
-        "programId": "paagal"
-      },
-      {
-        "startTime": "10:55",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "10:57",
-        "programId": "jathi-ratnalu"
-      },
-      {
-        "startTime": "12:00",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "12:05",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "12:10",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "12:15",
-        "programId": "varasudu"
-      },
-      {
-        "startTime": "15:04",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "15:06",
+        "startTime": "20:21",
         "programId": "maharshi"
       },
       {
-        "startTime": "18:00",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "18:03",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "18:05",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "18:10",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "18:15",
-        "programId": "vakeel-saab"
-      },
-      {
-        "startTime": "20:48",
-        "programId": "promo-movies-1"
-      },
-      {
-        "startTime": "20:50",
-        "programId": "whistle"
-      },
-      {
-        "startTime": "23:47",
-        "programId": "ident-movies-1"
-      },
-      {
-        "startTime": "23:49",
-        "programId": "vakeel-saab"
+        "startTime": "23:19",
+        "programId": "paagal"
       }
     ]
   },
