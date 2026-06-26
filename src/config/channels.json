@@ -24,7 +24,7 @@
           "videoUrl": "https://hv-cartoons.online:8443/62028/6224194d.mp4?hash=AgAD8p&stream=true",
           "type": "song",
           "category": "SONG",
-          "thumbnail": "/media/artwork/neno_butterfly_artwork.png"
+          "thumbnail": "https://i.ytimg.com/vi/9dV6Hl2u3vM/hq720.jpg"
         },
         {
           "id": "spiderman-brand-new-day-trailer-1",
@@ -34,7 +34,7 @@
           "videoUrl": "https://hv-cartoons.online:8443/62022/7dc7ead3.mp4?hash=AgADFp&stream=true",
           "type": "trailer",
           "category": "Trailer",
-          "thumbnail": "/media/artwork/spiderman_trailer_1.png"
+          "thumbnail": "https://i.ytimg.com/vi/8TZMtslA3UY/hq720.jpg"
         },
         {
           "id": "spiderman-brand-new-day-trailer-2",
@@ -44,7 +44,7 @@
           "videoUrl": "https://hv-cartoons.online:8443/62024/33c6ae4d.mp4?hash=AgADEp&stream=true",
           "type": "trailer",
           "category": "Trailer",
-          "thumbnail": "/media/artwork/spiderman_trailer_2.png"
+          "thumbnail": "https://i.ytimg.com/vi/3gAlCLVpePk/hq720.jpg"
         },
         {
           "id": "x-men-6",
@@ -54,7 +54,7 @@
           "videoUrl": "https://hv-cartoons.online:8443/62030/f6536583.mp4?hash=AgAD-Z&stream=true",
           "type": "song",
           "category": "SONG",
-          "thumbnail": "/media/artwork/dheema_song_artwork.png"
+          "thumbnail": "https://i.ytimg.com/vi/0mp6SO-OMHU/hq720.jpg"
         }
       ],
       "idents": [],
@@ -84,10 +84,10 @@
           "videoUrl": "https://d3sgzbosmwirao.cloudfront.net/video/1a19486eae6ec07925050cf1cf2f7586ceadbfb49b557a8cacd3cdd4578c7d0b/1/hls/h264_high.m3u8",
           "type": "content",
           "category": "Thriller",
-          "thumbnail": "https://media.themoviedb.org/t/p/w500/irKSHLQLuIZs4Ug5sTvFZGOKGVg.jpg",
+          "thumbnail": "https://image.tmdb.org/t/p/w1280/gSYkMzVRBeYwBgvQ155oORPJzmW.jpg",
           "year": 2022,
           "language": "Telugu",
-          "backdrop": "https://media.themoviedb.org/t/p/w1280/irKSHLQLuIZs4Ug5sTvFZGOKGVg.jpg"
+          "backdrop": "https://image.tmdb.org/t/p/w1280/gSYkMzVRBeYwBgvQ155oORPJzmW.jpg"
         },
         {
           "id": "jathi-ratnalu",
@@ -97,10 +97,10 @@
           "videoUrl": "https://d3sgzbosmwirao.cloudfront.net/video/b849e1f72e3e6063f4dbbe6fc3166b808579ec5847461d7e7eab613c93a4082b/1/hls/h264_high.m3u8",
           "type": "content",
           "category": "Comedy",
-          "thumbnail": "https://media.themoviedb.org/t/p/w500/fxQazusEog5kLxxmkJ6og5lCkYn.jpg",
+          "thumbnail": "https://image.tmdb.org/t/p/w1280/7MzvmgHRmhbJH1UZJhRCkAtxvEy.jpg",
           "year": 2021,
           "language": "Telugu",
-          "backdrop": "https://media.themoviedb.org/t/p/w1280/fxQazusEog5kLxxmkJ6og5lCkYn.jpg"
+          "backdrop": "https://image.tmdb.org/t/p/w1280/7MzvmgHRmhbJH1UZJhRCkAtxvEy.jpg"
         },
         {
           "id": "maharshi",
@@ -136,10 +136,10 @@
           "videoUrl": "https://d3sgzbosmwirao.cloudfront.net/video/ce7e5f1351ebbc47fe284a7acf4bd6c1d898aa6f8a14efac7b2d5acde08fa7ee/3/hls/h264_720_high_3000k.m3u8",
           "type": "content",
           "category": "Romance",
-          "thumbnail": "https://media.themoviedb.org/t/p/w500/rBWzAtvqJwIgqppO2FlOVd2i1vh.jpg",
+          "thumbnail": "https://image.tmdb.org/t/p/w1280/5D7OCKLqf68V6h0HO4dCo30cVtH.jpg",
           "year": 2021,
           "language": "Telugu",
-          "backdrop": "https://image.tmdb.org/t/p/w1280/rBWzAtvqJwIgqppO2FlOVd2i1vh.jpg"
+          "backdrop": "https://image.tmdb.org/t/p/w1280/o293eLODW22BME8XokbS09SHD6B.jpg"
         },
         {
           "id": "vakeel-saab",
@@ -149,10 +149,10 @@
           "videoUrl": "https://d3sgzbosmwirao.cloudfront.net/video/bc5477a2aa440ee48b7a786829f8751bc032e0ec288b4997e545124b5692053d/1/hls/h264_720_high_3000k.m3u8",
           "type": "content",
           "category": "Drama",
-          "thumbnail": "https://media.themoviedb.org/t/p/w500/ni8GiwJbhFBMmlDCWWXz8TKtxPk.jpg",
+          "thumbnail": "https://image.tmdb.org/t/p/w1280/jiIKf2tXZJDnpeDxEsA5UnH6DID.jpg",
           "year": 2021,
           "language": "Telugu",
-          "backdrop": "https://media.themoviedb.org/t/p/w1280/ni8GiwJbhFBMmlDCWWXz8TKtxPk.jpg"
+          "backdrop": "https://image.tmdb.org/t/p/w1280/iPKoEwpH6kHycI2Jelzc2aVqnm7.jpg"
         },
         {
           "id": "hit-first-case",
@@ -162,10 +162,10 @@
           "videoUrl": "https://d3sgzbosmwirao.cloudfront.net/video/26710cbfb243d3c4ef929e48fbfb9d81ef36289620b6a8bdecf4081b6c17ebd9/1/hls/h264_high.m3u8",
           "type": "content",
           "category": "Mystery",
-          "thumbnail": "https://image.tmdb.org/t/p/w500/iQJ31iW9o1H6yQj1b64iY8g93y7.jpg",
+          "thumbnail": "https://image.tmdb.org/t/p/w1280/dMxentLHEJPBMQCPXHrUKluODpe.jpg",
           "year": 2020,
           "language": "Telugu",
-          "backdrop": "https://image.tmdb.org/t/p/w1280/iQJ31iW9o1H6yQj1b64iY8g93y7.jpg"
+          "backdrop": "https://image.tmdb.org/t/p/w1280/dMxentLHEJPBMQCPXHrUKluODpe.jpg"
         },
         {
           "id": "whistle",
@@ -175,10 +175,10 @@
           "videoUrl": "https://d3sgzbosmwirao.cloudfront.net/video/652177483a08e5ba7c4caa8042b9ae32a394549fc8c92c00db02ea3f5444dfbc/1/hls/h264_high.m3u8",
           "type": "content",
           "category": "Sports",
-          "thumbnail": "https://media.themoviedb.org/t/p/w500/w6Jk8BHohhoKBUcxGeSyDQGWGWc.jpg",
+          "thumbnail": "https://image.tmdb.org/t/p/w1280/s4Yi1RbMyyN3hH2hElwvluP2rOG.jpg",
           "year": 2019,
           "language": "Telugu",
-          "backdrop": "https://image.tmdb.org/t/p/w1280/5ZSwZPKgcTJJwhxjbOHeoBTVaKh.jpg"
+          "backdrop": "https://image.tmdb.org/t/p/w1280/cc14e095w0ri6ppoLxSEl7iUqHs.jpg"
         }
       ],
       "idents": [
@@ -452,7 +452,7 @@
       "category": "News",
       "description": "NTV Telugu Live News Broadcast.",
       "channelNumber": 6,
-      "standbyArtwork": "/branding/ntv-telugu-standby.svg",
+      "standbyArtwork": "https://i.ytimg.com/vi/L0RktSIM980/maxresdefault.jpg",
       "weaving": {
         "insertIdentEveryNPrograms": 1,
         "insertPromoEveryNPrograms": 1
@@ -466,7 +466,7 @@
           "videoUrl": "https://yuppmedtaorire.akamaized.net/v1/manifest/a0d007312bfd99c47f76b77ae26b1ccdaae76cb1/ntv_nim_https/67bd6de4-25de-44b3-a242-e446154979ac/0.m3u8",
           "type": "content",
           "category": "News",
-          "thumbnail": "/branding/ntv-telugu-standby.svg"
+          "thumbnail": "https://i.ytimg.com/vi/L0RktSIM980/maxresdefault.jpg"
         }
       ],
       "idents": [],
@@ -482,7 +482,7 @@
       "category": "News",
       "description": "TV9 Telugu Live News Broadcast.",
       "channelNumber": 7,
-      "standbyArtwork": "/branding/tv9-telugu-standby.svg",
+      "standbyArtwork": "https://upload.wikimedia.org/wikipedia/commons/9/94/TV9TeluguLogo.jpg",
       "weaving": {
         "insertIdentEveryNPrograms": 1,
         "insertPromoEveryNPrograms": 1
@@ -496,7 +496,7 @@
           "videoUrl": "https://dyjmyiv3bp2ez.cloudfront.net/pub-iotv9telcmjhcs/liveabr/playlist.m3u8",
           "type": "content",
           "category": "News",
-          "thumbnail": "/branding/tv9-telugu-standby.svg"
+          "thumbnail": "https://upload.wikimedia.org/wikipedia/commons/9/94/TV9TeluguLogo.jpg"
         }
       ],
       "idents": [],
@@ -512,7 +512,7 @@
       "category": "News",
       "description": "10TV Live News Broadcast.",
       "channelNumber": 8,
-      "standbyArtwork": "/branding/10tv-standby.svg",
+      "standbyArtwork": "https://upload.wikimedia.org/wikipedia/en/0/0f/10tv_telugu.jpg",
       "weaving": {
         "insertIdentEveryNPrograms": 1,
         "insertPromoEveryNPrograms": 1
@@ -526,7 +526,7 @@
           "videoUrl": "https://d2gvyg6lvauoko.cloudfront.net/230226/10tv/chunks.m3u8",
           "type": "content",
           "category": "News",
-          "thumbnail": "/branding/10tv-standby.svg"
+          "thumbnail": "https://upload.wikimedia.org/wikipedia/en/0/0f/10tv_telugu.jpg"
         }
       ],
       "idents": [],
@@ -542,7 +542,7 @@
       "category": "Entertainment",
       "description": "Telugu One Live Entertainment Broadcast.",
       "channelNumber": 9,
-      "standbyArtwork": "/branding/telugu-one-standby.svg",
+      "standbyArtwork": "https://i.pinimg.com/280x280_RS/d2/c6/41/d2c641f205661bf8244b2b2348d75801.jpg",
       "weaving": {
         "insertIdentEveryNPrograms": 1,
         "insertPromoEveryNPrograms": 1
@@ -556,7 +556,7 @@
           "videoUrl": "https://vglivessai.akamaized.net/sg/v1/manifest/611d79b11b77e2f571934fd80ca1413453772ac7/4eda1f4a-c0ee-4273-adfe-17afc51977fc/38b0a0b4-6ec8-432d-8e56-48ef8ab046e6/1.m3u8",
           "type": "content",
           "category": "Entertainment",
-          "thumbnail": "/branding/telugu-one-standby.svg"
+          "thumbnail": "https://i.pinimg.com/280x280_RS/d2/c6/41/d2c641f205661bf8244b2b2348d75801.jpg"
         }
       ],
       "idents": [],
@@ -596,13 +596,13 @@
       "id": "studio-yuva",
       "name": "Studio Yuva",
       "tagline": "Youth & Entertainment",
-      "logoUrl": "/branding/studio-yuva-logo.svg",
+      "logoUrl": "https://jiotv.catchup.cdn.jio.com/dare_images/images/Studio_Yuva_Alpha.png",
       "bugUrl": "/branding/acm-tv-bug.svg",
       "themeColor": "#84CC16",
       "category": "Entertainment",
       "description": "Studio Yuva Live Youth & Hits Broadcast.",
       "channelNumber": 11,
-      "standbyArtwork": "/branding/studio-yuva-standby.svg",
+      "standbyArtwork": "https://jiotv.catchup.cdn.jio.com/dare_images/images/Studio_Yuva_Alpha.png",
       "weaving": {
         "insertIdentEveryNPrograms": 1,
         "insertPromoEveryNPrograms": 1
@@ -616,7 +616,7 @@
           "videoUrl": "https://d2gvyg6lvauoko.cloudfront.net/230226/studioyuva/chunks.m3u8",
           "type": "content",
           "category": "Entertainment",
-          "thumbnail": "/branding/studio-yuva-standby.svg"
+          "thumbnail": "https://jiotv.catchup.cdn.jio.com/dare_images/images/Studio_Yuva_Alpha.png"
         }
       ],
       "idents": [],
@@ -626,13 +626,13 @@
       "id": "tolly-tv",
       "name": "Tolly TV",
       "tagline": "Cinema Hub & Music",
-      "logoUrl": "/branding/tolly-tv-logo.svg",
+      "logoUrl": "https://d229kpbsb5jevy.cloudfront.net/tv/480/270/languages/tollytv_960X540.jpg",
       "bugUrl": "/branding/acm-tv-bug.svg",
       "themeColor": "#EC4899",
       "category": "Entertainment",
       "description": "Tolly TV Live Movies & Music Broadcast.",
       "channelNumber": 12,
-      "standbyArtwork": "/branding/tolly-tv-standby.svg",
+      "standbyArtwork": "https://d229kpbsb5jevy.cloudfront.net/tv/480/270/languages/tollytv_960X540.jpg",
       "weaving": {
         "insertIdentEveryNPrograms": 1,
         "insertPromoEveryNPrograms": 1
@@ -646,7 +646,7 @@
           "videoUrl": "https://streams2.sofast.tv/ptnr-yupptv/title-TOLLY-TV-TEL_yupptv/v1/manifest/611d79b11b77e2f571934fd80ca1413453772ac7/13b5735d-52c3-4be0-853d-e0ec0127e708/b4dec3fe-fa4d-4ab9-9e81-75a8fbb9922b/1.m3u8",
           "type": "content",
           "category": "Entertainment",
-          "thumbnail": "/branding/tolly-tv-standby.svg"
+          "thumbnail": "https://d229kpbsb5jevy.cloudfront.net/tv/480/270/languages/tollytv_960X540.jpg"
         }
       ],
       "idents": [],
