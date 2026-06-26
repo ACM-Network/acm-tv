@@ -12,8 +12,8 @@ interface ProgramGuideProps {
 export default function ProgramGuide({ broadcastState }: ProgramGuideProps) {
   if (!broadcastState) {
     return (
-      <div className="bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-12 flex items-center justify-center text-zinc-500">
-        <div className="w-8 h-8 border-3 border-zinc-800 border-t-amber-500 rounded-full animate-spin"></div>
+      <div className="bg-signal-surface border border-signal-border rounded-md p-8 flex items-center justify-center text-signal-text-secondary">
+        <div className="w-6 h-6 border-2 border-signal-border border-t-signal-amber rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -37,51 +37,51 @@ export default function ProgramGuide({ broadcastState }: ProgramGuideProps) {
   const progressPercent = (playbackPosition / currentProgramDef.duration) * 100;
 
   return (
-    <div className="space-y-6 lg:h-full lg:flex lg:flex-col">
+    <div className="space-y-4 lg:h-full lg:flex lg:flex-col">
       {/* Tab Header (Informational) */}
-      <div className="flex items-center justify-between border-b border-zinc-800 pb-3 flex-shrink-0">
-        <h3 className="text-lg font-black text-white tracking-tight flex items-center gap-2">
-          <Radio className="w-5 h-5 text-red-500 animate-pulse" />
+      <div className="flex items-center justify-between border-b border-signal-border pb-2 flex-shrink-0">
+        <h3 className="text-sm font-bold text-signal-text-primary tracking-tight flex items-center gap-2">
+          <Radio className="w-4 h-4 text-signal-red animate-pulse-live" />
           <span>BROADCAST DESK</span>
         </h3>
-        <span className="text-xs text-zinc-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+        <span className="text-xs text-signal-text-secondary font-mono uppercase tracking-wider flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-sm bg-signal-red animate-pulse-live"></span>
           Feed Active
         </span>
       </div>
 
       {/* NOW PLAYING Section */}
-      <div className="bg-zinc-900/40 border border-zinc-800/60 rounded-2xl p-5 space-y-4 flex-shrink-0">
+      <div className="bg-signal-surface border border-signal-border rounded-md p-4 space-y-3 flex-shrink-0">
         <div className="flex items-center justify-between">
-          <span className="text-[10px] font-black text-amber-500 tracking-widest uppercase">
+          <span className="text-[10px] font-bold text-signal-amber tracking-widest uppercase font-mono">
             NOW PLAYING
           </span>
-          <span className="px-2 py-0.5 rounded bg-zinc-800 text-[9px] font-bold text-zinc-300 uppercase">
+          <span className="px-1.5 py-0.5 rounded-sm bg-signal-black border border-signal-border text-[9px] font-bold text-signal-text-secondary uppercase">
             {currentProgramDef.type}
           </span>
         </div>
 
-        <div className="space-y-2">
-          <h4 className="text-lg font-black text-white leading-tight">
+        <div className="space-y-1">
+          <h4 className="text-base font-bold text-signal-text-primary leading-tight">
             {currentProgramDef.title}
           </h4>
-          <span className="inline-block text-xs font-semibold text-zinc-400 bg-zinc-900 border border-zinc-800/80 px-2.5 py-1 rounded">
+          <span className="inline-block text-xs font-semibold text-signal-text-secondary bg-signal-black border border-signal-border px-2 py-0.5 rounded-sm">
             {currentProgramDef.category}
           </span>
-          <p className="text-xs text-zinc-400 leading-relaxed pt-1">
+          <p className="text-xs text-signal-text-secondary leading-relaxed pt-1 line-clamp-2">
             {currentProgramDef.description}
           </p>
         </div>
 
         {/* Runtime info */}
-        <div className="space-y-2 pt-2 border-t border-zinc-900">
-          <div className="flex justify-between items-center text-xs font-mono text-zinc-400">
+        <div className="space-y-1 pt-2 border-t border-signal-border">
+          <div className="flex justify-between items-center text-xs font-mono text-signal-text-tertiary">
             <span>{formatSeconds(playbackPosition)}</span>
             <span>{formatSeconds(currentProgramDef.duration)}</span>
           </div>
-          <div className="w-full h-1.5 bg-zinc-950 rounded-full overflow-hidden">
+          <div className="w-full h-1 bg-signal-black border border-signal-border rounded-sm overflow-hidden">
             <div 
-              className="h-full bg-amber-500 rounded-full transition-all duration-1000 ease-linear"
+              className="h-full bg-signal-amber transition-all duration-1000 ease-linear"
               style={{ width: `${Math.min(100, Math.max(0, progressPercent))}%` }}
             />
           </div>
@@ -89,51 +89,50 @@ export default function ProgramGuide({ broadcastState }: ProgramGuideProps) {
       </div>
 
       {/* UP NEXT Section */}
-      <div className="flex-shrink-0 space-y-2">
-        <span className="text-[10px] font-black text-zinc-500 tracking-widest uppercase block px-1">
+      <div className="flex-shrink-0 space-y-1">
+        <span className="text-[10px] font-bold text-signal-text-secondary tracking-widest uppercase block px-1 font-mono">
           UP NEXT
         </span>
         <NextProgramCard upNext={upNext} />
       </div>
 
       {/* LATER TONIGHT Section */}
-      <div className="space-y-3 flex-1 flex flex-col min-h-0">
-        <span className="text-[10px] font-black text-zinc-500 tracking-widest uppercase block px-1 flex-shrink-0">
+      <div className="space-y-2 flex-1 flex flex-col min-h-0">
+        <span className="text-[10px] font-bold text-signal-text-secondary tracking-widest uppercase block px-1 flex-shrink-0 font-mono">
           LATER TONIGHT
         </span>
         
         {/* Scrollable list */}
-        <div className="flex-1 overflow-y-auto pr-1 space-y-2.5 max-h-[350px] lg:max-h-none scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
+        <div className="flex-1 overflow-y-auto pr-1 space-y-2 max-h-[350px] lg:max-h-none scrollbar-thin scrollbar-thumb-signal-border scrollbar-track-transparent">
           {laterTonight.map((item) => {
             return (
               <div 
                 key={item.instanceId}
-                className="flex items-center gap-3.5 p-3 rounded-xl bg-zinc-900/20 border border-zinc-900/60 hover:bg-zinc-900/40 hover:border-zinc-800/80 transition-all duration-200"
+                className="flex items-center gap-3 p-2 rounded-md bg-signal-surface border border-signal-border hover:bg-signal-surface-hover hover:border-signal-border-active transition-colors"
               >
                 {/* Small thumbnail */}
-                <div className="relative w-16 aspect-video bg-zinc-950 rounded-lg overflow-hidden flex-shrink-0 border border-zinc-900">
+                <div className="relative w-16 aspect-video bg-signal-black rounded-sm overflow-hidden flex-shrink-0 border border-signal-border">
                   <img 
                     src={item.program.thumbnail || "/branding/acm-tv-bug.svg"} 
                     alt={item.program.title}
                     className="w-full h-full object-cover opacity-60"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-                  <span className="absolute bottom-0.5 right-1 text-[8px] font-mono text-zinc-400">
+                  <span className="absolute bottom-0.5 right-1 text-[8px] font-mono text-signal-text-tertiary bg-signal-black/80 px-1 rounded-sm">
                     {Math.round(item.program.duration / 60)}m
                   </span>
                 </div>
 
                 {/* Show Title */}
                 <div className="min-w-0 flex-1">
-                  <h5 className="text-xs font-bold text-zinc-200 truncate leading-snug group-hover:text-white">
+                  <h5 className="text-xs font-bold text-signal-text-primary truncate leading-snug">
                     {item.program.title}
                   </h5>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-[9px] text-zinc-500 font-semibold truncate">
+                  <div className="flex items-center gap-2 mt-0.5 font-mono">
+                    <span className="text-[9px] text-signal-text-secondary font-semibold truncate uppercase">
                       {item.program.category}
                     </span>
-                    <span className="w-1 h-1 rounded-full bg-zinc-800"></span>
-                    <span className="text-[9px] font-bold text-amber-500/80">
+                    <span className="w-1 h-1 rounded-sm bg-signal-border"></span>
+                    <span className="text-[9px] font-bold text-signal-amber">
                       {item.startTimeFormatted}
                     </span>
                   </div>

@@ -1,9 +1,8 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { Channel, ProgramInstance } from '../types';
-import { motion } from 'framer-motion';
 
 interface StandbyOverlayProps {
   channel: Channel;
@@ -21,70 +20,71 @@ export default function StandbyOverlay({
   isRetrying
 }: StandbyOverlayProps) {
   const isOffAir = !currentProgram?.program.videoUrl;
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
-    <div className="absolute inset-0 z-40 bg-zinc-950 flex flex-col items-center justify-center overflow-hidden">
+    <div className={`absolute inset-0 z-40 bg-signal-black flex flex-col items-center justify-center overflow-hidden transition-opacity duration-300 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
       {/* Broadcast Style Color Bars (Stylized Background) */}
       <div className="absolute inset-0 opacity-15 grid grid-cols-7 h-full w-full pointer-events-none">
         <div className="bg-white"></div>
         <div className="bg-yellow-400"></div>
         <div className="bg-cyan-400"></div>
         <div className="bg-green-500"></div>
-        <div className="bg-magenta-500 bg-pink-500"></div>
+        <div className="bg-magenta-500"></div>
         <div className="bg-red-600"></div>
         <div className="bg-blue-600"></div>
       </div>
       
       {/* Static Noise Overlay */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-50 via-zinc-950 to-black bg-[size:3px_3px]"></div>
+      <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-signal-surface via-signal-black to-black bg-[size:3px_3px]"></div>
 
-      {/* Main Glassmorphic Panel */}
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="relative z-10 max-w-lg w-full mx-4 p-8 rounded-2xl bg-zinc-900/80 backdrop-blur-xl border border-zinc-800/80 shadow-2xl shadow-black/80 text-center"
-      >
+      {/* Main Panel */}
+      <div className={`relative z-10 max-w-md w-full mx-4 p-6 rounded-md bg-signal-surface-raised border border-signal-border shadow-2xl text-center transform transition-all duration-300 ${mounted ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'}`}>
         {/* Channel Bug/Logo */}
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center mb-4">
           <img 
             src={channel.logoUrl || "/branding/acm-tv-logo.svg"} 
             alt={channel.name} 
-            className="h-12 object-contain filter drop-shadow-[0_0_8px_rgba(245,158,11,0.2)]"
+            className="h-10 object-contain"
           />
         </div>
 
         {/* Offline / Standby Badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-500 mb-6">
-          <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-          <span className="text-[10px] font-bold tracking-widest uppercase">
-            {isOffAir ? "CHANNEL STANDBY" : "TEMPORARILY OFFLINE"}
+        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-sm bg-signal-red-dim border border-signal-red/30 text-signal-red mb-4">
+          <div className="w-1.5 h-1.5 rounded-sm bg-signal-red animate-pulse-live" />
+          <span className="text-[10px] font-bold font-mono tracking-widest uppercase">
+            {isOffAir ? "STANDBY" : "OFFLINE"}
           </span>
         </div>
 
-        <h3 className="text-xl font-black text-white tracking-tight mb-3">
-          {isOffAir ? "CHANNEL STANDBY" : "BROADCAST TEMPORARILY OFFLINE"}
+        <h3 className="text-lg font-bold text-signal-text-primary tracking-tight mb-2">
+          {isOffAir ? "CHANNEL STANDBY" : "BROADCAST INTERRUPTED"}
         </h3>
         
-        <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed mb-6 px-4">
+        <p className="text-xs text-signal-text-secondary leading-relaxed mb-6 font-mono">
           {isOffAir 
-            ? "This broadcast channel is currently off the air. Program transmission will resume shortly."
-            : "We are experiencing a brief interruption in the stream. We will resume the broadcast shortly. Thank you for your patience."
+            ? "Transmission will resume shortly."
+            : "Attempting to re-establish connection."
           }
         </p>
 
         {/* Current / Next Program Metadata */}
-        <div className="bg-black/40 border border-zinc-800/50 rounded-xl p-4 mb-6 text-left space-y-2">
+        <div className="bg-signal-black border border-signal-border rounded-sm p-3 mb-6 text-left space-y-2 font-mono">
           {currentProgram && (
             <div>
-              <span className="text-[10px] font-bold text-amber-500 tracking-wider uppercase block">Scheduled Now</span>
-              <span className="text-sm font-semibold text-zinc-200 block truncate">{currentProgram.program.title}</span>
+              <span className="text-[10px] font-bold text-signal-amber tracking-wider uppercase block">Scheduled Now</span>
+              <span className="text-xs font-semibold text-signal-text-primary block truncate">{currentProgram.program.title}</span>
             </div>
           )}
           {upNext && !isOffAir && (
-            <div className="border-t border-zinc-900 pt-2 mt-2">
-              <span className="text-[10px] font-bold text-zinc-500 tracking-wider uppercase block">Up Next</span>
-              <span className="text-xs text-zinc-400 block truncate">
-                {upNext.program.title} <span className="text-amber-500/80">({upNext.startTimeFormatted})</span>
+            <div className="border-t border-signal-border pt-2 mt-2">
+              <span className="text-[10px] font-bold text-signal-text-secondary tracking-wider uppercase block">Up Next</span>
+              <span className="text-xs text-signal-text-secondary block truncate">
+                {upNext.program.title} <span className="text-signal-text-tertiary">({upNext.startTimeFormatted})</span>
               </span>
             </div>
           )}
@@ -95,19 +95,19 @@ export default function StandbyOverlay({
           <button
             onClick={onRetry}
             disabled={isRetrying}
-            className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-bold text-sm transition-all shadow-lg shadow-amber-500/10 active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-sm bg-signal-amber-dim border border-signal-border-active text-signal-amber font-bold text-xs font-mono transition-colors hover:bg-signal-surface-hover disabled:opacity-50 cursor-pointer"
           >
-            <RefreshCw className={`w-4 h-4 ${isRetrying ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${isRetrying ? 'animate-spin' : ''}`} />
             {isRetrying ? 'RECONNECTING...' : 'RETRY CONNECTION'}
           </button>
         )}
-      </motion.div>
+      </div>
 
       {/* Decorative corners */}
-      <div className="absolute top-8 left-8 border-t-2 border-l-2 border-zinc-800 w-6 h-6 pointer-events-none"></div>
-      <div className="absolute top-8 right-8 border-t-2 border-r-2 border-zinc-800 w-6 h-6 pointer-events-none"></div>
-      <div className="absolute bottom-8 left-8 border-b-2 border-l-2 border-zinc-800 w-6 h-6 pointer-events-none"></div>
-      <div className="absolute bottom-8 right-8 border-b-2 border-r-2 border-zinc-800 w-6 h-6 pointer-events-none"></div>
+      <div className="absolute top-8 left-8 border-t-2 border-l-2 border-signal-border-active w-4 h-4 pointer-events-none"></div>
+      <div className="absolute top-8 right-8 border-t-2 border-r-2 border-signal-border-active w-4 h-4 pointer-events-none"></div>
+      <div className="absolute bottom-8 left-8 border-b-2 border-l-2 border-signal-border-active w-4 h-4 pointer-events-none"></div>
+      <div className="absolute bottom-8 right-8 border-b-2 border-r-2 border-signal-border-active w-4 h-4 pointer-events-none"></div>
     </div>
   );
 }

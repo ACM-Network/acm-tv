@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ACM TV | Entertainment Without Limits",
-  description: "Experience the next generation of broadcasting with ACM TV. A global virtual television network playing premium content, movie trailers, RCU promos, and music videos in absolute real-time sync.",
-  keywords: ["ACM TV", "Live Broadcast", "Virtual Television", "OTT Network", "Realm Cinematic Universe", "Movie Trailers"],
+  title: "ACM TV | Signal Broadcast",
+  description: "Experience the next generation of broadcasting with ACM TV. Global UTC-synchronized virtual television network.",
+  keywords: ["ACM TV", "Live Broadcast", "Virtual Television", "OTT Network"],
 };
 
 export default function RootLayout({
@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body className="bg-black text-white antialiased min-h-screen flex flex-col scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
+      <body className="bg-signal-black text-signal-text-primary antialiased min-h-screen flex flex-col selection:bg-signal-amber-glow selection:text-white">
         {/* Navigation Bar */}
         <Navigation />
         
@@ -42,4 +42,3 @@ export default function RootLayout({
     </html>
   );
 }
-

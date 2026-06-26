@@ -19,7 +19,6 @@ export default function Home() {
     const updateAllStates = () => {
       const now = Date.now();
       
-      // Update flagship channel state
       try {
         const flagState = getBroadcastState(flagshipChannel, now);
         setFlagshipState(flagState);
@@ -27,14 +26,11 @@ export default function Home() {
         console.error("Flagship state error:", e);
       }
 
-      // Update all channels states
       const states: { [key: string]: BroadcastState } = {};
       channels.forEach(ch => {
         try {
           states[ch.id] = getBroadcastState(ch, now);
-        } catch {
-          // Ignore
-        }
+        } catch {}
       });
       setNetworkStates(states);
     };
@@ -44,158 +40,142 @@ export default function Home() {
       updateAllStates();
     }, 0);
 
-    const interval = setInterval(updateAllStates, 5000); // Update every 5 seconds
-
+    const interval = setInterval(updateAllStates, 5000);
     return () => clearInterval(interval);
   }, []);
 
   if (!isMounted) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-amber-500/25 border-t-amber-500 rounded-full animate-spin"></div>
+      <div className="min-h-screen bg-signal-black flex items-center justify-center">
+        <div className="w-10 h-10 border-2 border-signal-border-active border-t-signal-amber rounded-full animate-spin"></div>
       </div>
     );
   }
 
-
-
   return (
-    <div className="pb-16 space-y-16">
+    <div className="pb-16 space-y-12 bg-signal-black min-h-screen">
       
-      {/* 1. Cinematic Hero Billboard */}
-      <section className="relative h-[80vh] min-h-[550px] max-h-[800px] flex items-center overflow-hidden border-b border-zinc-900">
-        {/* Background glow orb */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-amber-500/10 via-red-600/5 to-transparent rounded-full blur-[140px] pointer-events-none"></div>
-        {/* Grid pattern overlay */}
-        <div className="absolute inset-0 opacity-[0.02] bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+      {/* 1. Control Room Hero Billboard */}
+      <section className="relative flex flex-col justify-end h-[60vh] min-h-[450px] border-b border-signal-border bg-signal-surface overflow-hidden">
+        <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]"></div>
         
-        {/* Cinematic Backdrop Image */}
-        <div className="absolute inset-0 bg-black">
+        <div className="absolute inset-0 bg-signal-black/80">
           <img 
             src="/media/artwork/spiderman_trailer_1.png" 
-            alt="ACM Cinematic Billboard"
-            className="w-full h-full object-cover opacity-35 object-center"
+            alt="ACM Feed"
+            className="w-full h-full object-cover opacity-20 object-center mix-blend-luminosity"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/20 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-signal-black via-signal-black/80 to-transparent"></div>
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full z-10 space-y-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-500 font-bold text-xs tracking-widest uppercase">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>VIRTUAL LIVE BROADCAST FEEDS</span>
+        <div className="relative max-w-7xl mx-auto px-6 lg:px-8 w-full z-10 pb-12 space-y-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm bg-signal-amber-dim border border-signal-border text-signal-amber text-xs font-mono uppercase tracking-widest">
+            <Radio className="w-3.5 h-3.5 animate-pulse" />
+            <span>Master Control Room</span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-white leading-[1.05] max-w-4xl">
+          <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-signal-text-primary leading-[1.1]">
             ACM TV<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-500 to-red-500">
-              Entertainment Without Limits
+            <span className="text-signal-text-secondary font-medium text-3xl sm:text-5xl">
+              Global Sync Feed
             </span>
           </h1>
 
-          <p className="text-base sm:text-lg text-zinc-300 max-w-2xl font-medium leading-relaxed">
-            Experience television reimagined. No catalog navigation, no endless searching. A completely synchronized, global real-time network feed. Everyone watches the same frame, at the same millisecond.
+          <p className="text-base text-signal-text-tertiary max-w-2xl font-mono leading-relaxed">
+            SYSTEM STATUS: ONLINE. Syncing all channels to global UTC reference. Everyone watches the same frame, at the same millisecond. No navigation required.
           </p>
 
           <div className="flex flex-wrap items-center gap-4 pt-4">
             <Link 
               href="/live" 
-              className="inline-flex items-center gap-2.5 px-7 py-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-black text-sm transition-all shadow-xl shadow-amber-500/15 hover:shadow-amber-500/30 active:scale-[0.98]"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-sm bg-signal-surface-raised border border-signal-border-active text-signal-text-primary font-bold text-sm transition-all hover:bg-signal-surface"
             >
-              <Play className="w-4 h-4 fill-current" />
-              <span>TUNE IN LIVE</span>
+              <Play className="w-4 h-4 fill-current text-signal-amber" />
+              <span>TUNE IN MASTER</span>
             </Link>
             <Link 
               href="/schedule" 
-              className="inline-flex items-center gap-2.5 px-6 py-4 rounded-xl bg-zinc-900/80 border border-zinc-800 hover:bg-zinc-800/80 text-white font-black text-sm transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-sm bg-signal-surface border border-signal-border hover:border-signal-border-active text-signal-text-secondary font-bold text-sm transition-all"
             >
               <Calendar className="w-4 h-4" />
-              <span>VIEW GUIDE</span>
+              <span>SYSTEM SCHEDULE</span>
             </Link>
           </div>
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 space-y-12">
         
         {/* 2. Flagship Channel Live Now */}
-        <section className="space-y-6">
-          <div className="flex items-center justify-between border-b border-zinc-900 pb-3">
-            <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2.5">
-              <Radio className="w-5.5 h-5.5 text-red-500 animate-pulse" />
-              <span>ON THE AIR NOW</span>
+        <section className="space-y-4">
+          <div className="flex items-center justify-between border-b border-signal-border pb-2">
+            <h2 className="text-lg font-bold text-signal-text-primary uppercase tracking-wider flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-signal-red animate-pulse"></span>
+              Primary Feed [LIVE]
             </h2>
-            <span className="text-xs font-semibold text-zinc-500">Flagship Feed</span>
+            <span className="text-xs font-mono text-signal-text-tertiary">TX: FLAGSHIP_01</span>
           </div>
 
-          <LiveNowCard channel={flagshipChannel} currentProgram={flagshipState?.currentProgram || null} />
+          <div className="bg-signal-surface border border-signal-border rounded-lg p-1">
+            <LiveNowCard channel={flagshipChannel} currentProgram={flagshipState?.currentProgram || null} />
+          </div>
         </section>
 
         {/* 3. Live Across The Network Grid */}
-        <section className="space-y-6">
-          <div className="border-b border-zinc-900 pb-3">
-            <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2.5">
-              <Activity className="w-5.5 h-5.5 text-amber-500" />
-              <span>ACM NETWORK CHANNELS</span>
+        <section className="space-y-4">
+          <div className="border-b border-signal-border pb-2 flex items-center justify-between">
+            <h2 className="text-lg font-bold text-signal-text-primary uppercase tracking-wider flex items-center gap-2">
+              <Activity className="w-4 h-4 text-signal-amber" />
+              Auxiliary Feeds
             </h2>
-            <p className="text-xs text-zinc-500 mt-1">Select a feed to tune in directly to that broadcast.</p>
+            <span className="text-xs font-mono text-signal-text-tertiary">ROUTING: {channels.length} NODES</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {channels.map((ch) => {
               const chState = networkStates[ch.id];
-              const progName = chState?.currentProgram?.program.title || "Loading schedule...";
-              const catName = chState?.currentProgram?.program.category || "General Broadcast";
+              const progName = chState?.currentProgram?.program.title || "Awaiting telemetry...";
+              const catName = chState?.currentProgram?.program.category || "General";
               const timeRange = chState?.currentProgram 
                 ? `${chState.currentProgram.startTimeFormatted} - ${chState.currentProgram.endTimeFormatted}` 
-                : "--:--";
-
-              // Color classes based on channel
-              const borderColors: { [key: string]: string } = {
-                'acm-tv': 'hover:border-amber-500/50',
-                'acm-movies': 'hover:border-blue-500/50',
-                'acm-music': 'hover:border-pink-500/50',
-                'acm-trailers': 'hover:border-emerald-500/50',
-                'acm-rcu': 'hover:border-orange-500/50',
-              };
+                : "--:--:--";
 
               return (
                 <Link 
                   key={ch.id} 
                   href={`/live?channel=${ch.id}`}
-                  className={`group bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-5 hover:bg-zinc-900/70 transition-all duration-300 flex flex-col justify-between ${borderColors[ch.id] || 'hover:border-zinc-700'}`}
+                  className="group bg-signal-surface border border-signal-border rounded-md p-4 hover:border-signal-border-active hover:bg-signal-surface-raised transition-all duration-150 flex flex-col justify-between h-40"
                 >
-                  <div className="space-y-4">
-                    {/* Header */}
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-black text-zinc-500 uppercase tracking-wider">
-                        {ch.name} Network
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between border-b border-signal-border pb-2">
+                      <span className="text-xs font-mono text-signal-text-secondary uppercase tracking-wider">
+                        {ch.name}
                       </span>
-                      <span className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-zinc-950 text-[9px] font-bold text-zinc-400">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-                        LIVE
+                      <span className="flex items-center gap-1.5 px-1.5 py-0.5 rounded-sm bg-signal-red-dim text-[10px] font-mono text-signal-red">
+                        <span className="h-1.5 w-1.5 rounded-full bg-signal-red animate-pulse"></span>
+                        TX_ON
                       </span>
                     </div>
 
-                    {/* Program Info */}
-                    <div className="space-y-1.5">
-                      <span className="text-[9px] font-black text-amber-500 tracking-wider uppercase block">
-                        {catName}
-                      </span>
-                      <h4 className="text-sm font-bold text-white leading-snug group-hover:text-amber-500 transition-colors truncate">
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold text-signal-amber tracking-wider uppercase">
+                          {catName}
+                        </span>
+                        <span className="text-[10px] text-signal-text-tertiary font-mono">
+                          {timeRange}
+                        </span>
+                      </div>
+                      <h4 className="text-sm font-bold text-signal-text-primary truncate">
                         {progName}
                       </h4>
-                      <p className="text-xs text-zinc-400 font-medium">
-                        {timeRange}
-                      </p>
                     </div>
                   </div>
 
-                  <div className="pt-4 border-t border-zinc-950 mt-4 flex items-center justify-between text-xs font-bold text-zinc-500">
-                    <span>{ch.tagline}</span>
-                    <span className="text-white flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span>Tune in</span>
-                      <Play className="w-3 h-3 fill-current" />
+                  <div className="flex items-center justify-between text-[10px] font-mono text-signal-text-tertiary mt-2">
+                    <span className="truncate max-w-[70%]">{ch.tagline}</span>
+                    <span className="text-signal-amber flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span>ENGAGE</span>
                     </span>
                   </div>
                 </Link>
@@ -204,36 +184,34 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 4. Network Info & Technology Showcase */}
-        <section className="bg-gradient-to-br from-zinc-900 to-zinc-950 border border-zinc-800 rounded-3xl p-8 md:p-12 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full blur-[80px]"></div>
-          
-          <div className="max-w-3xl space-y-6 relative z-10">
-            <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-amber-500/10 border border-amber-500/20 text-amber-500 font-bold text-[9px] tracking-widest uppercase">
-              TECHNOLOGY FOCUS
+        {/* 4. Telemetry Showcase */}
+        <section className="bg-signal-surface border border-signal-border rounded-lg p-8">
+          <div className="max-w-3xl space-y-6">
+            <div className="inline-flex items-center gap-1 px-2 py-1 rounded-sm bg-signal-amber-dim border border-signal-border text-signal-amber font-mono text-[10px] uppercase">
+              System Diagnostics
             </div>
-            <h3 className="text-2xl sm:text-4xl font-black text-white tracking-tight leading-tight">
-              Global UTC-Reference Real-Time Frame Synchronization
+            <h3 className="text-2xl font-bold text-signal-text-primary uppercase tracking-wide">
+              UTC Engine Synchronization
             </h3>
-            <p className="text-sm sm:text-base text-zinc-400 leading-relaxed font-medium">
-              Unlike traditional streaming galleries which buffering introduces offsets, ACM TV schedules and calculates media position on a global UTC clock reference. Every single frame played in London is synced down to the same second in Tokyo. Seamlessly switching programs, idents, and bumpers automatically.
+            <p className="text-sm text-signal-text-secondary font-mono leading-relaxed">
+              Playback positions are calculated mathematically using a global UTC offset. No buffering drift. Instant frame-accurate switching across all global nodes.
             </p>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-4">
-              <div className="border-l-2 border-amber-500 pl-4 space-y-1">
-                <span className="text-2xl font-black text-white block">5</span>
-                <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider block">Live Channels</span>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-signal-border">
+              <div className="space-y-1">
+                <span className="text-xl font-mono text-signal-text-primary block">{channels.length}</span>
+                <span className="text-[10px] text-signal-text-tertiary font-mono uppercase block">Active Streams</span>
               </div>
-              <div className="border-l-2 border-amber-500 pl-4 space-y-1">
-                <span className="text-2xl font-black text-white block">&lt; 1s</span>
-                <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider block">Drift Sync</span>
+              <div className="space-y-1">
+                <span className="text-xl font-mono text-signal-text-primary block">&lt; 1s</span>
+                <span className="text-[10px] text-signal-text-tertiary font-mono uppercase block">Drift Sync</span>
               </div>
-              <div className="border-l-2 border-amber-500 pl-4 space-y-1">
-                <span className="text-2xl font-black text-white block">100%</span>
-                <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider block">UTC Engine</span>
+              <div className="space-y-1">
+                <span className="text-xl font-mono text-signal-text-primary block">UTC</span>
+                <span className="text-[10px] text-signal-text-tertiary font-mono uppercase block">Clock Ref</span>
               </div>
-              <div className="border-l-2 border-amber-500 pl-4 space-y-1">
-                <span className="text-2xl font-black text-white block">No-Code</span>
-                <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider block">Admin JSON</span>
+              <div className="space-y-1">
+                <span className="text-xl font-mono text-signal-text-primary block">OK</span>
+                <span className="text-[10px] text-signal-text-tertiary font-mono uppercase block">System Status</span>
               </div>
             </div>
           </div>

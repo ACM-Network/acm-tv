@@ -17,15 +17,12 @@ export default function ProgramsPage() {
 
   const channels: Channel[] = getRuntimeChannels();
 
-  // Flatten programs from all channels and attach channel metadata
   const allPrograms = useMemo(() => {
     const list: ProgramWithChannel[] = [];
     
     channels.forEach(ch => {
-      // Helper to push items from program arrays
       const addPrograms = (progs: Program[]) => {
         progs.forEach(p => {
-          // Check if already in list to avoid duplicates
           if (!list.some(existing => existing.id === p.id)) {
             list.push({
               ...p,
@@ -44,10 +41,8 @@ export default function ProgramsPage() {
     return list;
   }, [channels]);
 
-  // Types list
   const programTypes = ['all', 'content', 'trailer', 'song', 'promo', 'ident'];
 
-  // Filtered list
   const filteredPrograms = useMemo(() => {
     return allPrograms.filter(prog => {
       const matchesSearch = 
@@ -62,46 +57,44 @@ export default function ProgramsPage() {
   }, [allPrograms, searchQuery, selectedType]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 bg-signal-black min-h-screen">
       
       {/* Page Header */}
-      <div className="space-y-3.5 border-b border-zinc-900 pb-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 font-bold text-xs uppercase tracking-wider">
-          <Film className="w-3.5 h-3.5 text-amber-500" />
-          <span>Broadcast Repository</span>
+      <div className="space-y-4 border-b border-signal-border pb-4">
+        <div className="inline-flex items-center gap-2 px-2 py-1 bg-signal-surface border border-signal-border text-signal-text-secondary font-mono text-[10px] uppercase tracking-wider">
+          <Film className="w-3.5 h-3.5 text-signal-amber" />
+          <span>ASSET REPOSITORY</span>
         </div>
-        <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-none">
-          Program Library
+        <h1 className="text-2xl sm:text-4xl font-bold text-signal-text-primary tracking-tight">
+          System Content Index
         </h1>
-        <p className="text-sm text-zinc-400 max-w-xl leading-relaxed font-medium">
-          Browse the listing of films, music videos, RCU featurettes, and channel idents running across the ACM TV broadcast networks.
+        <p className="text-sm text-signal-text-tertiary max-w-xl font-mono">
+          Querying all indexed media payloads across broadcast networks. Search for specific featurettes, music tracks, or network idents.
         </p>
       </div>
 
-      {/* Search & Filter Controls */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-zinc-950/40 border border-zinc-900 rounded-3xl p-5">
-        {/* Search Input */}
+      {/* Search & Filter Pane */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-signal-surface border border-signal-border rounded-md p-4">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-signal-text-tertiary" />
           <input
             type="text"
-            placeholder="Search programs, categories, descriptions..."
+            placeholder="QUERY METADATA..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-zinc-900 border border-zinc-800 focus:border-zinc-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-none transition-colors"
+            className="w-full bg-signal-black border border-signal-border focus:border-signal-border-active rounded-sm pl-9 pr-3 py-2 text-sm text-signal-text-primary font-mono placeholder-signal-text-tertiary focus:outline-none transition-colors"
           />
         </div>
 
-        {/* Filter Pills */}
         <div className="flex flex-wrap items-center gap-2">
           {programTypes.map((type) => (
             <button
               key={type}
               onClick={() => setSelectedType(type)}
-              className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all border ${
+              className={`px-3 py-1.5 rounded-sm text-[10px] font-mono uppercase tracking-wider transition-all border ${
                 selectedType === type
-                  ? 'bg-amber-500 text-black border-amber-500 shadow-md shadow-amber-500/10'
-                  : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:text-white'
+                  ? 'bg-signal-amber-dim text-signal-amber border-signal-border-active'
+                  : 'bg-signal-black text-signal-text-secondary border-signal-border hover:text-signal-text-primary hover:border-signal-border-active'
               }`}
             >
               {type}
@@ -110,67 +103,61 @@ export default function ProgramsPage() {
         </div>
       </div>
 
-      {/* Grid of Program Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Data Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredPrograms.map((prog) => (
           <div
             key={prog.id}
-            className="group flex flex-col justify-between overflow-hidden bg-gradient-to-b from-zinc-900/60 to-zinc-950/80 border border-zinc-800/80 rounded-2xl p-4 shadow-xl transition-all duration-300 hover:border-zinc-700/80 hover:-translate-y-0.5 hover:shadow-amber-500/[0.01]"
+            className="group flex flex-col justify-between bg-signal-surface border border-signal-border rounded-md p-3 hover:border-signal-border-active hover:bg-signal-surface-raised transition-all duration-150 h-[380px]"
           >
-            <div className="space-y-4">
-              {/* Media Thumbnail */}
-              <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black border border-zinc-900">
+            <div className="space-y-3">
+              <div className="relative w-full aspect-video rounded-sm overflow-hidden bg-signal-black border border-signal-border">
                 <img
                   src={prog.thumbnail || "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=300"}
                   alt={prog.title}
-                  className="w-full h-full object-cover opacity-70 group-hover:scale-[1.02] transition-transform duration-500"
+                  className="w-full h-full object-cover opacity-60 mix-blend-luminosity group-hover:opacity-100 group-hover:mix-blend-normal transition-all duration-300"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent"></div>
                 
-                {/* Type Tag */}
-                <div className="absolute top-2 left-2 flex items-center gap-1.5">
-                  <span className="px-2 py-0.5 rounded bg-black/75 border border-zinc-800 text-[8px] font-black text-amber-500 uppercase tracking-widest">
+                <div className="absolute top-1.5 left-1.5 flex items-center gap-1">
+                  <span className="px-1.5 py-0.5 bg-signal-black/90 border border-signal-border text-[8px] font-mono text-signal-amber uppercase tracking-widest">
                     {prog.type}
                   </span>
                 </div>
 
-                {/* Duration Bumper */}
-                <div className="absolute bottom-2 right-2 text-[9px] font-mono font-bold text-zinc-300 bg-black/85 border border-zinc-900 px-2 py-0.5 rounded flex items-center gap-1">
-                  <Clock className="w-3 h-3 text-amber-500" />
-                  <span>{Math.round(prog.duration / 60)} min</span>
+                <div className="absolute bottom-1.5 right-1.5 text-[9px] font-mono text-signal-text-secondary bg-signal-black/90 border border-signal-border px-1.5 py-0.5 flex items-center gap-1">
+                  <Clock className="w-3 h-3 text-signal-amber" />
+                  <span>{Math.round(prog.duration / 60)}M</span>
                 </div>
               </div>
 
-              {/* Title & Metadata */}
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded-full bg-zinc-900 border border-zinc-800 text-[9px] font-bold text-zinc-400">
+                  <span className="px-1.5 py-0.5 bg-signal-black border border-signal-border text-[9px] font-mono text-signal-text-secondary uppercase">
                     {prog.channelName}
                   </span>
-                  <span className="text-[10px] text-zinc-500 font-semibold truncate">
+                  <span className="text-[10px] text-signal-text-tertiary font-mono truncate uppercase">
                     {prog.category}
                   </span>
                 </div>
 
-                <h4 className="text-base font-bold text-white leading-snug group-hover:text-amber-500 transition-colors">
+                <h4 className="text-sm font-bold text-signal-text-primary line-clamp-1 group-hover:text-signal-amber transition-colors">
                   {prog.title}
                 </h4>
 
-                <p className="text-xs text-zinc-400 font-medium leading-relaxed line-clamp-3">
+                <p className="text-[11px] text-signal-text-secondary font-mono leading-relaxed line-clamp-3">
                   {prog.description}
                 </p>
               </div>
             </div>
 
-            {/* Tune In Action Footer */}
-            <div className="pt-4 border-t border-zinc-950 mt-4 flex items-center justify-between">
-              <span className="text-[10px] font-bold text-zinc-500">Live Network Media</span>
+            <div className="pt-3 border-t border-signal-border mt-3 flex items-center justify-between">
+              <span className="text-[9px] font-mono text-signal-text-tertiary uppercase">ROUTING OK</span>
               <Link
                 href={`/live?channel=${prog.channelId}`}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700 text-white font-bold text-xs transition-colors"
+                className="inline-flex items-center gap-1 px-2 py-1 bg-signal-black border border-signal-border hover:border-signal-border-active text-signal-text-primary font-mono text-[10px] transition-colors"
               >
-                <span>Tune in Feed</span>
-                <ArrowUpRight className="w-3.5 h-3.5 text-amber-500" />
+                <span>TUNE TX</span>
+                <ArrowUpRight className="w-3 h-3 text-signal-amber" />
               </Link>
             </div>
           </div>
@@ -178,10 +165,10 @@ export default function ProgramsPage() {
       </div>
 
       {filteredPrograms.length === 0 && (
-        <div className="text-center py-16 text-zinc-500 bg-zinc-950/20 border border-zinc-900 rounded-3xl">
-          <ShieldAlert className="w-10 h-10 mx-auto text-zinc-800 mb-3 animate-pulse" />
-          <h4 className="text-base font-bold text-zinc-400">No programs found</h4>
-          <p className="text-xs text-zinc-600 mt-1">Try modifying your search keywords or checking another category filter.</p>
+        <div className="text-center py-12 bg-signal-surface border border-signal-border rounded-md">
+          <ShieldAlert className="w-8 h-8 mx-auto text-signal-red mb-3 animate-pulse" />
+          <h4 className="text-sm font-bold text-signal-text-primary uppercase">NO METADATA MATCH</h4>
+          <p className="text-[11px] text-signal-text-tertiary font-mono mt-2 uppercase">ADJUST QUERY PARAMETERS.</p>
         </div>
       )}
 
