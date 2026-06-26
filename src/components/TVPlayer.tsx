@@ -1764,6 +1764,22 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   }, []);
 
   // Show/Hide Custom controls
+  const toggleControls = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setShowControls(prev => {
+      const next = !prev;
+      if (next) {
+        if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
+        controlsTimeoutRef.current = setTimeout(() => {
+          if (isPlaying && !showTapToUnmute) {
+            setShowControls(false);
+          }
+        }, 4000);
+      }
+      return next;
+    });
+  };
+
   const handleMouseMove = () => {
     setShowControls(true);
     if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
@@ -1813,7 +1829,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       {/* Video Element */}
       <video
         ref={videoRef}
-        onClick={handlePlayPause}
+        onClick={toggleControls}
         poster={broadcastState?.currentProgram?.program.thumbnail || "/branding/acm-tv-bug.svg"}
         onLoadedMetadata={(e) => {
           handleLoadedMetadata();
@@ -1872,71 +1888,6 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
           <div className="flex flex-col items-center gap-4">
             <div className="w-8 h-8 border-2 border-signal-border border-t-signal-amber rounded-full animate-spin"></div>
             <div className="text-[10px] font-mono text-signal-amber uppercase tracking-widest animate-pulse-live">Syncing Signal...</div>
-          </div>
-        </div>
-      )}
-
-      {/* Pause Overlay */}
-      {!isPlaying && !isLoading && !isBuffering && !mediaError && (
-        <div 
-          onClick={handlePlayPause}
-          className="absolute inset-0 z-35 bg-signal-black/60 backdrop-blur-sm flex items-center justify-center cursor-pointer select-none animate-fade-in"
-        >
-          <div className="flex items-center gap-3 bg-signal-surface-raised border border-signal-border-active px-6 py-3 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
-            <span className="text-xs font-mono font-bold text-signal-text-primary tracking-widest uppercase flex items-center gap-2">
-              <span className="text-signal-amber">||</span>
-              <span>PAUSED</span>
-            </span>
-          </div>
-        </div>
-      )}
-
-      {/* Movie Title Card */}
-      {showTitleCard && broadcastState?.currentProgram && channel.id === 'acm-movies' && broadcastState.currentProgram.program.type === 'content' && (
-        <div className="absolute inset-0 z-35 bg-gradient-to-t from-signal-black via-signal-black/90 to-transparent flex flex-col justify-end p-8 sm:p-12 text-left animate-fade-in">
-          {broadcastState.currentProgram.program.backdrop && (
-            <div 
-              className="absolute inset-0 opacity-10 bg-cover bg-center filter blur-xl scale-110"
-              style={{ backgroundImage: `url(${broadcastState.currentProgram.program.backdrop})` }}
-            />
-          )}
-          
-          <div className="relative z-10 max-w-3xl space-y-4 animate-slide-up">
-            <div className="flex items-center gap-3">
-              <span className="px-2.5 py-1 bg-signal-surface border border-signal-border-active text-[10px] font-mono text-signal-amber uppercase tracking-widest">
-                NOW SHOWING
-              </span>
-              {broadcastState.currentProgram.program.year && (
-                <span className="text-signal-text-secondary font-mono text-[11px]">
-                  {broadcastState.currentProgram.program.year}
-                </span>
-              )}
-              <span className="text-signal-border-active font-bold">•</span>
-              <span className="text-signal-text-secondary font-mono text-[11px] uppercase tracking-wider">
-                {broadcastState.currentProgram.program.category}
-              </span>
-            </div>
-            
-            <h1 className="text-4xl sm:text-6xl font-black text-signal-text-primary tracking-tight leading-none drop-shadow-lg">
-              {broadcastState.currentProgram.program.title}
-            </h1>
-            
-            <p className="text-sm text-signal-text-secondary leading-relaxed font-medium max-w-2xl line-clamp-3">
-              {broadcastState.currentProgram.program.description}
-            </p>
-            
-            <div className="pt-4 flex items-center gap-8 text-[11px] text-signal-text-tertiary font-mono">
-              <div>
-                <span className="uppercase text-[9px] font-bold block mb-1">Runtime</span>
-                <span className="text-signal-text-primary font-bold">{Math.round(broadcastState.currentProgram.program.duration / 60)} MIN</span>
-              </div>
-              {broadcastState.upNext && (
-                <div>
-                  <span className="uppercase text-[9px] font-bold block mb-1">Up Next</span>
-                  <span className="text-signal-amber font-bold">{broadcastState.upNext.program.title}</span>
-                </div>
-              )}
-            </div>
           </div>
         </div>
       )}
@@ -2142,7 +2093,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
           <div className="flex items-center justify-between pt-2">
             <div className="flex items-center gap-2 md:gap-4">
               <button 
-                onClick={handlePlayPause} 
+                onClick={toggleControls} 
                 className="w-12 h-12 md:w-10 md:h-10 flex items-center justify-center bg-signal-surface border border-signal-border hover:bg-signal-surface-hover text-signal-text-primary transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-signal-amber rounded"
                 aria-label={isPlaying ? "Pause" : "Play"}
               >
