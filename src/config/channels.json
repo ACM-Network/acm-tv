@@ -84,7 +84,7 @@
           "videoUrl": "https://d3sgzbosmwirao.cloudfront.net/video/1a19486eae6ec07925050cf1cf2f7586ceadbfb49b557a8cacd3cdd4578c7d0b/1/hls/h264_high.m3u8",
           "type": "content",
           "category": "Thriller",
-          "thumbnail": "https://image.tmdb.org/t/p/w1280/gSYkMzVRBeYwBgvQ155oORPJzmW.jpg",
+          "thumbnail": "https://image.tmdb.org/t/p/w1280/hmmO043egTRuKyWUmdq7jvezMBC.jpg",
           "year": 2022,
           "language": "Telugu",
           "backdrop": "https://image.tmdb.org/t/p/w1280/gSYkMzVRBeYwBgvQ155oORPJzmW.jpg"
@@ -97,7 +97,7 @@
           "videoUrl": "https://d3sgzbosmwirao.cloudfront.net/video/b849e1f72e3e6063f4dbbe6fc3166b808579ec5847461d7e7eab613c93a4082b/1/hls/h264_high.m3u8",
           "type": "content",
           "category": "Comedy",
-          "thumbnail": "https://image.tmdb.org/t/p/w1280/7MzvmgHRmhbJH1UZJhRCkAtxvEy.jpg",
+          "thumbnail": "https://image.tmdb.org/t/p/w1280/sLTe3l1SX2h7xjfO0vwKhoQm3hx.jpg",
           "year": 2021,
           "language": "Telugu",
           "backdrop": "https://image.tmdb.org/t/p/w1280/7MzvmgHRmhbJH1UZJhRCkAtxvEy.jpg"
@@ -110,10 +110,10 @@
           "videoUrl": "https://d3sgzbosmwirao.cloudfront.net/video/5e373d61f1604e87cab5b861fab15c4351b7edf7be3896e4871432bcff227aa7/1/hls/h264_high.m3u8",
           "type": "content",
           "category": "Drama",
-          "thumbnail": "https://media.themoviedb.org/t/p/w500/pV6xLQh54ga8oaQqJtUqLp12LwQ.jpg",
+          "thumbnail": "https://image.tmdb.org/t/p/w1280/giVZsq8aBKd8C7Fd9NyzOOE7jmI.jpg",
           "year": 2019,
           "language": "Telugu",
-          "backdrop": "https://image.tmdb.org/t/p/w1280/giVZsq8aBKd8C7Fd9NyzOOE7jmI.jpg"
+          "backdrop": "https://image.tmdb.org/t/p/w1280/pV6xLQh54ga8oaQqJtUqLp12LwQ.jpg"
         },
         {
           "id": "varasudu",
@@ -123,10 +123,10 @@
           "videoUrl": "https://d3sgzbosmwirao.cloudfront.net/video/13c16a3ae3cf9ae873fc6d63ee70f75819876ffad030142d866c6d2f1347d31d/3/hls/h264_720_high_3000k.m3u8",
           "type": "content",
           "category": "Action",
-          "thumbnail": "https://media.themoviedb.org/t/p/w500/iMUIsV6u0pPqfv1j8tGxbJw40sw.jpg",
+          "thumbnail": "https://image.tmdb.org/t/p/w1280/fjd6RKx4Zh8UKQfjpSSkM53eJw6.jpg",
           "year": 2023,
           "language": "Telugu",
-          "backdrop": "https://image.tmdb.org/t/p/w1280/fjd6RKx4Zh8UKQfjpSSkM53eJw6.jpg"
+          "backdrop": "https://media.themoviedb.org/t/p/w500/iMUIsV6u0pPqfv1j8tGxbJw40sw.jpg"
         },
         {
           "id": "paagal",
@@ -136,10 +136,10 @@
           "videoUrl": "https://d3sgzbosmwirao.cloudfront.net/video/ce7e5f1351ebbc47fe284a7acf4bd6c1d898aa6f8a14efac7b2d5acde08fa7ee/3/hls/h264_720_high_3000k.m3u8",
           "type": "content",
           "category": "Romance",
-          "thumbnail": "https://image.tmdb.org/t/p/w1280/5D7OCKLqf68V6h0HO4dCo30cVtH.jpg",
+          "thumbnail": "https://image.tmdb.org/t/p/w1280/o293eLODW22BME8XokbS09SHD6B.jpg",
           "year": 2021,
           "language": "Telugu",
-          "backdrop": "https://image.tmdb.org/t/p/w1280/o293eLODW22BME8XokbS09SHD6B.jpg"
+          "backdrop": "https://image.tmdb.org/t/p/w1280/5D7OCKLqf68V6h0HO4dCo30cVtH.jpg"
         },
         {
           "id": "vakeel-saab",
@@ -149,10 +149,10 @@
           "videoUrl": "https://d3sgzbosmwirao.cloudfront.net/video/bc5477a2aa440ee48b7a786829f8751bc032e0ec288b4997e545124b5692053d/1/hls/h264_720_high_3000k.m3u8",
           "type": "content",
           "category": "Drama",
-          "thumbnail": "https://image.tmdb.org/t/p/w1280/jiIKf2tXZJDnpeDxEsA5UnH6DID.jpg",
+          "thumbnail": "https://image.tmdb.org/t/p/w1280/iPKoEwpH6kHycI2Jelzc2aVqnm7.jpg",
           "year": 2021,
           "language": "Telugu",
-          "backdrop": "https://image.tmdb.org/t/p/w1280/iPKoEwpH6kHycI2Jelzc2aVqnm7.jpg"
+          "backdrop": "https://image.tmdb.org/t/p/w1280/jiIKf2tXZJDnpeDxEsA5UnH6DID.jpg"
         },
         {
           "id": "hit-first-case",
@@ -162,7 +162,7 @@
           "videoUrl": "https://d3sgzbosmwirao.cloudfront.net/video/26710cbfb243d3c4ef929e48fbfb9d81ef36289620b6a8bdecf4081b6c17ebd9/1/hls/h264_high.m3u8",
           "type": "content",
           "category": "Mystery",
-          "thumbnail": "https://image.tmdb.org/t/p/w1280/dMxentLHEJPBMQCPXHrUKluODpe.jpg",
+          "thumbnail": "https://image.tmdb.org/t/p/w1280/A45uq2S4JHBVLGaMWrtawOLp08i.jpg",
           "year": 2020,
           "language": "Telugu",
           "backdrop": "https://image.tmdb.org/t/p/w1280/dMxentLHEJPBMQCPXHrUKluODpe.jpg"
@@ -175,10 +175,10 @@
           "videoUrl": "https://d3sgzbosmwirao.cloudfront.net/video/652177483a08e5ba7c4caa8042b9ae32a394549fc8c92c00db02ea3f5444dfbc/1/hls/h264_high.m3u8",
           "type": "content",
           "category": "Sports",
-          "thumbnail": "https://image.tmdb.org/t/p/w1280/s4Yi1RbMyyN3hH2hElwvluP2rOG.jpg",
+          "thumbnail": "https://image.tmdb.org/t/p/w1280/cc14e095w0ri6ppoLxSEl7iUqHs.jpg",
           "year": 2019,
           "language": "Telugu",
-          "backdrop": "https://image.tmdb.org/t/p/w1280/cc14e095w0ri6ppoLxSEl7iUqHs.jpg"
+          "backdrop": "https://image.tmdb.org/t/p/w1280/s4Yi1RbMyyN3hH2hElwvluP2rOG.jpg"
         }
       ],
       "idents": [
