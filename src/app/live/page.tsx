@@ -39,16 +39,16 @@ function LiveTVClientContent() {
   const isStateMatching = broadcastState && broadcastState.channelId === activeChannel.id;
 
   return (
-    <div className="w-full mx-auto md:max-w-7xl md:px-6 lg:px-8 md:py-8 bg-signal-black min-h-screen">
+    <div className="w-full mx-auto md:max-w-7xl md:px-6 lg:px-8 md:py-8 bg-black min-h-screen">
       
       {/* Main Live Layout Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 md:gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 md:gap-6 items-start w-full">
         
         {/* Left 2 Columns: Video Player & Metadata Pane */}
         <div className="lg:col-span-2 flex flex-col">
           
           {/* Player Shell (Edge-to-edge on mobile) */}
-          <div className="w-full bg-signal-surface md:border border-signal-border md:rounded-md md:p-2 z-10 sticky top-0 md:static">
+          <div className="w-full z-10 sticky top-0 md:static md:bg-signal-surface md:border md:border-signal-border md:rounded-md md:p-2">
             <TVPlayer 
               key={activeChannel.id}
               channel={activeChannel} 

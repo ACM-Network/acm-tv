@@ -7,8 +7,10 @@ import { getBroadcastState, formatLocalTime } from '../utils/scheduleEngine';
 import { getDirectVideoUrl } from '../utils/videoParser';
 import StandbyOverlay from './StandbyOverlay';
 import { motion, AnimatePresence } from 'framer-motion';
-import AudioTrackSelector, { AudioTrack } from './AudioTrackSelector';
-import SubtitleSelector, { SubtitleTrack } from './SubtitleSelector';
+
+import PlayerSettings, { QualityLevel } from './PlayerSettings';
+import { AudioTrack } from './AudioTrackSelector';
+import { SubtitleTrack } from './SubtitleSelector';
 import Hls from 'hls.js';
 
 const getUnixTimeMs = () => Date.now();
@@ -91,6 +93,10 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showTapToUnmute, setShowTapToUnmute] = useState(true);
   const [showControls, setShowControls] = useState(true);
+
+  const [availableQualities, setAvailableQualities] = useState<QualityLevel[]>([]);
+  const [activeQuality, setActiveQuality] = useState<number | 'auto'>('auto');
+
   
   // Loading & Media Error States
   const [isLoading, setIsLoading] = useState(true);
@@ -161,6 +167,18 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  
+  const handleQualitySelect = (id: number | 'auto') => {
+    setActiveQuality(id);
+    if (hlsRef.current) {
+      if (id === 'auto') {
+        hlsRef.current.currentLevel = -1; // Auto
+      } else {
+        hlsRef.current.currentLevel = id as number;
+      }
+    }
+  };
 
   const destroyHls = () => {
     if (hlsRef.current) {
@@ -639,6 +657,10 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
           console.log('[ACM TV] Hls manifest parsed. Level count:', hls.levels.length);
+          const parsedQualities = hls.levels.map((l, idx) => ({ id: idx, height: l.height, bitrate: l.bitrate }));
+          setAvailableQualities(parsedQualities);
+          setActiveQuality('auto');
+
 
           // Always start and lock to highest available quality level
           let highestLevelIdx = hls.levels.length - 1;
@@ -1739,18 +1761,40 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   };
 
   // Toggle Fullscreen
-  const toggleFullscreen = (e: React.MouseEvent) => {
+  const toggleFullscreen = async (e: React.MouseEvent) => {
     e.stopPropagation();
     const container = containerRef.current;
     if (!container) return;
 
     if (!document.fullscreenElement) {
-      container.requestFullscreen()
-        .then(() => setIsFullscreen(true))
-        .catch(err => console.error("Error enabling fullscreen", err));
+      try {
+        await container.requestFullscreen();
+        setIsFullscreen(true);
+        // Attempt landscape lock
+        if (screen.orientation && (screen.orientation as any).lock) {
+          try {
+            await (screen.orientation as any).lock('landscape');
+          } catch (err) {
+            console.warn('Orientation lock failed:', err);
+          }
+        }
+      } catch (err) {
+        console.error("Error enabling fullscreen", err);
+      }
     } else {
-      document.exitFullscreen()
-        .then(() => setIsFullscreen(false));
+      try {
+        await document.exitFullscreen();
+        setIsFullscreen(false);
+        if (screen.orientation && screen.orientation.unlock) {
+          try {
+            screen.orientation.unlock();
+          } catch (err) {
+             console.warn('Orientation unlock failed:', err);
+          }
+        }
+      } catch (err) {
+        console.error("Error exiting fullscreen", err);
+      }
     }
   };
 
@@ -1812,7 +1856,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       ref={containerRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={() => isPlaying && setShowControls(false)}
-      className="relative w-full h-full sm:aspect-video bg-black group cursor-none overflow-hidden"
+      className="relative w-full h-[60vh] sm:h-auto sm:aspect-video bg-black group cursor-none overflow-hidden"
       style={{ cursor: showControls || showTapToUnmute || mediaError ? 'auto' : 'none' }}
     >
       {/* External Audio Track Element */}
@@ -2046,22 +2090,17 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
             </div>
 
             {/* Right Controls */}
-            <div className="flex items-center gap-5 sm:gap-6">
-              {audioTracks.length > 1 && (
-                <div className="relative text-white hover:scale-110 transition-transform cursor-pointer">
-                  <AudioTrackSelector tracks={audioTracks} onSelectTrack={handleSelectTrack} hasNativeSupport={hasAudioTrackSupport} />
-                </div>
-              )}
-              {subtitles.length > 0 && (
-                <div className="relative text-white hover:scale-110 transition-transform cursor-pointer">
-                  <SubtitleSelector tracks={subtitles} onSelectTrack={handleSelectSubtitleTrack} />
-                </div>
-              )}
-              {isPipSupported && (
-                <button onClick={togglePip} className={`transition-all hover:scale-110 ${isPipActive ? 'text-red-500' : 'text-white hover:text-gray-300'}`}>
-                  <Tv className="w-5 h-5 sm:w-6 sm:h-6" />
-                </button>
-              )}
+            <div className="flex items-center gap-4 sm:gap-6">
+              <PlayerSettings 
+                qualities={availableQualities}
+                activeQuality={activeQuality}
+                onSelectQuality={handleQualitySelect}
+                audioTracks={audioTracks}
+                onSelectAudioTrack={handleSelectTrack}
+                hasNativeAudioSupport={hasAudioTrackSupport}
+                subtitleTracks={subtitles}
+                onSelectSubtitleTrack={handleSelectSubtitleTrack}
+              />
               <button onClick={toggleFullscreen} className="text-white hover:text-gray-300 hover:scale-110 transition-all">
                 {isFullscreen ? <Minimize2 className="w-5 h-5 sm:w-6 sm:h-6" /> : <Maximize2 className="w-5 h-5 sm:w-6 sm:h-6" />}
               </button>
