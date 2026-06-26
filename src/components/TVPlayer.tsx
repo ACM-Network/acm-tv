@@ -426,11 +426,6 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   const handleBufferingEvent = (nowMs: number) => {
     // Filter to last 60s
     downgradeTimestampsRef.current = downgradeTimestampsRef.current.filter(t => nowMs - t < 60000);
-    if (downgradeTimestampsRef.current.length >= 3) {
-      console.error("[ACM TV] Stability Manager: Buffer/Downgrade limit exceeded (3 in 60s). Skipping program.");
-      markProgramUnhealthyAndSkip(nowMs);
-      return;
-    }
     downgradeTimestampsRef.current.push(nowMs);
 
     // Downgrade HLS quality cap: One step lower only if needed
@@ -909,55 +904,6 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       console.error("[ACM TV] Picture-in-Picture error:", err);
     }
   };
-
-  // Channel Info Overlay Timer and Trigger helpers
-  const triggerInfoOverlay = () => {
-    setShowInfoOverlay(true);
-    if (infoOverlayTimeoutRef.current) {
-      clearTimeout(infoOverlayTimeoutRef.current);
-    }
-    infoOverlayTimeoutRef.current = setTimeout(() => {
-      setShowInfoOverlay(false);
-    }, 5000);
-  };
-
-  useEffect(() => {
-    if (broadcastState?.currentProgram?.instanceId) {
-      const timer = setTimeout(() => {
-        triggerInfoOverlay();
-      }, 0);
-      return () => clearTimeout(timer);
-    }
-  }, [broadcastState?.currentProgram?.instanceId]);
-
-  useEffect(() => {
-    return () => {
-      if (infoOverlayTimeoutRef.current) clearTimeout(infoOverlayTimeoutRef.current);
-    };
-  }, []);
-
-  // Trigger title card overlay on movie transitions
-  useEffect(() => {
-    const currentInst = broadcastState?.currentProgram;
-    if (currentInst && channel.id === 'acm-movies' && currentInst.program.type === 'content') {
-      const startTimer = setTimeout(() => {
-        setShowTitleCard(true);
-      }, 0);
-      const endTimer = setTimeout(() => {
-        setShowTitleCard(false);
-      }, 5000);
-      return () => {
-        clearTimeout(startTimer);
-        clearTimeout(endTimer);
-      };
-    } else {
-      const clearTimer = setTimeout(() => {
-        setShowTitleCard(false);
-      }, 0);
-      return () => clearTimeout(clearTimer);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [broadcastState?.currentProgram?.instanceId, channel.id]);
 
   // Check native audioTracks API support on mount
   useEffect(() => {
@@ -2194,14 +2140,22 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
           {/* Controls Bar */}
           <div className="flex items-center justify-between pt-2">
-            <div className="flex items-center gap-2">
-              <button onClick={handlePlayPause} className="p-2 bg-signal-surface border border-signal-border hover:bg-signal-surface-hover text-signal-text-primary transition-colors cursor-pointer">
-                {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+            <div className="flex items-center gap-2 md:gap-4">
+              <button 
+                onClick={handlePlayPause} 
+                className="w-12 h-12 md:w-10 md:h-10 flex items-center justify-center bg-signal-surface border border-signal-border hover:bg-signal-surface-hover text-signal-text-primary transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-signal-amber rounded"
+                aria-label={isPlaying ? "Pause" : "Play"}
+              >
+                {isPlaying ? <Pause className="w-5 h-5 md:w-4 md:h-4" /> : <Play className="w-5 h-5 md:w-4 md:h-4" />}
               </button>
               
-              <div className="flex items-center gap-3 bg-signal-surface border border-signal-border px-3 py-1.5 h-[34px]">
-                <button onClick={toggleMute} className="text-signal-text-secondary hover:text-signal-text-primary transition-colors cursor-pointer" title={isMuted ? 'Unmute' : 'Mute'}>
-                  {isMuted ? <VolumeX className="w-4 h-4 text-signal-red" /> : <Volume2 className="w-4 h-4" />}
+              <div className="flex items-center gap-3 bg-signal-surface border border-signal-border px-3 py-1.5 h-12 md:h-10 rounded">
+                <button 
+                  onClick={toggleMute} 
+                  className="w-8 h-8 flex items-center justify-center text-signal-text-secondary hover:text-signal-text-primary transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-signal-amber rounded" 
+                  title={isMuted ? 'Unmute' : 'Mute'}
+                >
+                  {isMuted ? <VolumeX className="w-5 h-5 md:w-4 md:h-4 text-signal-red" /> : <Volume2 className="w-5 h-5 md:w-4 md:h-4" />}
                 </button>
                 <input 
                   type="range"
@@ -2210,26 +2164,39 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
                   step="0.05"
                   value={isMuted ? 0 : volume}
                   onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
-                  className="w-16 sm:w-24 h-[2px] bg-signal-border appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-signal-text-primary"
+                  className="w-20 md:w-24 h-1 md:h-[2px] bg-signal-border appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 md:[&::-webkit-slider-thumb]:w-2 md:[&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-signal-text-primary focus:outline-none focus:ring-2 focus:ring-signal-amber rounded"
                   style={{ backgroundImage: `linear-gradient(to right, var(--signal-text-primary) ${(isMuted ? 0 : volume) * 100}%, transparent 0)` }}
+                  aria-label="Volume"
                 />
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 md:gap-3">
               {audioTracks.length > 1 && (
-                <AudioTrackSelector tracks={audioTracks} onSelectTrack={handleSelectTrack} hasNativeSupport={hasAudioTrackSupport} />
+                <div className="focus-within:ring-2 focus-within:ring-signal-amber rounded">
+                  <AudioTrackSelector tracks={audioTracks} onSelectTrack={handleSelectTrack} hasNativeSupport={hasAudioTrackSupport} />
+                </div>
               )}
               {subtitles.length > 0 && (
-                <SubtitleSelector tracks={subtitles} onSelectTrack={handleSelectSubtitleTrack} />
+                <div className="focus-within:ring-2 focus-within:ring-signal-amber rounded">
+                  <SubtitleSelector tracks={subtitles} onSelectTrack={handleSelectSubtitleTrack} />
+                </div>
               )}
               {isPipSupported && (
-                <button onClick={togglePip} className={`p-2 bg-signal-surface border transition-colors cursor-pointer ${isPipActive ? 'border-signal-border-active text-signal-amber' : 'border-signal-border hover:bg-signal-surface-hover text-signal-text-secondary'}`}>
-                  <Tv className="w-4 h-4" />
+                <button 
+                  onClick={togglePip} 
+                  className={`w-12 h-12 md:w-10 md:h-10 flex items-center justify-center bg-signal-surface border transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-signal-amber rounded ${isPipActive ? 'border-signal-border-active text-signal-amber' : 'border-signal-border hover:bg-signal-surface-hover text-signal-text-secondary'}`}
+                  aria-label="Picture in Picture"
+                >
+                  <Tv className="w-5 h-5 md:w-4 md:h-4" />
                 </button>
               )}
-              <button onClick={toggleFullscreen} className="p-2 bg-signal-surface border border-signal-border hover:bg-signal-surface-hover text-signal-text-secondary hover:text-signal-text-primary transition-colors cursor-pointer">
-                {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+              <button 
+                onClick={toggleFullscreen} 
+                className="w-12 h-12 md:w-10 md:h-10 flex items-center justify-center bg-signal-surface border border-signal-border hover:bg-signal-surface-hover text-signal-text-secondary hover:text-signal-text-primary transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-signal-amber rounded"
+                aria-label={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+              >
+                {isFullscreen ? <Minimize2 className="w-5 h-5 md:w-4 md:h-4" /> : <Maximize2 className="w-5 h-5 md:w-4 md:h-4" />}
               </button>
             </div>
           </div>
