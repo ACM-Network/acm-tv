@@ -44,71 +44,70 @@ export default function AudioTrackSelector({
           e.stopPropagation();
           setIsOpen(!isOpen);
         }}
-        className={`p-2 rounded-sm bg-signal-surface hover:bg-signal-surface-hover border transition-colors flex items-center gap-1.5 cursor-pointer ${
+        className={`p-2 rounded-full transition-all flex items-center justify-center cursor-pointer ${
           isDisabled && !isOpen
-            ? 'opacity-50 border-signal-border text-signal-text-secondary hover:bg-signal-surface'
-            : 'border-signal-border-active text-signal-text-primary'
+            ? 'opacity-50 text-white/50 cursor-not-allowed'
+            : 'text-white hover:text-gray-300 hover:bg-white/10'
         }`}
-        title={!hasNativeSupport ? "Audio Tracks (Unsupported)" : "Audio Tracks"}
+        title={!hasNativeSupport ? "Audio Tracks (Unsupported)" : "Audio"}
       >
-        <Headphones className="w-4 h-4" />
-        <span className="text-xs font-bold font-mono tracking-wide hidden sm:inline">
-          {activeTrack && hasNativeSupport ? activeTrack.label : 'AUDIO'}
-        </span>
+        <Headphones className="w-5 h-5 sm:w-6 sm:h-6" />
       </button>
 
       {isOpen && (
-        <div className="absolute bottom-full right-0 mb-2 w-56 rounded-md bg-signal-surface-raised border border-signal-border shadow-2xl p-1.5 z-50 text-left pointer-events-auto animate-slide-up">
-          <div className="px-2 py-1.5 text-[10px] font-bold font-mono text-signal-text-secondary tracking-widest uppercase border-b border-signal-border mb-1.5 flex items-center justify-between">
-            <span>AUDIO TRK</span>
+        <div className="absolute bottom-full right-0 mb-4 w-64 rounded-2xl bg-black/80 backdrop-blur-xl border border-white/10 shadow-2xl overflow-hidden z-50 text-left pointer-events-auto transform transition-all animate-slide-up origin-bottom-right">
+          <div className="px-4 py-3 bg-white/5 border-b border-white/10 flex items-center justify-between">
+            <span className="text-sm font-semibold text-white tracking-wide">Audio</span>
             {!hasNativeSupport && (
-              <span className="text-signal-red text-[8px] font-bold bg-signal-red-dim px-1 py-0.5 rounded-sm border border-signal-red/20">
-                UNSUPPORTED
+              <span className="text-red-400 text-[10px] font-bold bg-red-400/10 px-2 py-0.5 rounded-full border border-red-400/20 uppercase tracking-widest">
+                Unsupported
               </span>
             )}
           </div>
 
-          {!hasNativeSupport ? (
-            <div className="px-2 py-3 text-center space-y-2 select-none">
-              <HelpCircle className="w-5 h-5 text-signal-text-secondary mx-auto" />
-              <p className="text-[10px] font-mono text-signal-text-secondary leading-normal">
-                MULTI-TRACK UNSUPPORTED
-              </p>
-            </div>
-          ) : tracks.length <= 1 ? (
-            <div className="px-2 py-2 text-[10px] font-mono text-signal-text-secondary select-none text-center">
-              SINGLE TRACK
-            </div>
-          ) : (
-            <div className="space-y-0.5">
-              {tracks.map((track) => (
-                <button
-                  key={track.id}
-                  onClick={() => {
-                    onSelectTrack(track.id);
-                    setIsOpen(false);
-                  }}
-                  className={`w-full flex items-center justify-between px-2 py-1.5 rounded-sm text-xs font-mono font-bold transition-colors ${
-                    track.enabled
-                      ? 'bg-signal-amber-dim text-signal-amber border border-signal-border-active'
-                      : 'text-signal-text-secondary hover:bg-signal-surface-hover hover:text-signal-text-primary border border-transparent'
-                  }`}
-                >
-                  <span className="flex flex-col text-left">
-                    <span>{track.label}</span>
-                    {track.language && track.language !== 'und' && (
-                      <span className="text-[9px] text-signal-text-tertiary uppercase tracking-wider">
-                        LANG: {track.language}
-                      </span>
+          <div className="p-2 max-h-60 overflow-y-auto custom-scrollbar">
+            {!hasNativeSupport ? (
+              <div className="px-4 py-6 text-center space-y-3 select-none">
+                <HelpCircle className="w-6 h-6 text-white/40 mx-auto" />
+                <p className="text-xs text-white/50 leading-relaxed font-medium">
+                  Multiple audio tracks are unsupported in this browser.
+                </p>
+              </div>
+            ) : tracks.length <= 1 ? (
+              <div className="px-4 py-4 text-xs font-medium text-white/50 select-none text-center">
+                Single track only
+              </div>
+            ) : (
+              <div className="space-y-1">
+                {tracks.map((track) => (
+                  <button
+                    key={track.id}
+                    onClick={() => {
+                      onSelectTrack(track.id);
+                      setIsOpen(false);
+                    }}
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                      track.enabled
+                        ? 'bg-white/10 text-white'
+                        : 'text-white/60 hover:bg-white/5 hover:text-white'
+                    }`}
+                  >
+                    <span className="flex flex-col text-left gap-0.5">
+                      <span className={track.enabled ? 'font-semibold' : ''}>{track.label}</span>
+                      {track.language && track.language !== 'und' && (
+                        <span className="text-[10px] text-white/40 font-normal uppercase tracking-wider">
+                          {track.language}
+                        </span>
+                      )}
+                    </span>
+                    {track.enabled && (
+                      <Check className="w-4 h-4 text-white" />
                     )}
-                  </span>
-                  {track.enabled && (
-                    <Check className="w-3.5 h-3.5 stroke-[3]" />
-                  )}
-                </button>
-              ))}
-            </div>
-          )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

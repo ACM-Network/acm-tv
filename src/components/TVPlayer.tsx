@@ -1812,7 +1812,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       ref={containerRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={() => isPlaying && setShowControls(false)}
-      className="relative w-full aspect-video bg-signal-black border border-signal-border group cursor-none shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden"
+      className="relative w-full h-full sm:aspect-video bg-black group cursor-none overflow-hidden"
       style={{ cursor: showControls || showTapToUnmute || mediaError ? 'auto' : 'none' }}
     >
       {/* External Audio Track Element */}
@@ -1842,7 +1842,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         onPlaying={() => setIsBuffering(false)}
         onWaiting={() => { setIsBuffering(true); handleBufferingEvent(getUnixTimeMs()); }}
         onPause={() => setIsPlaying(false)}
-        className="w-full h-full transition-all duration-300 cursor-pointer object-contain bg-signal-black"
+        className="w-full h-full transition-all duration-300 cursor-pointer object-contain bg-black"
         style={getObjectFitStyle()}
         playsInline
         muted={isMuted}
@@ -1860,35 +1860,32 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         ))}
       </video>
 
-      {/* Branded Channel Bug */}
+      {/* Subtle Watermark */}
       {isPlaying && !mediaError && (
-        <div className="absolute top-6 right-6 z-30 w-24 sm:w-28 opacity-40 hover:opacity-100 transition-opacity duration-300 pointer-events-none select-none">
+        <div className="absolute top-6 right-6 z-30 w-20 opacity-30 hover:opacity-100 transition-opacity duration-700 pointer-events-none select-none">
           <img 
             src={channel.bugUrl || "/branding/acm-tv-bug.svg"} 
             alt="ACM TV Watermark" 
-            className="w-full object-contain filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
+            className="w-full object-contain filter drop-shadow-lg"
           />
         </div>
       )}
 
-      {/* Poster artwork overlay */}
+      {/* Poster artwork overlay - fading cleanly */}
       {isLoading && !mediaError && broadcastState?.currentProgram?.program.thumbnail && (
-        <div className="absolute inset-0 z-10 bg-signal-black pointer-events-none">
+        <div className="absolute inset-0 z-10 bg-black pointer-events-none transition-opacity duration-1000">
           <img 
             src={broadcastState.currentProgram.program.thumbnail} 
             alt={broadcastState.currentProgram.program.title} 
-            className="w-full h-full object-cover opacity-30 grayscale"
+            className="w-full h-full object-cover opacity-20 blur-sm"
           />
         </div>
       )}
 
-      {/* Loading Spinner */}
+      {/* Cinematic Loading Spinner */}
       {(isLoading || isBuffering) && !mediaError && (
-        <div className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none bg-signal-black/20">
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-8 h-8 border-2 border-signal-border border-t-signal-amber rounded-full animate-spin"></div>
-            <div className="text-[10px] font-mono text-signal-amber uppercase tracking-widest animate-pulse-live">Syncing Signal...</div>
-          </div>
+        <div className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none bg-black/10 backdrop-blur-sm transition-all duration-500">
+          <Loader2 className="w-14 h-14 text-white/80 animate-spin" />
         </div>
       )}
 
@@ -1903,28 +1900,25 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         />
       )}
 
-      {/* Signal Interruption Overlay */}
+      {/* Signal Interruption Overlay (Premium Redesign) */}
       {mediaError && !isFallbackActive && (
-        <div className="absolute inset-0 z-40 bg-signal-black flex flex-col items-center justify-center">
-          <div className="relative z-10 max-w-md w-full mx-4 p-8 bg-signal-surface border border-signal-red-dim shadow-[0_0_50px_rgba(224,64,64,0.1)] text-center animate-fade-in">
-            <div className="flex justify-center mb-6 text-signal-red animate-pulse-live">
-              <AlertTriangle className="w-10 h-10" />
+        <div className="absolute inset-0 z-40 bg-black flex flex-col items-center justify-center backdrop-blur-md">
+          <div className="relative z-10 max-w-sm w-full mx-4 p-8 bg-white/5 rounded-3xl border border-white/10 shadow-2xl text-center backdrop-blur-xl animate-fade-in">
+            <div className="flex justify-center mb-6 text-white/50 animate-pulse">
+              <AlertTriangle className="w-12 h-12" />
             </div>
-
-            <h3 className="text-lg font-mono font-bold text-signal-text-primary uppercase tracking-widest mb-3">
-              Signal Interruption
+            <h3 className="text-xl font-bold text-white mb-2 tracking-wide">
+              Connection Lost
             </h3>
-            
-            <p className="text-[12px] text-signal-text-secondary leading-relaxed mb-8 px-4 font-mono">
-              Broadcast signal lost. Re-establishing connection to network feed...
+            <p className="text-sm text-gray-400 leading-relaxed mb-8">
+              We're having trouble reaching the stream. Please check your connection.
             </p>
-
             <button
               onClick={handleReconnect}
               disabled={isRetrying}
-              className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-signal-surface-raised hover:bg-signal-surface-hover border border-signal-red-dim hover:border-signal-red text-signal-red font-mono font-bold text-[11px] tracking-widest uppercase transition-all cursor-pointer"
+              className="w-full py-4 rounded-full bg-white/10 hover:bg-white/20 text-white font-semibold text-sm transition-all cursor-pointer"
             >
-              {isRetrying ? 'RECONNECTING...' : 'FORCE RECONNECT'}
+              {isRetrying ? 'Reconnecting...' : 'Try Again'}
             </button>
           </div>
         </div>
@@ -1934,223 +1928,146 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       {isPlaying && showTapToUnmute && !mediaError && (
         <div 
           onClick={handleUnmute}
-          className="absolute inset-0 z-30 bg-signal-black/70 backdrop-blur-md flex flex-col items-center justify-center cursor-pointer select-none animate-fade-in"
+          className="absolute inset-0 z-30 bg-black/60 backdrop-blur-md flex flex-col items-center justify-center cursor-pointer select-none animate-fade-in transition-all duration-500 hover:bg-black/40"
         >
-          <div className="p-6 rounded-full bg-signal-surface border border-signal-amber/30 text-signal-amber shadow-[0_0_30px_rgba(232,162,48,0.2)] mb-6 animate-pulse-live">
-            <VolumeX className="w-8 h-8 stroke-[2]" />
+          <div className="p-6 rounded-full bg-white/10 text-white mb-6 animate-pulse border border-white/20 hover:scale-110 transition-transform">
+            <VolumeX className="w-10 h-10" />
           </div>
-          <h4 className="text-[15px] font-mono font-bold text-signal-text-primary uppercase tracking-widest text-center px-4">
-            Tap to Enable Audio
+          <h4 className="text-lg font-semibold text-white tracking-wide">
+            Tap to unmute
           </h4>
-          <p className="text-[10px] font-mono text-signal-text-tertiary mt-2 uppercase tracking-widest">
-            Live Broadcast Active
-          </p>
         </div>
       )}
 
-      {/* Info Overlay */}
-      {showInfoOverlay && broadcastState?.currentProgram && (
-        <div className="absolute top-6 left-6 right-6 z-30 p-4 bg-signal-surface/95 backdrop-blur-md border border-signal-border shadow-2xl text-left flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pointer-events-auto animate-slide-down">
-          <div className="space-y-1.5">
-            <span className="text-[9px] font-mono font-bold text-signal-amber tracking-widest uppercase flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-signal-red animate-pulse-live"></span>
-              Broadcasting • {broadcastState.currentProgram.program.category}
-            </span>
-            <h4 className="text-sm font-bold text-signal-text-primary leading-tight">
-              {broadcastState.currentProgram.program.title}
-            </h4>
+      {/* PREMIUM CONTROLS HUD */}
+      <div 
+        className={`absolute inset-0 z-20 flex flex-col justify-end pointer-events-none transition-opacity duration-500 ease-in-out ${showControls && !mediaError ? 'opacity-100' : 'opacity-0'}`}
+      >
+        {/* Cinematic Bottom Gradient */}
+        <div className="absolute inset-x-0 bottom-0 h-3/5 bg-gradient-to-t from-black via-black/50 to-transparent pointer-events-none transition-opacity duration-500" />
+        
+        {/* Center Play/Pause Overlay */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-auto" onClick={toggleControls}>
+          <button 
+            onClick={(e) => { e.stopPropagation(); handlePlayPause(); }}
+            className={`w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-lg text-white border border-white/10 transition-all duration-300 hover:bg-white/20 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-white/30 shadow-2xl ${showControls && !mediaError ? 'opacity-100 scale-100' : 'opacity-0 scale-90 pointer-events-none'}`}
+          >
+            {isPlaying ? <Pause className="w-10 h-10 ml-0 fill-current" /> : <Play className="w-10 h-10 ml-2 fill-current" />}
+          </button>
+        </div>
+
+        {/* Bottom Bar Content */}
+        <div className="relative px-4 sm:px-8 pb-6 sm:pb-8 pointer-events-auto w-full max-w-[1800px] mx-auto flex flex-col gap-5 sm:gap-6">
+          
+          {/* Metadata / Live Status */}
+          <div className="flex items-end justify-between px-2">
+             <div className="flex flex-col gap-1 drop-shadow-lg">
+               {broadcastState?.currentProgram && (
+                 <h2 className="text-xl sm:text-2xl font-bold text-white tracking-wide drop-shadow-md">
+                   {broadcastState.currentProgram.program.title}
+                 </h2>
+               )}
+             </div>
+             
+             {/* Live / Sync Status (Minimal) */}
+             <div className="flex items-center gap-2">
+               {isBehindLive ? (
+                  <button onClick={handleGoLive} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 transition-all shadow-lg hover:scale-105">
+                     <span className="w-2 h-2 rounded-full bg-gray-400"></span>
+                     <span className="text-[11px] font-bold text-gray-200 uppercase tracking-widest">{formattedDelay}</span>
+                  </button>
+               ) : (
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/5 shadow-lg">
+                     <span className="w-2 h-2 rounded-full bg-red-600 shadow-[0_0_8px_rgba(220,38,38,0.8)]"></span>
+                     <span className="text-[11px] font-bold text-white uppercase tracking-widest">Live</span>
+                  </div>
+               )}
+             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 sm:border-l border-signal-border pt-3 sm:pt-0 sm:pl-6 text-[10px] font-mono text-signal-text-secondary">
-            <div>
-              <span className="text-signal-text-tertiary uppercase font-bold block mb-0.5">Remaining</span>
-              <span className="text-signal-text-primary font-bold">
-                {(() => {
-                  const remaining = Math.max(0, broadcastState.currentProgram.program.duration - videoCurrentTime);
-                  const hrs = Math.floor(remaining / 3600);
-                  const mins = Math.floor((remaining % 3600) / 60);
-                  const secs = Math.floor(remaining % 60);
-                  return `${hrs > 0 ? hrs + ':' : ''}${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-                })()}
-              </span>
+          {/* Scrubber / Progress Bar */}
+          <div className="group relative w-full h-8 flex items-center cursor-pointer"
+               ref={progressBarRef}
+               onClick={handleProgressBarClick}
+               onMouseMove={handleProgressBarMouseMove}
+               onMouseLeave={handleProgressBarMouseLeave}>
+            
+            {/* The line itself */}
+            <div className="relative w-full h-1.5 sm:h-1 bg-white/20 rounded-full overflow-hidden transition-all duration-300 group-hover:h-2 sm:group-hover:h-1.5 shadow-sm">
+              <div className="absolute inset-y-0 left-0 bg-white/40" style={{ width: `${bufferedPercent}%` }} />
+              <div className="absolute inset-y-0 left-0 bg-red-600" style={{ width: `${progressPercent}%` }} />
             </div>
-
-            <div>
-              <span className="text-signal-text-tertiary uppercase font-bold block mb-0.5">UTC Clock</span>
-              <span className="text-signal-text-primary font-bold">{formatLocalTime(localTimeMs)}</span>
-            </div>
-
-            {broadcastState.upNext && (
-              <div>
-                <span className="text-signal-text-tertiary uppercase font-bold block mb-0.5">Next Up</span>
-                <span className="text-signal-amber font-bold max-w-[150px] truncate block" title={broadcastState.upNext.program.title}>
-                  {broadcastState.upNext.program.title}
-                </span>
+            
+            {/* Scrubber Thumb */}
+            <div className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-red-600 shadow-lg opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 pointer-events-none"
+                 style={{ left: `calc(${progressPercent}% - 8px)` }} />
+            
+            {/* Hover Tooltip */}
+            {hoverPosition !== null && (
+              <div className="absolute bottom-full mb-4 -translate-x-1/2 pointer-events-none" style={{ left: `${hoverPosition}%` }}>
+                <div className="px-3 py-1.5 bg-black/80 backdrop-blur-md text-white text-xs font-medium rounded-lg border border-white/10 shadow-xl">
+                  {hoverTimeStr}
+                </div>
+                <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-black/80" />
               </div>
             )}
           </div>
-        </div>
-      )}
 
-      {/* Controls HUD */}
-      <div 
-        className={`absolute inset-0 z-20 flex flex-col justify-between p-4 sm:p-6 pointer-events-none transition-opacity duration-300 ${showControls && !mediaError ? 'opacity-100' : 'opacity-0'}`}
-      >
-        <div className="absolute inset-0 bg-gradient-to-t from-signal-black/90 via-transparent to-signal-black/60 pointer-events-none"></div>
-        
-        {/* Top HUD */}
-        <div className="relative flex items-center justify-between pointer-events-auto">
-          <div className="flex items-center space-x-3">
-            <span className="text-[11px] text-signal-text-secondary font-mono font-bold tracking-widest uppercase">
-              {channel.name} Network Feed
-            </span>
-          </div>
-          <div className="flex items-center space-x-2 text-[10px] font-mono font-bold text-signal-text-tertiary bg-signal-surface border border-signal-border px-3 py-1.5">
-            <Wifi className="w-3 h-3 text-signal-green animate-pulse-live" />
-            <span>UTC {formatLocalTime(localTimeMs).replace(/AM|PM/g, '')}</span>
-          </div>
-        </div>
+          {/* Controls Row */}
+          <div className="flex items-center justify-between">
+            {/* Left Controls */}
+            <div className="flex items-center gap-4 sm:gap-6">
+               <button onClick={toggleControls} className="text-white hover:text-gray-300 hover:scale-110 transition-all">
+                  {isPlaying ? <Pause className="w-6 h-6 sm:w-7 sm:h-7 fill-current" /> : <Play className="w-6 h-6 sm:w-7 sm:h-7 fill-current" />}
+               </button>
+               
+               <div className="group/vol flex items-center gap-3">
+                 <button onClick={toggleMute} className="text-white hover:text-gray-300 hover:scale-110 transition-all">
+                   {isMuted ? <VolumeX className="w-6 h-6 sm:w-6 sm:h-6" /> : <Volume2 className="w-6 h-6 sm:w-6 sm:h-6" />}
+                 </button>
+                 <div className="w-0 overflow-hidden group-hover/vol:w-24 transition-all duration-300 ease-out hidden sm:block">
+                   <input 
+                      type="range" min="0" max="1" step="0.05" value={isMuted ? 0 : volume}
+                      onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+                      className="w-full h-1 bg-white/20 appearance-none rounded-full cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full"
+                      style={{ backgroundImage: `linear-gradient(to right, white ${(isMuted ? 0 : volume) * 100}%, transparent 0)` }}
+                      aria-label="Volume"
+                   />
+                 </div>
+               </div>
 
-        {/* Bottom HUD */}
-        <div className="relative space-y-4 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
-          {broadcastState?.currentProgram && (
-            <div className="mb-2">
-              <span className="text-sm font-bold text-signal-text-primary uppercase tracking-wide">
-                {broadcastState.currentProgram.program.title}
-              </span>
-            </div>
-          )}
-
-          {/* Progress Bar */}
-          <div className="space-y-2">
-            <div 
-              ref={progressBarRef}
-              onClick={handleProgressBarClick}
-              onMouseMove={handleProgressBarMouseMove}
-              onMouseLeave={handleProgressBarMouseLeave}
-              className="relative w-full h-[3px] bg-signal-surface-raised cursor-pointer group"
-            >
-              <div 
-                className="absolute top-0 left-0 h-full bg-signal-text-tertiary pointer-events-none"
-                style={{ width: `${bufferedPercent}%` }}
-              />
-              <div 
-                className="absolute top-0 left-0 h-full bg-signal-amber pointer-events-none"
-                style={{ width: `${progressPercent}%` }}
-              />
-              <div 
-                className="absolute top-1/2 -translate-y-1/2 w-1.5 h-4 bg-signal-amber opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
-                style={{ left: `calc(${progressPercent}% - 3px)` }}
-              />
-              {hoverPosition !== null && (
-                <div 
-                  className="absolute top-0 bottom-0 w-[1px] bg-signal-text-secondary pointer-events-none"
-                  style={{ left: `${hoverPosition}%` }}
-                />
-              )}
-              {hoverPosition !== null && (
-                <div 
-                  className="absolute bottom-4 -translate-x-1/2 px-2 py-1 bg-signal-surface border border-signal-border text-[10px] text-signal-text-primary font-mono pointer-events-none"
-                  style={{ left: `${hoverPosition}%` }}
-                >
-                  {hoverTimeStr}
-                </div>
-              )}
+               <div className="text-xs sm:text-sm font-medium text-white/90 tabular-nums tracking-wide drop-shadow-md">
+                 {new Date(Math.max(0, videoCurrentTime) * 1000).toISOString().substring(11, 19)}
+                 <span className="text-white/40 mx-2">/</span>
+                 <span className="text-white/60">
+                   {broadcastState?.currentProgram ? new Date(broadcastState.currentProgram.program.duration * 1000).toISOString().substring(11, 19) : "00:00:00"}
+                 </span>
+               </div>
             </div>
 
-            <div className="flex justify-between items-center text-[10px] font-mono font-bold text-signal-text-secondary">
-              <div className="flex items-center space-x-3">
-                {isBehindLive ? (
-                  <div className="flex items-center gap-2">
-                    <span className="flex items-center gap-1.5 px-2 py-1 bg-signal-surface border border-signal-border text-signal-text-secondary">
-                      {formattedDelay} SYNC
-                    </span>
-                    <button
-                      onClick={handleGoLive}
-                      className="px-2 py-1 bg-signal-amber-dim border border-signal-border-active hover:bg-signal-amber hover:text-signal-black text-signal-amber transition-colors cursor-pointer"
-                    >
-                      REALIGN
-                    </button>
-                  </div>
-                ) : (
-                  <span className="flex items-center gap-1.5 text-signal-green">
-                    <span className="w-1.5 h-1.5 bg-signal-green rounded-full animate-pulse-live"></span>
-                    SYNCED
-                  </span>
-                )}
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span>{new Date(Math.max(0, videoCurrentTime) * 1000).toISOString().substring(11, 19)}</span>
-                <span className="text-signal-text-tertiary">/</span>
-                <span className="text-signal-text-tertiary">
-                  {broadcastState?.currentProgram ? new Date(broadcastState.currentProgram.program.duration * 1000).toISOString().substring(11, 19) : "00:00:00"}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Controls Bar */}
-          <div className="flex items-center justify-between pt-2">
-            <div className="flex items-center gap-2 md:gap-4">
-              <button 
-                onClick={toggleControls} 
-                className="w-12 h-12 md:w-10 md:h-10 flex items-center justify-center bg-signal-surface border border-signal-border hover:bg-signal-surface-hover text-signal-text-primary transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-signal-amber rounded"
-                aria-label={isPlaying ? "Pause" : "Play"}
-              >
-                {isPlaying ? <Pause className="w-5 h-5 md:w-4 md:h-4" /> : <Play className="w-5 h-5 md:w-4 md:h-4" />}
-              </button>
-              
-              <div className="flex items-center gap-3 bg-signal-surface border border-signal-border px-3 py-1.5 h-12 md:h-10 rounded">
-                <button 
-                  onClick={toggleMute} 
-                  className="w-8 h-8 flex items-center justify-center text-signal-text-secondary hover:text-signal-text-primary transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-signal-amber rounded" 
-                  title={isMuted ? 'Unmute' : 'Mute'}
-                >
-                  {isMuted ? <VolumeX className="w-5 h-5 md:w-4 md:h-4 text-signal-red" /> : <Volume2 className="w-5 h-5 md:w-4 md:h-4" />}
-                </button>
-                <input 
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.05"
-                  value={isMuted ? 0 : volume}
-                  onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
-                  className="w-20 md:w-24 h-1 md:h-[2px] bg-signal-border appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 md:[&::-webkit-slider-thumb]:w-2 md:[&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-signal-text-primary focus:outline-none focus:ring-2 focus:ring-signal-amber rounded"
-                  style={{ backgroundImage: `linear-gradient(to right, var(--signal-text-primary) ${(isMuted ? 0 : volume) * 100}%, transparent 0)` }}
-                  aria-label="Volume"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 md:gap-3">
+            {/* Right Controls */}
+            <div className="flex items-center gap-5 sm:gap-6">
               {audioTracks.length > 1 && (
-                <div className="focus-within:ring-2 focus-within:ring-signal-amber rounded">
+                <div className="relative text-white hover:scale-110 transition-transform cursor-pointer">
                   <AudioTrackSelector tracks={audioTracks} onSelectTrack={handleSelectTrack} hasNativeSupport={hasAudioTrackSupport} />
                 </div>
               )}
               {subtitles.length > 0 && (
-                <div className="focus-within:ring-2 focus-within:ring-signal-amber rounded">
+                <div className="relative text-white hover:scale-110 transition-transform cursor-pointer">
                   <SubtitleSelector tracks={subtitles} onSelectTrack={handleSelectSubtitleTrack} />
                 </div>
               )}
               {isPipSupported && (
-                <button 
-                  onClick={togglePip} 
-                  className={`w-12 h-12 md:w-10 md:h-10 flex items-center justify-center bg-signal-surface border transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-signal-amber rounded ${isPipActive ? 'border-signal-border-active text-signal-amber' : 'border-signal-border hover:bg-signal-surface-hover text-signal-text-secondary'}`}
-                  aria-label="Picture in Picture"
-                >
-                  <Tv className="w-5 h-5 md:w-4 md:h-4" />
+                <button onClick={togglePip} className={`transition-all hover:scale-110 ${isPipActive ? 'text-red-500' : 'text-white hover:text-gray-300'}`}>
+                  <Tv className="w-5 h-5 sm:w-6 sm:h-6" />
                 </button>
               )}
-              <button 
-                onClick={toggleFullscreen} 
-                className="w-12 h-12 md:w-10 md:h-10 flex items-center justify-center bg-signal-surface border border-signal-border hover:bg-signal-surface-hover text-signal-text-secondary hover:text-signal-text-primary transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-signal-amber rounded"
-                aria-label={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
-              >
-                {isFullscreen ? <Minimize2 className="w-5 h-5 md:w-4 md:h-4" /> : <Maximize2 className="w-5 h-5 md:w-4 md:h-4" />}
+              <button onClick={toggleFullscreen} className="text-white hover:text-gray-300 hover:scale-110 transition-all">
+                {isFullscreen ? <Minimize2 className="w-5 h-5 sm:w-6 sm:h-6" /> : <Maximize2 className="w-5 h-5 sm:w-6 sm:h-6" />}
               </button>
             </div>
           </div>
+
         </div>
       </div>
     </div>

@@ -42,36 +42,33 @@ export default function SubtitleSelector({
           e.stopPropagation();
           setIsOpen(!isOpen);
         }}
-        className="p-2 rounded-sm bg-signal-surface hover:bg-signal-surface-hover border border-signal-border text-signal-text-primary transition-colors flex items-center gap-1.5 cursor-pointer"
+        className="p-2 rounded-full transition-all flex items-center justify-center cursor-pointer text-white hover:text-gray-300 hover:bg-white/10"
         title="Subtitles"
       >
-        <MessageSquare className="w-4 h-4" />
-        <span className="text-xs font-bold font-mono tracking-wide hidden sm:inline">
-          {activeTrack ? activeTrack.label : 'CC'}
-        </span>
+        <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6" />
       </button>
 
       {isOpen && (
-        <div className="absolute bottom-full right-0 mb-2 w-56 rounded-md bg-signal-surface-raised border border-signal-border shadow-2xl p-1.5 z-50 text-left pointer-events-auto animate-slide-up">
-          <div className="px-2 py-1.5 text-[10px] font-bold font-mono text-signal-text-secondary tracking-widest uppercase border-b border-signal-border mb-1.5">
-            SUBTITLES
+        <div className="absolute bottom-full right-0 mb-4 w-64 rounded-2xl bg-black/80 backdrop-blur-xl border border-white/10 shadow-2xl overflow-hidden z-50 text-left pointer-events-auto transform transition-all animate-slide-up origin-bottom-right">
+          <div className="px-4 py-3 bg-white/5 border-b border-white/10">
+            <span className="text-sm font-semibold text-white tracking-wide">Subtitles</span>
           </div>
 
-          <div className="space-y-0.5">
+          <div className="p-2 max-h-60 overflow-y-auto custom-scrollbar space-y-1">
             <button
               onClick={() => {
                 onSelectTrack(null);
                 setIsOpen(false);
               }}
-              className={`w-full flex items-center justify-between px-2 py-1.5 rounded-sm text-xs font-mono font-bold transition-colors ${
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                 !activeTrack
-                  ? 'bg-signal-amber-dim text-signal-amber border border-signal-border-active'
-                  : 'text-signal-text-secondary hover:bg-signal-surface-hover hover:text-signal-text-primary border border-transparent'
+                  ? 'bg-white/10 text-white'
+                  : 'text-white/60 hover:bg-white/5 hover:text-white'
               }`}
             >
-              <span>OFF</span>
+              <span className={!activeTrack ? 'font-semibold' : ''}>Off</span>
               {!activeTrack && (
-                <Check className="w-3.5 h-3.5 stroke-[3]" />
+                <Check className="w-4 h-4 text-white" />
               )}
             </button>
 
@@ -82,22 +79,22 @@ export default function SubtitleSelector({
                   onSelectTrack(track.id);
                   setIsOpen(false);
                 }}
-                className={`w-full flex items-center justify-between px-2 py-1.5 rounded-sm text-xs font-mono font-bold transition-colors ${
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                   track.enabled
-                    ? 'bg-signal-amber-dim text-signal-amber border border-signal-border-active'
-                    : 'text-signal-text-secondary hover:bg-signal-surface-hover hover:text-signal-text-primary border border-transparent'
+                    ? 'bg-white/10 text-white'
+                    : 'text-white/60 hover:bg-white/5 hover:text-white'
                 }`}
               >
-                <span className="flex flex-col text-left">
-                  <span>{track.label}</span>
+                <span className="flex flex-col text-left gap-0.5">
+                  <span className={track.enabled ? 'font-semibold' : ''}>{track.label}</span>
                   {track.language && (
-                    <span className="text-[9px] text-signal-text-tertiary uppercase tracking-wider">
-                      LANG: {track.language}
+                    <span className="text-[10px] text-white/40 font-normal uppercase tracking-wider">
+                      {track.language}
                     </span>
                   )}
                 </span>
                 {track.enabled && (
-                  <Check className="w-3.5 h-3.5 stroke-[3]" />
+                  <Check className="w-4 h-4 text-white" />
                 )}
               </button>
             ))}
