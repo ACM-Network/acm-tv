@@ -96,15 +96,15 @@ export default function PlayerSettings({
       </button>
 
       {isOpen && (
-        <div className="absolute bottom-full right-0 mb-4 w-[280px] sm:w-[320px] h-[340px] rounded-2xl bg-black/80 backdrop-blur-2xl border border-white/10 shadow-2xl overflow-hidden z-50 text-left pointer-events-auto transform transition-all animate-slide-up origin-bottom-right flex flex-col">
+        <div className="absolute bottom-full right-0 mb-4 w-[280px] sm:w-[320px] rounded-2xl bg-black/80 backdrop-blur-2xl border border-white/10 shadow-2xl overflow-hidden z-50 text-left pointer-events-auto transform transition-all animate-slide-up origin-bottom-right flex flex-col">
           
-          <div className="relative w-full h-full overflow-hidden">
+          <div className="relative w-full overflow-hidden flex flex-col transition-[height] duration-300">
             {/* MAIN MENU */}
-            <div className={`absolute inset-0 transition-transform duration-300 ease-out flex flex-col ${activeMenu === 'main' ? 'translate-x-0' : '-translate-x-full'}`}>
+            <div className={`w-full transition-transform duration-300 ease-out flex flex-col ${activeMenu === 'main' ? 'relative translate-x-0' : 'absolute top-0 -translate-x-full opacity-0 pointer-events-none'}`}>
               <div className="px-5 py-4 border-b border-white/10 flex items-center">
                 <span className="text-sm font-bold text-white tracking-wide">Settings</span>
               </div>
-              <div className="p-2 space-y-1 overflow-y-auto custom-scrollbar flex-1">
+              <div className="p-2 space-y-1">
                 <button onClick={(e) => { e.stopPropagation(); setActiveMenu('quality'); }} className="w-full flex items-center justify-between px-3 py-3 rounded-xl text-sm font-medium text-white/90 hover:bg-white/10 transition-colors group">
                   <div className="flex items-center gap-3">
                     <span className="font-semibold">Quality</span>
@@ -136,12 +136,12 @@ export default function PlayerSettings({
             </div>
 
             {/* QUALITY SUBMENU */}
-            <div className={`absolute inset-0 transition-transform duration-300 ease-out flex flex-col ${activeMenu === 'quality' ? 'translate-x-0' : 'translate-x-full'}`}>
+            <div className={`w-full transition-transform duration-300 ease-out flex flex-col ${activeMenu === 'quality' ? 'relative translate-x-0' : 'absolute top-0 translate-x-full opacity-0 pointer-events-none'}`}>
               <button onClick={(e) => { e.stopPropagation(); setActiveMenu('main'); }} className="px-3 py-4 border-b border-white/10 flex items-center gap-2 text-white hover:bg-white/5 transition-colors">
                 <ChevronLeft className="w-5 h-5 text-white/70" />
                 <span className="text-sm font-bold tracking-wide">Quality</span>
               </button>
-              <div className="p-2 overflow-y-auto custom-scrollbar flex-1">
+              <div className="p-2 overflow-y-auto custom-scrollbar max-h-[50vh] sm:max-h-[300px]">
                 {qualities.length === 0 ? (
                   <div className="px-4 py-8 text-center flex flex-col items-center justify-center h-full">
                     <HelpCircle className="w-8 h-8 text-white/30 mb-3" />
@@ -165,12 +165,12 @@ export default function PlayerSettings({
             </div>
 
             {/* AUDIO SUBMENU */}
-            <div className={`absolute inset-0 transition-transform duration-300 ease-out flex flex-col ${activeMenu === 'audio' ? 'translate-x-0' : 'translate-x-full'}`}>
+            <div className={`w-full transition-transform duration-300 ease-out flex flex-col ${activeMenu === 'audio' ? 'relative translate-x-0' : 'absolute top-0 translate-x-full opacity-0 pointer-events-none'}`}>
               <button onClick={(e) => { e.stopPropagation(); setActiveMenu('main'); }} className="px-3 py-4 border-b border-white/10 flex items-center gap-2 text-white hover:bg-white/5 transition-colors">
                 <ChevronLeft className="w-5 h-5 text-white/70" />
                 <span className="text-sm font-bold tracking-wide">Audio Track</span>
               </button>
-              <div className="p-2 overflow-y-auto custom-scrollbar flex-1">
+              <div className="p-2 overflow-y-auto custom-scrollbar max-h-[50vh] sm:max-h-[300px]">
                 {!hasNativeAudioSupport || audioTracks.length <= 1 ? (
                   <div className="px-4 py-8 text-center flex flex-col items-center justify-center h-full">
                     <HelpCircle className="w-8 h-8 text-white/30 mb-3" />
@@ -193,12 +193,12 @@ export default function PlayerSettings({
             </div>
 
             {/* SUBTITLES SUBMENU */}
-            <div className={`absolute inset-0 transition-transform duration-300 ease-out flex flex-col ${activeMenu === 'subtitles' ? 'translate-x-0' : 'translate-x-full'}`}>
+            <div className={`w-full transition-transform duration-300 ease-out flex flex-col ${activeMenu === 'subtitles' ? 'relative translate-x-0' : 'absolute top-0 translate-x-full opacity-0 pointer-events-none'}`}>
               <button onClick={(e) => { e.stopPropagation(); setActiveMenu('main'); }} className="px-3 py-4 border-b border-white/10 flex items-center gap-2 text-white hover:bg-white/5 transition-colors">
                 <ChevronLeft className="w-5 h-5 text-white/70" />
                 <span className="text-sm font-bold tracking-wide">Subtitles</span>
               </button>
-              <div className="p-2 overflow-y-auto custom-scrollbar flex-1">
+              <div className="p-2 overflow-y-auto custom-scrollbar max-h-[50vh] sm:max-h-[300px]">
                 {subtitleTracks.length === 0 ? (
                   <div className="px-4 py-8 text-center flex flex-col items-center justify-center h-full">
                     <HelpCircle className="w-8 h-8 text-white/30 mb-3" />
