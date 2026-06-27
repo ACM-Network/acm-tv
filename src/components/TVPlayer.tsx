@@ -1162,7 +1162,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     }
 
     const loadMetadataAndSetup = async () => {
-      const videoUrl = currentInst.program.videoUrl;
+      const videoUrl = currentInst.subProgram?.videoUrl || currentInst.program.videoUrl;
       if (!videoUrl) {
         setIsFallbackActive(true);
         setIsLoading(false);
@@ -1188,13 +1188,13 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       }
 
       // 2. Fetch metadata (completely optional, do not block or throw error if it fails)
-      const metadata = await fetchAndCacheMetadata(videoUrl, currentInst.program.metadataUrl);
+      const metadata = await fetchAndCacheMetadata(videoUrl, currentInst.subProgram?.metadataUrl || currentInst.program.metadataUrl);
       if (!active) return;
 
       const videoSource = metadata ? (metadata.hls || metadata.video || targetSrc) : targetSrc;
 
       // 3. Verify duration > 0 (fallback to program default if metadata missing)
-      const duration = metadata?.duration || currentInst.program.duration;
+      const duration = metadata?.duration || currentInst.subProgram?.duration || currentInst.program.duration;
       if (!(duration > 0)) {
         updateFailedProgram(currentInst.instanceId, getUnixTimeMs());
         setIsLoading(false);
@@ -1906,11 +1906,11 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
       {/* Subtle Watermark */}
       {isPlaying && !mediaError && (
-        <div className="absolute top-6 right-6 z-30 w-20 opacity-30 hover:opacity-100 transition-opacity duration-700 pointer-events-none select-none">
+        <div className="absolute top-[5%] right-[5%] z-20 w-[8vw] max-w-[100px] min-w-[60px] opacity-40 mix-blend-screen pointer-events-none select-none">
           <img 
             src={channel.bugUrl || "/branding/acm-tv-bug.svg"} 
-            alt="ACM TV Watermark" 
-            className="w-full object-contain filter drop-shadow-lg"
+            alt="Channel Watermark" 
+            className="w-full h-auto object-contain filter drop-shadow-md"
           />
         </div>
       )}

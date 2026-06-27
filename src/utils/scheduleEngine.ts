@@ -54,26 +54,42 @@ export function getRuntimeChannels(): Channel[] {
   }];
 }
 
-export function getProductionScheduleForDay(): ScheduleEntry[] {
+export function getDynamicScheduleForChannel(channelId: string, channel: Channel): ScheduleEntry[] {
   const entries: ScheduleEntry[] = [];
-  
-  const items = [
-    { programId: 'neno-butterfly', slotMinutes: 5 },
-    { programId: 'spiderman-brand-new-day-trailer-1', slotMinutes: 3 },
-    { programId: 'spiderman-brand-new-day-trailer-2', slotMinutes: 3 },
-    { programId: 'x-men-6', slotMinutes: 4 }
-  ];
+  let items: { programId: string, durationMinutes: number }[] = [];
+
+  if (channelId === 'acm-tv') {
+    // ACM TV: Loop Trailer Block
+    const blockProg = channel.programs.find(p => p.id === 'acm-tv-trailer-block');
+    if (blockProg) {
+      items = [
+        { programId: blockProg.id, durationMinutes: Math.max(1, Math.ceil(blockProg.duration / 60)) }
+      ];
+    }
+  } else if (channelId === 'acm-music') {
+    // ACM Music: Loop all songs
+    const songs = channel.programs.filter(p => p.type === 'song');
+    if (songs.length > 0) {
+      items = songs.map(s => ({
+        programId: s.id,
+        durationMinutes: Math.max(1, Math.ceil(s.duration / 60))
+      }));
+    }
+  }
+
+  if (items.length === 0) return []; // Fallback handled by stitcher
 
   let currentMin = 0;
   let idx = 0;
 
+  // Generate 24 hours of schedule (1440 minutes)
   while (currentMin < 1440) {
     const item = items[idx % items.length];
     const hours = Math.floor(currentMin / 60);
     const minutes = currentMin % 60;
     const startTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
     entries.push({ startTime, programId: item.programId });
-    currentMin += item.slotMinutes;
+    currentMin += item.durationMinutes;
     idx++;
   }
 
@@ -153,6 +169,40 @@ export function formatSecondsToTime(seconds: number): string {
  */
 
 /**
+ * Deterministic shuffle array based on seed string
+ */
+function shuffleArray<T>(array: T[], seedStr: string): T[] {
+  let h1 = 1779033703, h2 = 3144134277, h3 = 1013904242, h4 = 2773480762;
+  for (let i = 0, k; i < seedStr.length; i++) {
+      k = seedStr.charCodeAt(i);
+      h1 = h2 ^ Math.imul(h1 ^ k, 597399067);
+      h2 = h3 ^ Math.imul(h2 ^ k, 2869860233);
+      h3 = h4 ^ Math.imul(h3 ^ k, 951274213);
+      h4 = h1 ^ Math.imul(h4 ^ k, 2716044179);
+  }
+  h1 = Math.imul(h3 ^ (h1 >>> 18), 597399067);
+  h2 = Math.imul(h4 ^ (h2 >>> 22), 2869860233);
+  h3 = Math.imul(h1 ^ (h3 >>> 17), 2716044179);
+  h4 = Math.imul(h2 ^ (h4 >>> 19), 951274213);
+  h1 ^= (h2 ^ h3 ^ h4), h2 ^= h1, h3 ^= h1, h4 ^= h1;
+  let seed = h1 >>> 0;
+  
+  const rand = () => {
+    let t = seed += 0x6D2B79F5;
+    t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+  
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+/**
  * Stitch 3 days of schedule (yesterday, today, tomorrow) into absolute seconds relative to startOfTodayMs.
  */
 function getStitchedEntries(channel: Channel, localTimestampMs: number) {
@@ -164,13 +214,15 @@ function getStitchedEntries(channel: Channel, localTimestampMs: number) {
   const startOfTodayMs = startOfToday.getTime();
 
   const getEntriesForDay = (dayName: string) => {
-    if (channel.id === 'acm-tv') return getProductionScheduleForDay();
+    if (channel.id === 'acm-tv' || channel.id === 'acm-music') {
+      return getDynamicScheduleForChannel(channel.id, channel);
+    }
     const typedSchedule = scheduleData as any;
     const channelSchedule = typedSchedule[channel.id] || {};
     return channelSchedule[dayName] || [];
   };
 
-  const stitched: { programId: string, startMs: number, endMs: number, startTimeStr: string, isFallback?: boolean }[] = [];
+  const stitched: { programId: string, subProgramId?: string, startMs: number, endMs: number, startTimeStr: string, isFallback?: boolean }[] = [];
   
   // We span dayOffset -1 (yesterday) to +7 (next week) to be absolutely safe for any lookaheads
   let currentAbsoluteMs = 0;
@@ -189,15 +241,37 @@ function getStitchedEntries(channel: Channel, localTimestampMs: number) {
       const startMs = targetDate.getTime() + startSec * 1000;
       
       const prog = findProgramById(entry.programId, channel);
-      const durationMs = (prog.duration || 3600) * 1000;
-      const endMs = startMs + durationMs;
       
-      stitched.push({
-        programId: entry.programId,
-        startMs,
-        endMs,
-        startTimeStr: entry.startTime
-      });
+      if (prog.type === 'block' && prog.contentIds && prog.contentIds.length > 0) {
+        // Flatten the block
+        let currentSubStartMs = startMs;
+        const seedStr = `${entry.programId}-${startMs}`;
+        const contentIds = prog.blockShuffle ? shuffleArray(prog.contentIds, seedStr) : prog.contentIds;
+        
+        for (const subId of contentIds) {
+          const subProg = findProgramById(subId, channel);
+          const subDurationMs = (subProg.duration || 3600) * 1000;
+          const subEndMs = currentSubStartMs + subDurationMs;
+          stitched.push({
+            programId: entry.programId,
+            subProgramId: subId,
+            startMs: currentSubStartMs,
+            endMs: subEndMs,
+            startTimeStr: entry.startTime
+          });
+          currentSubStartMs = subEndMs;
+        }
+      } else {
+        const durationMs = (prog.duration || 3600) * 1000;
+        const endMs = startMs + durationMs;
+        
+        stitched.push({
+          programId: entry.programId,
+          startMs,
+          endMs,
+          startTimeStr: entry.startTime
+        });
+      }
     });
   }
   
@@ -270,10 +344,10 @@ export function getBroadcastState(channel: Channel, localTimestampMs: number): B
   const elapsedSeconds = (localTimestampMs - activeEntry.startMs) / 1000;
   const playbackPosition = Math.max(0, elapsedSeconds);
 
-  // We map the activeEntry to a ProgramInstance
   const currentProgram: ProgramInstance = {
-    instanceId: `${activeEntry.programId}-${activeEntry.startMs}`,
+    instanceId: `${activeEntry.programId}-${activeEntry.subProgramId || '0'}-${activeEntry.startMs}`,
     program,
+    subProgram: activeEntry.subProgramId ? findProgramById(activeEntry.subProgramId, channel) : undefined,
     startTime: activeEntry.startMs,
     endTime: activeEntry.endMs,
     startTimeFormatted: formatSecondsToTime(Math.floor((activeEntry.startMs - startOfToday.getTime())/1000)),
@@ -284,8 +358,9 @@ export function getBroadcastState(channel: Channel, localTimestampMs: number): B
   const upNextEntry = stitched[activeIndex + 1] || stitched[activeIndex];
   const upNextProg = findProgramById(upNextEntry.programId, channel);
   const upNext: ProgramInstance = {
-    instanceId: `${upNextEntry.programId}-${upNextEntry.startMs}`,
+    instanceId: `${upNextEntry.programId}-${upNextEntry.subProgramId || '0'}-${upNextEntry.startMs}`,
     program: upNextProg,
+    subProgram: upNextEntry.subProgramId ? findProgramById(upNextEntry.subProgramId, channel) : undefined,
     startTime: upNextEntry.startMs,
     endTime: upNextEntry.endMs,
     startTimeFormatted: formatSecondsToTime(Math.floor((upNextEntry.startMs - startOfToday.getTime())/1000)),
@@ -298,8 +373,9 @@ export function getBroadcastState(channel: Channel, localTimestampMs: number): B
     const lEntry = stitched[i];
     const lProg = findProgramById(lEntry.programId, channel);
     laterTonight.push({
-      instanceId: `${lEntry.programId}-${lEntry.startMs}`,
+      instanceId: `${lEntry.programId}-${lEntry.subProgramId || '0'}-${lEntry.startMs}`,
       program: lProg,
+      subProgram: lEntry.subProgramId ? findProgramById(lEntry.subProgramId, channel) : undefined,
       startTime: lEntry.startMs,
       endTime: lEntry.endMs,
       startTimeFormatted: formatSecondsToTime(Math.floor((lEntry.startMs - startOfToday.getTime())/1000)),
@@ -332,8 +408,9 @@ export function getDailyTimeline(channel: Channel, dayTimestampMs: number): Prog
     if (entry.endMs > startOfDayMs && entry.startMs < endOfDayMs) {
       const prog = findProgramById(entry.programId, channel);
       timeline.push({
-        instanceId: `${entry.programId}-${entry.startMs}`,
+        instanceId: `${entry.programId}-${entry.subProgramId || '0'}-${entry.startMs}`,
         program: prog,
+        subProgram: entry.subProgramId ? findProgramById(entry.subProgramId, channel) : undefined,
         startTime: entry.startMs,
         endTime: entry.endMs,
         startTimeFormatted: formatSecondsToTime(Math.floor((entry.startMs - startOfDayMs)/1000)),

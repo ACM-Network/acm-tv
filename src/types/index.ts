@@ -1,4 +1,4 @@
-export type ProgramType = 'content' | 'promo' | 'ident' | 'trailer' | 'song';
+export type ProgramType = 'content' | 'promo' | 'ident' | 'trailer' | 'song' | 'block';
 
 export interface MetadataAudioTrack {
   language: string;
@@ -32,6 +32,8 @@ export interface Program {
   year?: number;
   language?: string;
   backdrop?: string;
+  contentIds?: string[]; // Used for blocks to reference inner program IDs
+  blockShuffle?: boolean; // Whether the block should shuffle its contents
 }
 
 export interface WeavingConfig {
@@ -59,6 +61,7 @@ export interface Channel {
 export interface ProgramInstance {
   instanceId: string;
   program: Program;
+  subProgram?: Program;
   startTime: number; // UTC Epoch timestamp in milliseconds
   endTime: number;   // UTC Epoch timestamp in milliseconds
   startTimeFormatted: string; // Formatting for UI (e.g., "18:30 UTC")

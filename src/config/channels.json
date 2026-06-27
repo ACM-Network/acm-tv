@@ -5,7 +5,7 @@
       "name": "ACM TV",
       "tagline": "Entertainment Without Limits",
       "logoUrl": "/branding/acm-tv-logo.svg",
-      "bugUrl": "/branding/acm-tv-bug.svg",
+      "bugUrl": "/branding/acm-tv-logo.svg",
       "themeColor": "#F59E0B",
       "category": "General",
       "description": "Entertainment Without Limits",
@@ -16,16 +16,6 @@
         "insertPromoEveryNPrograms": 2
       },
       "programs": [
-        {
-          "id": "neno-butterfly",
-          "title": "Neno Butterfly Video Song",
-          "description": "Neno Butterfly Lyric Video.",
-          "duration": 245,
-          "videoUrl": "https://hv-cartoons.online:8443/62028/6224194d.mp4?hash=AgAD8p&stream=true",
-          "type": "song",
-          "category": "SONG",
-          "thumbnail": "https://i.ytimg.com/vi/9dV6Hl2u3vM/hq720.jpg"
-        },
         {
           "id": "spiderman-brand-new-day-trailer-1",
           "title": "Spider-Man Brand New Day Trailer 1",
@@ -47,14 +37,157 @@
           "thumbnail": "https://i.ytimg.com/vi/3gAlCLVpePk/hq720.jpg"
         },
         {
-          "id": "x-men-6",
-          "title": "Dheema Video Song",
-          "description": "Dheema Video Song.",
-          "duration": 228,
-          "videoUrl": "https://hv-cartoons.online:8443/62030/f6536583.mp4?hash=AgAD-Z&stream=true",
-          "type": "song",
-          "category": "SONG",
-          "thumbnail": "https://i.ytimg.com/vi/0mp6SO-OMHU/hq720.jpg"
+          "id": "trailer-deewana",
+          "title": "Deewana Trailer",
+          "description": "A singer marries his biggest fan, but his uncle plans to kill him in order to gain his money.",
+          "duration": 143,
+          "videoUrl": "https://macdn.aoneroom.com/media/vone/2026/06/19/b07aa9f6dbbebfad89fdd6af17f7693c-ld.mp4",
+          "type": "trailer",
+          "category": "Trailer",
+          "thumbnail": "https://image.tmdb.org/t/p/w1280/8liOcHgcghI3aQFxq8QCGKKqQKX.jpg",
+          "year": 2026,
+          "language": "Telugu",
+          "backdrop": "https://image.tmdb.org/t/p/w1280/8liOcHgcghI3aQFxq8QCGKKqQKX.jpg"
+        },
+        {
+          "id": "trailer-bhartha-mahasayulaku-wignyapthi",
+          "title": "Bhartha Mahasayulaku Wignyapthi Trailer",
+          "description": "What begins as a casual fling between a married man, Ram a.k.a Satya and Manasa in the middle of an international business trip, balloons into an out-of-the-blue mess when the latter lands in Hyderabad, disrupting Ram’s otherwise stable marriage with Balamani.",
+          "duration": 140,
+          "videoUrl": "https://macdn.aoneroom.com/media/vone/2026/01/09/55c22635a46ec3650070ca0178de0c3b-ld.mp4",
+          "type": "trailer",
+          "category": "Trailer",
+          "thumbnail": "https://image.tmdb.org/t/p/w1280/8jnt8sZx0qv3IHh9drbKCZe5Nc1.jpg",
+          "year": 2026,
+          "language": "Telugu",
+          "backdrop": "https://image.tmdb.org/t/p/w1280/8jnt8sZx0qv3IHh9drbKCZe5Nc1.jpg"
+        },
+        {
+          "id": "trailer-keedaa-cola",
+          "title": "Keedaa Cola Trailer",
+          "description": "Vaasthu, Lancham, and Thatha stumble upon a cockroach in a cola bottle and devise a plan to profit by filing a case in the consumer court. Simultaneously, Jeevan, an egocentric local thug with political aspirations, gains momentum as his brother, Naidu, is released from a 20-year prison sentence. The convergence of these two distinct worlds brings forth unexpected and hilarious consequences for everyone involved.",
+          "duration": 175,
+          "videoUrl": "https://macdn.aoneroom.com/media/vone/2024/07/04/a48d5c6e25f749a03ee9599f2f1290c6-sd.mp4",
+          "type": "trailer",
+          "category": "Trailer",
+          "thumbnail": "https://image.tmdb.org/t/p/w1280/k5LhvsRqnhFeOhmlrcVQiHRK6Ij.jpg",
+          "year": 2024,
+          "language": "Telugu",
+          "backdrop": "https://image.tmdb.org/t/p/w1280/k5LhvsRqnhFeOhmlrcVQiHRK6Ij.jpg"
+        },
+        {
+          "id": "trailer-srikakulam-sherlockholmes",
+          "title": "Srikakulam Sherlockholmes Trailer",
+          "description": "A string of beach murders rocks a coastal town, prompting police to hire a meticulous private eye. His investigation zeroes in on seven suspects, including a village couple, after a young girl's killing sparks public outcry.",
+          "duration": 148,
+          "videoUrl": "https://macdn.aoneroom.com/media/vone/2024/12/26/5745f44cddf0461b598697258fa53cfb-sd.mp4",
+          "type": "trailer",
+          "category": "Trailer",
+          "thumbnail": "https://image.tmdb.org/t/p/w1280/5uFqY6ksaKQVC3DdV1mA5IjMlgr.jpg",
+          "year": 2024,
+          "language": "Telugu",
+          "backdrop": "https://image.tmdb.org/t/p/w1280/5uFqY6ksaKQVC3DdV1mA5IjMlgr.jpg"
+        },
+        {
+          "id": "trailer-agent-sai-srinivasa-athreya",
+          "title": "Agent Sai Srinivasa Athreya Trailer",
+          "description": "Agent Sai Srinivasa Athreya is a brilliant, underrated detective from Nellore who runs an agency called FBI which sees no business. He gets more than what he asked for when a case happens to fall right into his lap out of nowhere.",
+          "duration": 169,
+          "videoUrl": "https://macdn.aoneroom.com/media/vone/2024/08/22/bf2e0c41a90efd9293f04e4852bd531f-sd.mp4",
+          "type": "trailer",
+          "category": "Trailer",
+          "thumbnail": "https://image.tmdb.org/t/p/w1280/jMVfhhWfHLawVp3kd55KBy3VBsW.jpg",
+          "year": 2019,
+          "language": "Telugu",
+          "backdrop": "https://image.tmdb.org/t/p/w1280/jMVfhhWfHLawVp3kd55KBy3VBsW.jpg"
+        },
+        {
+          "id": "trailer-maruthi-nagar-subramanyam",
+          "title": "Maruthi Nagar Subramanyam Trailer",
+          "description": "A father and son's life changes dramatically after their bank account is mysteriously credited with a large amount of money.",
+          "duration": 134,
+          "videoUrl": "https://macdn.aoneroom.com/media/vone/2024/09/10/84873479df1edf570b147ccbb71895fa-sd.mp4",
+          "type": "trailer",
+          "category": "Trailer",
+          "thumbnail": "https://image.tmdb.org/t/p/w1280/e4afhtg46AM0IhCJHgknLUZRgjg.jpg",
+          "year": 2024,
+          "language": "Telugu",
+          "backdrop": "https://image.tmdb.org/t/p/w1280/e4afhtg46AM0IhCJHgknLUZRgjg.jpg"
+        },
+        {
+          "id": "trailer-svsc",
+          "title": "Seethamma Vakitlo Sirimalle Chettu Trailer",
+          "description": "An exuberant and evocative family drama, that primarily revolves around the close bond between two brothers with radically different personalities, highlighting the complex process of choosing an ideal life partner for each of them.",
+          "duration": 88,
+          "videoUrl": "https://macdn.aoneroom.com/media/vone/2024/05/27/b402fc91919dcb1fe7b833377c7a3e2a-sd.mp4",
+          "type": "trailer",
+          "category": "Trailer",
+          "thumbnail": "https://image.tmdb.org/t/p/w1280/wurRV7lMXMlBRSORvOXdlj21CEK.jpg",
+          "year": 2013,
+          "language": "Telugu",
+          "backdrop": "https://image.tmdb.org/t/p/w1280/wurRV7lMXMlBRSORvOXdlj21CEK.jpg"
+        },
+        {
+          "id": "trailer-ekkadiki-pothavu-chinnavada",
+          "title": "Ekkadiki Pothavu Chinnavada Trailer",
+          "description": "A visual effects artist gets possessed by an evil spirit and tries to get rid of it until he meets another innocent soul possessed by spirits.",
+          "duration": 100,
+          "videoUrl": "https://macdn.aoneroom.com/media/vone/2023/04/28/4cc5b40a3a8e1757443c6c2deaf5d7a8-sd.mp4",
+          "type": "trailer",
+          "category": "Trailer",
+          "thumbnail": "https://image.tmdb.org/t/p/w1280/oJ6PWpse5OPDYsFSlCFrzOay7fh.jpg",
+          "year": 2016,
+          "language": "Telugu",
+          "backdrop": "https://image.tmdb.org/t/p/w1280/oJ6PWpse5OPDYsFSlCFrzOay7fh.jpg"
+        },
+        {
+          "id": "trailer-mca",
+          "title": "Middle Class Abbayi Trailer",
+          "description": "Nani's brother and his friends are his world. But he shares a love-hate relationship with his sister-in-law Jyothi. What happens when Shiva threatens his family, is what 'MCA' is all about.",
+          "duration": 117,
+          "videoUrl": "https://macdn.aoneroom.com/media/vone/2023/08/13/ba8bf09e8195efb6ed96718ad8615f61-sd.mp4",
+          "type": "trailer",
+          "category": "Trailer",
+          "thumbnail": "https://image.tmdb.org/t/p/w1280/oYzWaKkNBpqq1EsSWr5BS6BWBbv.jpg",
+          "year": 2017,
+          "language": "Telugu",
+          "backdrop": "https://image.tmdb.org/t/p/w1280/oYzWaKkNBpqq1EsSWr5BS6BWBbv.jpg"
+        },
+        {
+          "id": "trailer-bakasura-restaurant",
+          "title": "Bakasura Restaurant Trailer",
+          "description": "A group of five youngsters decides to make a wish, but it backfires as it leads them to unveil a supernatural force around them.",
+          "duration": 162,
+          "videoUrl": "https://macdn.aoneroom.com/media/vone/2025/07/30/3522939ae688c7e4a9b5cdcd111ae8ab-ld.mp4",
+          "type": "trailer",
+          "category": "Trailer",
+          "thumbnail": "https://image.tmdb.org/t/p/w1280/pyznPP82WBdWOYvKHbQq9bDv4Ng.jpg",
+          "year": 2025,
+          "language": "Telugu",
+          "backdrop": "https://image.tmdb.org/t/p/w1280/pyznPP82WBdWOYvKHbQq9bDv4Ng.jpg"
+        },
+        {
+          "id": "acm-tv-trailer-block",
+          "title": "Trailer Block",
+          "description": "The latest cinematic sneak peeks and first looks.",
+          "duration": 1376,
+          "videoUrl": "",
+          "type": "block",
+          "category": "Trailer Block",
+          "thumbnail": "/branding/acm-tv-logo.svg",
+          "contentIds": [
+            "trailer-deewana",
+            "trailer-bhartha-mahasayulaku-wignyapthi",
+            "trailer-keedaa-cola",
+            "trailer-srikakulam-sherlockholmes",
+            "trailer-agent-sai-srinivasa-athreya",
+            "trailer-maruthi-nagar-subramanyam",
+            "trailer-svsc",
+            "trailer-ekkadiki-pothavu-chinnavada",
+            "trailer-mca",
+            "trailer-bakasura-restaurant"
+          ],
+          "blockShuffle": true
         }
       ],
       "idents": [],
@@ -65,7 +198,7 @@
       "name": "ACM Movies",
       "tagline": "Your Premium Cinema Experience",
       "logoUrl": "/branding/acm-movies-logo.svg",
-      "bugUrl": "/branding/acm-tv-bug.svg",
+      "bugUrl": "/branding/acm-movies-logo.svg",
       "themeColor": "#3B82F6",
       "category": "Cinema",
       "description": "Your Premium Cinema Experience",
@@ -358,7 +491,7 @@
       "name": "ACM Music",
       "tagline": "Non-Stop Hits & Anthems",
       "logoUrl": "/branding/acm-music-logo.svg",
-      "bugUrl": "/branding/acm-tv-bug.svg",
+      "bugUrl": "/branding/acm-music-logo.svg",
       "themeColor": "#EC4899",
       "category": "Music",
       "description": "Non-Stop Hits & Anthems",
@@ -388,6 +521,26 @@
           "type": "song",
           "category": "Synthwave",
           "thumbnail": "/branding/acm-music-logo.svg"
+        },
+        {
+          "id": "neno-butterfly",
+          "title": "Neno Butterfly Video Song",
+          "description": "Neno Butterfly Lyric Video.",
+          "duration": 245,
+          "videoUrl": "https://hv-cartoons.online:8443/62028/6224194d.mp4?hash=AgAD8p&stream=true",
+          "type": "song",
+          "category": "SONG",
+          "thumbnail": "https://i.ytimg.com/vi/9dV6Hl2u3vM/hq720.jpg"
+        },
+        {
+          "id": "x-men-6",
+          "title": "Dheema Video Song",
+          "description": "Dheema Video Song.",
+          "duration": 228,
+          "videoUrl": "https://hv-cartoons.online:8443/62030/f6536583.mp4?hash=AgAD-Z&stream=true",
+          "type": "song",
+          "category": "SONG",
+          "thumbnail": "https://i.ytimg.com/vi/0mp6SO-OMHU/hq720.jpg"
         }
       ],
       "idents": [
@@ -416,113 +569,11 @@
       ]
     },
     {
-      "id": "acm-trailers",
-      "name": "ACM Trailers",
-      "tagline": "Sneak Peeks & First Looks",
-      "logoUrl": "/branding/acm-trailers-logo.svg",
-      "bugUrl": "/branding/acm-tv-bug.svg",
-      "themeColor": "#10B981",
-      "category": "Trailers",
-      "description": "Sneak Peeks & First Looks",
-      "channelNumber": 4,
-      "standbyArtwork": "/branding/acm-trailers-logo.svg",
-      "weaving": {
-        "insertIdentEveryNPrograms": 1,
-        "insertPromoEveryNPrograms": 3
-      },
-      "programs": [
-        {
-          "id": "prog-trailer-sintel",
-          "title": "Sintel - Official Cinematic Trailer",
-          "description": "First look at Sintel, the open-source cinematic short story.",
-          "duration": 652,
-          "videoUrl": "/media/acm-trailers/trailer-sintel.mp4",
-          "type": "trailer",
-          "category": "Trailers",
-          "thumbnail": "/branding/acm-trailers-logo.svg"
-        },
-        {
-          "id": "prog-trailer-steel",
-          "title": "Tears of Steel - FX Reel",
-          "description": "Visual effects breakdown and official theatrical trailer for Tears of Steel.",
-          "duration": 734,
-          "videoUrl": "/media/acm-trailers/trailer-steel.mp4",
-          "type": "trailer",
-          "category": "Trailers",
-          "thumbnail": "/branding/acm-trailers-logo.svg"
-        },
-        {
-          "id": "spiderman-brand-new-day-trailer-1",
-          "title": "Spiderman Brand New Day Trailer 1",
-          "description": "Automatically prepared and registered media content.",
-          "duration": 153,
-          "videoUrl": "/media/acm-trailers/spiderman-brand-new-day-trailer-1.mp4",
-          "type": "content",
-          "category": "Trailer",
-          "metadataUrl": "/media/acm-trailers/spiderman-brand-new-day-trailer-1.metadata.json",
-          "audioTracks": [
-            {
-              "language": "English",
-              "code": "eng",
-              "codec": "aac",
-              "default": true,
-              "url": "/media/acm-trailers/spiderman-brand-new-day-trailer-1_eng.m4a"
-            }
-          ],
-          "subtitles": []
-        },
-        {
-          "id": "spiderman-brand-new-day-trailer-2",
-          "title": "Spiderman Brand New Day Trailer 2",
-          "description": "Automatically prepared and registered media content.",
-          "duration": 165,
-          "videoUrl": "/media/acm-trailers/spiderman-brand-new-day-trailer-2.mp4",
-          "type": "content",
-          "category": "Trailer",
-          "metadataUrl": "/media/acm-trailers/spiderman-brand-new-day-trailer-2.metadata.json",
-          "audioTracks": [
-            {
-              "language": "English",
-              "code": "eng",
-              "codec": "aac",
-              "default": true,
-              "url": "/media/acm-trailers/spiderman-brand-new-day-trailer-2_eng.m4a"
-            }
-          ],
-          "subtitles": []
-        }
-      ],
-      "idents": [
-        {
-          "id": "ident-trailers-1",
-          "title": "ACM Trailers Stamp Bumper",
-          "description": "ACM Trailers logo stamp bumper.",
-          "duration": 15,
-          "videoUrl": "/media/acm-trailers/ident-trailers.mp4",
-          "type": "ident",
-          "category": "Idents",
-          "thumbnail": "/branding/acm-trailers-logo.svg"
-        }
-      ],
-      "promos": [
-        {
-          "id": "promo-trailers-1",
-          "title": "Upcoming Teaser Alert",
-          "description": "Stay tuned for new exclusive cinematic trailers.",
-          "duration": 15,
-          "videoUrl": "/media/acm-trailers/promo-trailers.mp4",
-          "type": "promo",
-          "category": "Promos",
-          "thumbnail": "/branding/acm-trailers-logo.svg"
-        }
-      ]
-    },
-    {
       "id": "acm-rcu",
       "name": "ACM RCU",
       "tagline": "Realm Cinematic Universe Network",
       "logoUrl": "/branding/acm-rcu-logo.svg",
-      "bugUrl": "/branding/acm-tv-bug.svg",
+      "bugUrl": "/branding/acm-rcu-logo.svg",
       "themeColor": "#F97316",
       "category": "RCU",
       "description": "Realm Cinematic Universe Network",
@@ -594,7 +645,7 @@
       "name": "NTV Telugu",
       "tagline": "Prathkshanam Janahitham",
       "logoUrl": "/branding/ntv-telugu-logo.svg",
-      "bugUrl": "/branding/acm-tv-bug.svg",
+      "bugUrl": "/branding/ntv-telugu-logo.svg",
       "themeColor": "#EA580C",
       "category": "News",
       "description": "NTV Telugu Live News Broadcast.",
@@ -624,7 +675,7 @@
       "name": "TV9 Telugu",
       "tagline": "For a Better Society",
       "logoUrl": "/branding/tv9-telugu-logo.svg",
-      "bugUrl": "/branding/acm-tv-bug.svg",
+      "bugUrl": "/branding/tv9-telugu-logo.svg",
       "themeColor": "#EF4444",
       "category": "News",
       "description": "TV9 Telugu Live News Broadcast.",
@@ -654,7 +705,7 @@
       "name": "10TV",
       "tagline": "10TV News Live",
       "logoUrl": "/branding/10tv-logo.svg",
-      "bugUrl": "/branding/acm-tv-bug.svg",
+      "bugUrl": "/branding/10tv-logo.svg",
       "themeColor": "#06B6D4",
       "category": "News",
       "description": "10TV Live News Broadcast.",
@@ -684,7 +735,7 @@
       "name": "Telugu One",
       "tagline": "Entertainment Without Pause",
       "logoUrl": "/branding/telugu-one-logo.svg",
-      "bugUrl": "/branding/acm-tv-bug.svg",
+      "bugUrl": "/branding/telugu-one-logo.svg",
       "themeColor": "#F59E0B",
       "category": "Entertainment",
       "description": "Telugu One Live Entertainment Broadcast.",
@@ -714,7 +765,7 @@
       "name": "Mahaa Max",
       "tagline": "Maximum Entertainment",
       "logoUrl": "/branding/mahaa-max-logo.svg",
-      "bugUrl": "/branding/acm-tv-bug.svg",
+      "bugUrl": "/branding/mahaa-max-logo.svg",
       "themeColor": "#DC2626",
       "category": "Entertainment",
       "description": "Mahaa Max Live Movies & Shows Broadcast.",
@@ -744,7 +795,7 @@
       "name": "Studio Yuva",
       "tagline": "Youth & Entertainment",
       "logoUrl": "https://jiotv.catchup.cdn.jio.com/dare_images/images/Studio_Yuva_Alpha.png",
-      "bugUrl": "/branding/acm-tv-bug.svg",
+      "bugUrl": "https://jiotv.catchup.cdn.jio.com/dare_images/images/Studio_Yuva_Alpha.png",
       "themeColor": "#84CC16",
       "category": "Entertainment",
       "description": "Studio Yuva Live Youth & Hits Broadcast.",
@@ -774,7 +825,7 @@
       "name": "Tolly TV",
       "tagline": "Cinema Hub & Music",
       "logoUrl": "https://d229kpbsb5jevy.cloudfront.net/tv/480/270/languages/tollytv_960X540.jpg",
-      "bugUrl": "/branding/acm-tv-bug.svg",
+      "bugUrl": "https://d229kpbsb5jevy.cloudfront.net/tv/480/270/languages/tollytv_960X540.jpg",
       "themeColor": "#EC4899",
       "category": "Entertainment",
       "description": "Tolly TV Live Movies & Music Broadcast.",

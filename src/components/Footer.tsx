@@ -38,7 +38,6 @@ export default function Footer() {
                 { label: 'ACM Flagship', href: '/live?channel=acm-tv' },
                 { label: 'ACM Movies', href: '/live?channel=acm-movies' },
                 { label: 'ACM Music', href: '/live?channel=acm-music' },
-                { label: 'ACM Trailers', href: '/live?channel=acm-trailers' },
                 { label: 'ACM RCU', href: '/live?channel=acm-rcu' },
               ].map(link => (
                 <Link
