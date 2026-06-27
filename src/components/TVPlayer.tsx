@@ -80,7 +80,20 @@ interface TVPlayerProps {
 }
 
 export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
+  // Dual Player Architecture States
+  const videoRefs = [useRef<HTMLVideoElement>(null), useRef<HTMLVideoElement>(null)];
+  const hlsRefs = [useRef<Hls | null>(null), useRef<Hls | null>(null)];
+  const activeVideoIndexRef = useRef<number>(0);
+  const [activeVideoIndex, setActiveVideoIndex] = useState<number>(0);
+  const preloadedInstanceIdRef = useRef<string | null>(null);
+
+  const getActiveVideo = () => videoRefs[activeVideoIndexRef.current]?.current;
+  const getInactiveVideo = () => videoRefs[activeVideoIndexRef.current === 0 ? 1 : 0]?.current;
+  const getActiveHls = () => hlsRefs[activeVideoIndexRef.current]?.current;
+  const getInactiveHls = () => hlsRefs[activeVideoIndexRef.current === 0 ? 1 : 0]?.current;
+  const setActiveHls = (hls: Hls | null) => { hlsRefs[activeVideoIndexRef.current].current = hls; };
+  const setInactiveHls = (hls: Hls | null) => { hlsRefs[activeVideoIndexRef.current === 0 ? 1 : 0].current = hls; };
+
   const containerRef = useRef<HTMLDivElement>(null);
 
   // States
@@ -125,7 +138,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   const progressBarRef = useRef<HTMLDivElement>(null);
 
   // Hls.js diagnostics and state
-  const hlsRef = useRef<Hls | null>(null);
+
   const [videoCurrentTime, setVideoCurrentTime] = useState<number>(0);
   const [videoDuration, setVideoDuration] = useState<number>(0);
   const [bufferedPercent, setBufferedPercent] = useState<number>(0);
@@ -171,25 +184,27 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   
   const handleQualitySelect = (id: number | 'auto') => {
     setActiveQuality(id);
-    if (hlsRef.current) {
+    const activeHls = getActiveHls();
+    if (activeHls) {
       if (id === 'auto') {
-        hlsRef.current.currentLevel = -1; // Auto
+        activeHls.currentLevel = -1; // Auto
       } else {
-        hlsRef.current.currentLevel = id as number;
+        activeHls.currentLevel = id as number;
       }
     }
   };
 
   const destroyHls = () => {
-    if (hlsRef.current) {
+    const activeHls = getActiveHls();
+    if (activeHls) {
       console.log('[ACM TV] Destroying active Hls instance...');
       try {
-        hlsRef.current.detachMedia();
-        hlsRef.current.destroy();
+        activeHls.detachMedia();
+        activeHls.destroy();
       } catch (err) {
         console.error('Error destroying Hls instance:', err);
       }
-      hlsRef.current = null;
+      setActiveHls(null);
     }
   };
 
@@ -206,7 +221,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   };
 
   const updateAutoFit = () => {
-    const video = videoRef.current;
+    const video = getActiveVideo();
     if (!video || !video.videoWidth || !video.videoHeight) {
       setAutoFit('contain');
       return;
@@ -230,7 +245,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   const handleVolumeChange = (newVolume: number) => {
     const val = Math.max(0, Math.min(1, newVolume));
     setVolume(val);
-    const video = videoRef.current;
+    const video = getActiveVideo();
     if (video) {
       video.volume = val;
       video.muted = val === 0;
@@ -263,16 +278,19 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
             if (!isNaN(parsed) && parsed >= 0 && parsed <= 1) {
               setVolume(parsed);
               setIsMuted(parsed === 0);
-              if (videoRef.current) {
-                videoRef.current.volume = parsed;
-                videoRef.current.muted = parsed === 0;
+              if (getActiveVideo()) {
+                const vid = getActiveVideo();
+              if (vid) {
+                vid.volume = parsed;
+                vid.muted = parsed === 0;
+              }
               }
             }
           }
         } catch {}
 
         // PiP Support Check
-        const video = videoRef.current;
+        const video = getActiveVideo();
         const pipSupported = !!(document.pictureInPictureEnabled && video && video.requestPictureInPicture);
         setIsPipSupported(pipSupported);
       }, 0);
@@ -447,15 +465,15 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     downgradeTimestampsRef.current.push(nowMs);
 
     // Downgrade HLS quality cap: One step lower only if needed
-    if (hlsRef.current && hlsRef.current.levels.length > 1) {
-      const hls = hlsRef.current;
-      const highestLevelIdx = hls.levels.length - 1;
+    const activeHls = getActiveHls();
+    if (activeHls && activeHls.levels.length > 1) {
+      const highestLevelIdx = activeHls.levels.length - 1;
       const newCap = highestLevelIdx - 1;
       if (maxLevelCapRef.current === -1 || newCap < maxLevelCapRef.current) {
         maxLevelCapRef.current = newCap;
-        hls.autoLevelCapping = newCap;
-        hls.currentLevel = -1; // Unlock level so it can switch down
-        console.warn(`[ACM TV] Stability Manager: Buffering detected. Downgrading max level cap to: index ${newCap} (${hls.levels[newCap].height}p)`);
+        activeHls.autoLevelCapping = newCap;
+        activeHls.currentLevel = -1; // Unlock level so it can switch down
+        console.warn(`[ACM TV] Stability Manager: Buffering detected. Downgrading max level cap to: index ${newCap} (${activeHls.levels[newCap].height}p)`);
       }
     }
   };
@@ -506,9 +524,27 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       if (activeInstanceIdRef.current !== currentInst.instanceId) {
         // Switching is handled asynchronously inside the useEffect listening to instanceId
       } else {
-        const video = videoRef.current;
+        const video = getActiveVideo();
         if (video && !mediaError) {
+          
           const actualPos = video.currentTime;
+          
+          // Adaptive Preload Logic
+          const upNext = broadcastState?.upNext;
+          if (currentInst && upNext) {
+            const currentDuration = currentInst.subProgram?.duration || currentInst.program.duration || 60;
+            const adaptivePreloadWindow = Math.min(30, Math.max(10, currentDuration * 0.15));
+            const timeRemaining = currentInst.endTime - now;
+            
+            if (timeRemaining <= (adaptivePreloadWindow * 1000) && preloadedInstanceIdRef.current !== upNext.instanceId) {
+              console.log(`[ACM TV][PRELOAD] Initiating adaptive preload for ${upNext.instanceId} (Window: ${adaptivePreloadWindow}s)`);
+              preloadedInstanceIdRef.current = upNext.instanceId;
+              
+              const nextUrl = upNext.subProgram?.videoUrl || upNext.program.videoUrl;
+              if (nextUrl) preloadSource(nextUrl, upNext.instanceId);
+            }
+          }
+
           const targetPos = playbackPos;
           const drift = Math.abs(targetPos - actualPos);
 
@@ -552,7 +588,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
                 try {
                   const duration = video.duration || currentInst.program.duration || 1;
                   const newSeek = targetPos % duration;
-                  if (hlsRef.current) {
+                  if (getActiveHls()) {
                     console.log("[ACM TV] Recovery: Re-creating Hls instance.");
                     destroyHls();
                     loadAndPlaySource(videoSrc, newSeek, currentInst.instanceId);
@@ -607,8 +643,39 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   };
 
   // Helper to load and play the video source
+  
+  const preloadSource = (src: string, instId: string) => {
+    const video = getInactiveVideo();
+    if (!video) return;
+    
+    const inactiveHls = getInactiveHls();
+    if (inactiveHls) {
+      inactiveHls.detachMedia();
+      inactiveHls.destroy();
+      setInactiveHls(null);
+    }
+
+    const isHlsUrl = src.includes('.m3u8');
+    if (isHlsUrl && Hls.isSupported()) {
+      const hls = new Hls({
+        startPosition: 0,
+        enableWorker: true,
+        lowLatencyMode: true,
+      });
+      setInactiveHls(hls);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MEDIA_ATTACHED, () => {
+        hls.loadSource(src);
+      });
+    } else {
+      video.src = src;
+      video.load();
+    }
+  };
+
   const loadAndPlaySource = (src: string, seekOffset: number, instId: string) => {
-    const video = videoRef.current;
+
+    const video = getActiveVideo();
     if (!video) return;
 
     const isHlsUrl = src.includes('.m3u8');
@@ -647,7 +714,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
           fragLoadingMaxRetryTimeout: 20000
         });
 
-        hlsRef.current = hls;
+        setActiveHls(hls);
 
         hls.attachMedia(video);
 
@@ -835,7 +902,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   // Throttled update loop (once per second max) for progress, duration, stability cap restoration, and HUD updates
   useEffect(() => {
     const timer = setInterval(() => {
-      const video = videoRef.current;
+      const video = getActiveVideo();
       if (!video) return;
 
       // Update current playhead position, duration and buffered stats
@@ -858,12 +925,12 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         stablePlaybackSecondsRef.current += 1;
         if (stablePlaybackSecondsRef.current >= 20) {
           stablePlaybackSecondsRef.current = 0;
-          if (hlsRef.current && maxLevelCapRef.current !== -1) {
-            const hls = hlsRef.current;
-            const highestLevelIdx = hls.levels.length - 1;
+          const activeHls = getActiveHls();
+          if (activeHls && maxLevelCapRef.current !== -1) {
+            const highestLevelIdx = activeHls.levels.length - 1;
             maxLevelCapRef.current = highestLevelIdx;
-            hls.autoLevelCapping = highestLevelIdx;
-            hls.currentLevel = highestLevelIdx; // Lock back to highest
+            activeHls.autoLevelCapping = highestLevelIdx;
+            activeHls.currentLevel = highestLevelIdx; // Lock back to highest
             console.log(`[ACM TV] Stability Manager: Playback stable for 20s. Restored and locked quality to highest level.`);
           }
         }
@@ -879,7 +946,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
   // Picture-in-Picture event sync handlers
   useEffect(() => {
-    const video = videoRef.current;
+    const video = getActiveVideo();
     if (!video) return;
 
     const onEnterPip = () => {
@@ -914,7 +981,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   }, [broadcastState?.currentProgram?.instanceId]);
 
   const togglePip = async () => {
-    const video = videoRef.current;
+    const video = getActiveVideo();
     if (!video) return;
     try {
       if (document.pictureInPictureElement) {
@@ -929,7 +996,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
   // Check native audioTracks API support on mount
   useEffect(() => {
-    const video = videoRef.current;
+    const video = getActiveVideo();
     if (video) {
       const supported = 'audioTracks' in video || 'audioTracks' in HTMLVideoElement.prototype;
       setHasAudioTrackSupport(supported);
@@ -956,7 +1023,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       return prev;
     });
 
-    const video = videoRef.current;
+    const video = getActiveVideo();
     if (video) {
       video.muted = isMuted;
     }
@@ -964,7 +1031,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
 
   const detectNativeAudioTracks = () => {
-    const video = videoRef.current;
+    const video = getActiveVideo();
     if (!video) return;
 
     const nativeTracks = (video as HTMLVideoElementWithAudioTracks).audioTracks;
@@ -995,7 +1062,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     })));
 
     // 2. Toggle native text track modes
-    const video = videoRef.current;
+    const video = getActiveVideo();
     if (video) {
       const selectedTrack = subtitles.find(t => t.id === subTrackId);
       for (let i = 0; i < video.textTracks.length; i++) {
@@ -1011,7 +1078,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
   // Monitor native track changes
   useEffect(() => {
-    const video = videoRef.current;
+    const video = getActiveVideo();
     if (!video) return;
 
     const nativeTracks = (video as HTMLVideoElementWithAudioTracks).audioTracks;
@@ -1048,7 +1115,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     destroyHls();
 
     // 2. Pause and reset HTML5 video/audio elements to clear buffers
-    const video = videoRef.current;
+    const video = getActiveVideo();
     if (video) {
       video.pause();
       video.src = '';
@@ -1149,7 +1216,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     consecutiveErrorsRef.current = 0;
 
     if (isFallbackActive) {
-      const video = videoRef.current;
+      const video = getActiveVideo();
       if (video) {
         video.pause();
         video.src = '';
@@ -1263,7 +1330,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         const hasDefaultSub = mappedSub.some((s: SubtitleTrack) => s.enabled);
         if (hasDefaultSub) {
           setTimeout(() => {
-            const video = videoRef.current;
+            const video = getActiveVideo();
             if (video) {
               const activeSub = mappedSub.find((s: SubtitleTrack) => s.enabled);
               for (let i = 0; i < video.textTracks.length; i++) {
@@ -1281,12 +1348,51 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         setSubtitles([]);
       }
 
-      // Trigger load on source transition
+            // Trigger load on source transition
       if (activeInstanceIdRef.current !== currentInst.instanceId || videoSrc !== videoSource) {
-        console.log(`[ACM TV] Switching Program Source to: ${videoSource} (Seek offset: ${broadcastState?.playbackPosition || 0}s)`);
-        activeInstanceIdRef.current = currentInst.instanceId;
-        setVideoSrc(videoSource);
-        loadAndPlaySource(videoSource, broadcastState?.playbackPosition || 0, currentInst.instanceId);
+        if (preloadedInstanceIdRef.current === currentInst.instanceId) {
+          console.log(`[ACM TV][SWAP] Seamless transition to ${currentInst.instanceId}`);
+          
+          const activeHls = getActiveHls();
+          if (activeHls) {
+            activeHls.detachMedia();
+            activeHls.destroy();
+            setActiveHls(null);
+          } else if (getActiveVideo()) {
+            getActiveVideo()?.removeAttribute('src');
+            getActiveVideo()?.load();
+          }
+
+          // Swap active index
+          activeVideoIndexRef.current = activeVideoIndexRef.current === 0 ? 1 : 0;
+          setActiveVideoIndex(activeVideoIndexRef.current);
+          
+          const newVideo = getActiveVideo();
+          if (newVideo) {
+            newVideo.muted = isMuted; 
+            newVideo.volume = volume;
+            newVideo.currentTime = broadcastState?.playbackPosition || 0;
+            newVideo.play().catch(() => {});
+          }
+
+          activeInstanceIdRef.current = currentInst.instanceId;
+          setVideoSrc(videoSource);
+          setIsLoading(false);
+          setIsBuffering(false);
+        } else {
+          console.log(`[ACM TV] Hard loading Program Source to: ${videoSource} (Seek offset: ${broadcastState?.playbackPosition || 0}s)`);
+          const inactiveHlsToDestroy = getInactiveHls();
+          if (inactiveHlsToDestroy) {
+            inactiveHlsToDestroy.detachMedia();
+            inactiveHlsToDestroy.destroy();
+            setInactiveHls(null);
+          }
+          preloadedInstanceIdRef.current = null;
+          
+          activeInstanceIdRef.current = currentInst.instanceId;
+          setVideoSrc(videoSource);
+          loadAndPlaySource(videoSource, broadcastState?.playbackPosition || 0, currentInst.instanceId);
+        }
       } else {
         setIsLoading(false);
       }
@@ -1302,7 +1408,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   }, [broadcastState?.currentProgram?.instanceId, isFallbackActive]);
 
   const handleSelectTrack = (trackId: string | number) => {
-    const video = videoRef.current;
+    const video = getActiveVideo();
     if (!video) return;
 
     // Update enabled state in React state
@@ -1373,7 +1479,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
   // Manage native video element mute state based on active audio track
   useEffect(() => {
-    const video = videoRef.current;
+    const video = getActiveVideo();
     if (!video) return;
 
     const activeTrack = audioTracks.find(t => t.enabled);
@@ -1388,7 +1494,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
   // Synchronize external audio element with the main video element
   useEffect(() => {
-    const video = videoRef.current;
+    const video = getActiveVideo();
     const audio = audioRef.current;
     if (!video || !audio) return;
 
@@ -1527,7 +1633,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   }, [channel, isFallbackActive]);
 
   const syncSubtitlesMode = () => {
-    const video = videoRef.current;
+    const video = getActiveVideo();
     if (!video) return;
     const activeSub = subtitles.find(s => s.enabled);
     for (let i = 0; i < video.textTracks.length; i++) {
@@ -1542,7 +1648,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
   // Sync seek and handle playback state on loaded metadata
   const handleLoadedMetadata = () => {
-    const video = videoRef.current;
+    const video = getActiveVideo();
     const currentInst = broadcastState?.currentProgram;
     if (video && currentInst) {
       setIsLoading(false);
@@ -1574,7 +1680,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   };
 
   const handlePlaybackError = (errorContext: string, errorDetail?: unknown) => {
-    const video = videoRef.current;
+    const video = getActiveVideo();
     if (!video) return;
 
     let errorName = '';
@@ -1605,7 +1711,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     // Silently attempt controlled recovery after 3 seconds
     console.log(`[ACM TV][RECOVERY] Scheduling silent recovery in 3 seconds for instance: ${instanceId}`);
     setTimeout(() => {
-      if (videoRef.current && activeInstanceIdRef.current === instanceId) {
+      if (getActiveVideo() && activeInstanceIdRef.current === instanceId) {
         console.log(`[ACM TV][RECOVERY] Attempting silent recovery for: ${instanceId}`);
         const now = Date.now();
         const state = getBroadcastState(channel, now);
@@ -1613,8 +1719,9 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         const duration = video.duration || currentInst.program.duration || 1;
         
         try {
-          if (hlsRef.current) {
-            hlsRef.current.recoverMediaError();
+          const activeHls = getActiveHls();
+          if (activeHls) {
+            activeHls.recoverMediaError();
           } else {
             video.load();
             video.currentTime = targetPos % duration;
@@ -1631,7 +1738,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
   // Handle errors and fall back gracefully
   const handleVideoError = () => {
-    const video = videoRef.current;
+    const video = getActiveVideo();
     const err = video?.error;
     handlePlaybackError('HTML5 Video Element Error Event', {
       code: err?.code,
@@ -1655,7 +1762,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
   const handlePlayPause = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    const video = videoRef.current;
+    const video = getActiveVideo();
     if (!video) return;
     if (isPlaying) {
       video.pause();
@@ -1675,7 +1782,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
   const handleGoLive = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    const video = videoRef.current;
+    const video = getActiveVideo();
     if (!video || !broadcastState) return;
     const now = Date.now();
     const state = getBroadcastState(channel, now);
@@ -1690,14 +1797,16 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
   const handleProgressBarClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = progressBarRef.current?.getBoundingClientRect();
-    if (!rect || !videoRef.current || !broadcastState?.currentProgram) return;
+    if (!rect || !getActiveVideo() || !broadcastState?.currentProgram) return;
     const clickX = e.clientX - rect.left;
     const width = rect.width;
     const percentage = Math.max(0, Math.min(1, clickX / width));
     
-    const duration = videoRef.current.duration || broadcastState.currentProgram.program.duration || 1;
+    const vid = getActiveVideo();
+    if (!vid) return;
+    const duration = vid.duration || broadcastState?.currentProgram?.program?.duration || 1;
     const seekTarget = percentage * duration;
-    videoRef.current.currentTime = seekTarget;
+    vid.currentTime = seekTarget;
     setVideoCurrentTime(seekTarget);
   };
 
@@ -1709,7 +1818,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     const percentage = Math.max(0, Math.min(1, moveX / width));
     setHoverPosition(percentage * 100);
 
-    const duration = videoRef.current?.duration || broadcastState.currentProgram.program.duration || 0;
+    const duration = getActiveVideo()?.duration || broadcastState.currentProgram.program.duration || 0;
     const hoverTime = percentage * duration;
     const mins = Math.floor(hoverTime / 60);
     const secs = Math.floor(hoverTime % 60);
@@ -1723,7 +1832,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
   // Tap to Unmute Action
   const handleUnmute = () => {
-    const video = videoRef.current;
+    const video = getActiveVideo();
     const audio = audioRef.current;
     setIsMuted(false);
     setShowTapToUnmute(false);
@@ -1742,7 +1851,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   // Toggle Mute
   const toggleMute = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const video = videoRef.current;
+    const video = getActiveVideo();
     const audio = audioRef.current;
     const targetMute = !isMuted;
     setIsMuted(targetMute);
@@ -1870,9 +1979,11 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         }}
       />
 
-      {/* Video Element */}
+            {/* Background/Inactive Video for Preloading */}
       <video
-        ref={videoRef}
+        ref={videoRefs[activeVideoIndex === 0 ? 1 : 0]}
+        className={`absolute inset-0 w-full h-full object-${autoFit} transition-opacity duration-300 opacity-0 z-0`}
+        muted={true}
         onClick={toggleControls}
         poster={broadcastState?.currentProgram?.program.thumbnail || "/branding/acm-tv-bug.svg"}
         onLoadedMetadata={(e) => {
@@ -1886,10 +1997,42 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         onPlaying={() => setIsBuffering(false)}
         onWaiting={() => { setIsBuffering(true); handleBufferingEvent(getUnixTimeMs()); }}
         onPause={() => setIsPlaying(false)}
-        className="w-full h-full transition-all duration-300 cursor-pointer object-contain bg-black"
         style={getObjectFitStyle()}
         playsInline
+        autoPlay
+      >
+        {subtitles.map((track) => (
+          <track
+            key={track.id}
+            kind="subtitles"
+            label={track.label}
+            srcLang={track.language}
+            src={track.url}
+            default={track.enabled}
+          />
+        ))}
+      </video>
+
+      {/* Foreground/Active Video */}
+      <video
+        ref={videoRefs[activeVideoIndex === 0 ? 0 : 1]}
+        className={`absolute inset-0 w-full h-full object-${autoFit} transition-opacity duration-300 opacity-100 z-10 cursor-pointer`}
         muted={isMuted}
+        onClick={toggleControls}
+        poster={broadcastState?.currentProgram?.program.thumbnail || "/branding/acm-tv-bug.svg"}
+        onLoadedMetadata={(e) => {
+          handleLoadedMetadata();
+          updateVideoStats(e.currentTarget);
+        }}
+        onTimeUpdate={(e) => updateVideoStats(e.currentTarget)}
+        onProgress={(e) => updateVideoStats(e.currentTarget)}
+        onError={handleVideoError}
+        onPlay={() => { setIsPlaying(true); setIsBuffering(false); }}
+        onPlaying={() => setIsBuffering(false)}
+        onWaiting={() => { setIsBuffering(true); handleBufferingEvent(getUnixTimeMs()); }}
+        onPause={() => setIsPlaying(false)}
+        style={getObjectFitStyle()}
+        playsInline
         autoPlay
       >
         {subtitles.map((track) => (
