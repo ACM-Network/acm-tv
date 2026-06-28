@@ -51,8 +51,8 @@
   --color-signal-green: var(--signal-green);
   --color-signal-green-dim: var(--signal-green-dim);
   
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
   
   /* Border radius scale */
   --radius-sm: 6px;

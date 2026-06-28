@@ -1,8 +1,13 @@
-'use client';
-
 import React from 'react';
 import { legalConfig } from '@/config/legal';
 import { Mail, MessageSquare, Bug, Lightbulb, Scale, Briefcase, ArrowUpRight } from 'lucide-react';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Contact | ACM TV',
+  description: 'Get in touch with ACM TV. Reach our broadcast desk, engineering team, or legal team for enquiries, bug reports, feature requests, or copyright matters.',
+};
+
 
 const contactOptions = [
   {

@@ -103,7 +103,7 @@ export default function ProgramGuide({ broadcastState }: ProgramGuideProps) {
         </span>
         
         {/* Scrollable list */}
-        <div className="flex-1 overflow-y-auto pr-1 space-y-2 max-h-[350px] lg:max-h-none scrollbar-thin scrollbar-thumb-signal-border scrollbar-track-transparent">
+        <div className="flex-1 overflow-y-auto pr-1 space-y-2 max-h-[350px] lg:max-h-none custom-scrollbar">
           {laterTonight.map((item) => {
             return (
               <div 

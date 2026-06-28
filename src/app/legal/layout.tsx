@@ -1,5 +1,8 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Shield, FileText, AlertCircle, Scale, Building2 } from 'lucide-react';
 import { legalConfig } from '@/config/legal';
 
@@ -12,6 +15,8 @@ const legalLinks = [
 ];
 
 export default function LegalLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+
   return (
     <div className="min-h-screen bg-signal-black">
       
@@ -44,20 +49,28 @@ export default function LegalLayout({ children }: { children: React.ReactNode })
           
           {/* Sidebar Navigation */}
           <aside className="lg:w-64 flex-shrink-0">
-            <nav className="sticky top-24 space-y-2">
+            <nav className="sticky top-24 space-y-2" aria-label="Legal documents navigation">
               <h3 className="text-[10px] font-bold uppercase tracking-widest text-signal-text-tertiary mb-4 ml-3">
                 Legal Documents
               </h3>
               <ul className="space-y-1">
                 {legalLinks.map((link) => {
                   const Icon = link.icon;
+                  const isActive = link.exact 
+                    ? pathname === link.href 
+                    : pathname === link.href;
                   return (
                     <li key={link.href}>
                       <Link
                         href={link.href}
-                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-signal-text-secondary hover:text-signal-amber hover:bg-signal-surface transition-all group"
+                        aria-current={isActive ? 'page' : undefined}
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group ${
+                          isActive
+                            ? 'bg-signal-amber-dim border border-signal-border-active text-signal-amber'
+                            : 'text-signal-text-secondary hover:text-signal-amber hover:bg-signal-surface'
+                        }`}
                       >
-                        <Icon className="w-4 h-4 text-signal-text-tertiary group-hover:text-signal-amber transition-colors" />
+                        <Icon className={`w-4 h-4 transition-colors ${isActive ? 'text-signal-amber' : 'text-signal-text-tertiary group-hover:text-signal-amber'}`} />
                         {link.label}
                       </Link>
                     </li>
@@ -79,3 +92,4 @@ export default function LegalLayout({ children }: { children: React.ReactNode })
     </div>
   );
 }
+

@@ -1,8 +1,13 @@
-'use client';
-
 import React from 'react';
 import { Tv, Cpu, Globe, Rocket, Zap, Heart } from 'lucide-react';
 import { legalConfig } from '@/config/legal';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'About | ACM TV',
+  description: 'Learn about ACM TV — the global UTC-synchronized virtual television network merging the nostalgia of linear TV with modern web technologies.',
+};
+
 
 export default function AboutPage() {
   return (

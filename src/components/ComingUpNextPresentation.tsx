@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ProgramInstance, Channel, BrandingTheme } from '../types';
 
@@ -13,15 +13,23 @@ interface ComingUpNextPresentationProps {
 export default function ComingUpNextPresentation({ upNext, channel, theme, timeRemaining, onDismiss }: ComingUpNextPresentationProps) {
   const [isVisible, setIsVisible] = useState(true);
 
+  const dismissTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
-    // Auto dismiss if timeRemaining is <= 0 or if 10 seconds have passed.
-    // The parent controls mounting, but we can manage local exit animation state.
+    // Auto-dismiss after 10 seconds. The parent controls mounting,
+    // but we manage local exit animation state here.
     const timer = setTimeout(() => {
       setIsVisible(false);
-      setTimeout(onDismiss, 800); // Wait for exit animation
+      dismissTimerRef.current = setTimeout(onDismiss, 800); // Wait for exit animation
     }, 10000);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      // Clean up the inner dismiss timer to prevent memory leak on unmount
+      if (dismissTimerRef.current) {
+        clearTimeout(dismissTimerRef.current);
+      }
+    };
   }, [onDismiss]);
 
   const poster = upNext.program.thumbnail || upNext.program.backdrop;
@@ -49,7 +57,7 @@ export default function ComingUpNextPresentation({ upNext, channel, theme, timeR
             )}
 
             {/* Content Section */}
-            <div className="flex flex-col justify-center px-6 py-4 flex-1 h-full min-w-[280px]">
+            <div className="relative flex flex-col justify-center px-6 py-4 flex-1 h-full min-w-[280px]">
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}

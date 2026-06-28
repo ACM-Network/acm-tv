@@ -29,7 +29,7 @@ export default function ACMMusicNowShowing({ program, theme, isVisible }: Props)
             variants={{
               hidden: { height: '2px', opacity: 0 },
               visible: { 
-                height: ['2px', `${10 + Math.random() * 14}px`, '2px'],
+                height: ['2px', `${10 + (i * 3 + 7) % 14}px`, '2px'],
                 opacity: 1,
                 transition: { 
                   opacity: { duration: 0.3, delay: i * 0.1 },

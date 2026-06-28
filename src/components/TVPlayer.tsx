@@ -81,20 +81,31 @@ interface TVPlayerProps {
   onStateChange?: (state: BroadcastState) => void;
 }
 
+
 export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
-  // Dual Player Architecture States
-  const videoRefs = [useRef<HTMLVideoElement>(null), useRef<HTMLVideoElement>(null)];
-  const hlsRefs = [useRef<Hls | null>(null), useRef<Hls | null>(null)];
+  // Dual Player Architecture — each ref is declared individually (Rules of Hooks compliance).
+  // Calling useRef inside an array literal was a hooks-in-array violation.
+  const videoRef0 = useRef<HTMLVideoElement>(null);
+  const videoRef1 = useRef<HTMLVideoElement>(null);
+  const hlsRef0 = useRef<Hls | null>(null);
+  const hlsRef1 = useRef<Hls | null>(null);
   const activeVideoIndexRef = useRef<number>(0);
   const [activeVideoIndex, setActiveVideoIndex] = useState<number>(0);
   const preloadedInstanceIdRef = useRef<string | null>(null);
 
-  const getActiveVideo = () => videoRefs[activeVideoIndexRef.current]?.current;
-  const getInactiveVideo = () => videoRefs[activeVideoIndexRef.current === 0 ? 1 : 0]?.current;
-  const getActiveHls = () => hlsRefs[activeVideoIndexRef.current]?.current;
-  const getInactiveHls = () => hlsRefs[activeVideoIndexRef.current === 0 ? 1 : 0]?.current;
-  const setActiveHls = (hls: Hls | null) => { hlsRefs[activeVideoIndexRef.current].current = hls; };
-  const setInactiveHls = (hls: Hls | null) => { hlsRefs[activeVideoIndexRef.current === 0 ? 1 : 0].current = hls; };
+  const getActiveVideo = () => activeVideoIndexRef.current === 0 ? videoRef0.current : videoRef1.current;
+  const getInactiveVideo = () => activeVideoIndexRef.current === 0 ? videoRef1.current : videoRef0.current;
+  const getActiveHls = () => activeVideoIndexRef.current === 0 ? hlsRef0.current : hlsRef1.current;
+  const getInactiveHls = () => activeVideoIndexRef.current === 0 ? hlsRef1.current : hlsRef0.current;
+  const setActiveHls = (hls: Hls | null) => { 
+    if (activeVideoIndexRef.current === 0) hlsRef0.current = hls; 
+    else hlsRef1.current = hls; 
+  };
+  const setInactiveHls = (hls: Hls | null) => { 
+    if (activeVideoIndexRef.current === 0) hlsRef1.current = hls; 
+    else hlsRef0.current = hls; 
+  };
+
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -219,8 +230,8 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     const mode = displayMode;
     if (mode === 'Contain') return { objectFit: 'contain' };
     if (mode === 'Cover') return { objectFit: 'cover' };
-    if (mode === 'Fill') return { objectFit: 'cover' };
-    if (mode === 'Stretch') return { objectFit: 'fill' };
+    if (mode === 'Fill') return { objectFit: 'fill' };    // CSS fill = stretch to container
+    if (mode === 'Stretch') return { objectFit: 'fill' }; // Alias for Fill
     if (mode === 'Auto') {
       return { objectFit: autoFit };
     }
@@ -525,7 +536,8 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       };
 
       setBroadcastState(adjustedState);
-      if (onStateChange) onStateChange(adjustedState);
+      // Always use the stable ref to avoid stale closure on the callback prop
+      onStateChangeRef.current?.(adjustedState);
 
       // Program Switch Check
       if (activeInstanceIdRef.current !== currentInst.instanceId) {
@@ -1433,7 +1445,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
     const selectedTrack = updatedTracks.find(t => t.enabled);
 
-    if (process.env.NODE_ENV === 'development' || true) {
+    if (process.env.NODE_ENV === 'development') {
       console.log(`[ACM TV][RECOVERY] Selected audio track "${selectedTrack?.label}" (ID: ${trackId})`);
     }
 
@@ -1908,9 +1920,9 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         await container.requestFullscreen();
         setIsFullscreen(true);
         // Attempt landscape lock
-        if (screen.orientation && (screen.orientation as any).lock) {
+        if (screen.orientation && (screen.orientation as unknown as { lock: (orient: string) => Promise<void> }).lock) {
           try {
-            await (screen.orientation as any).lock('landscape');
+            await (screen.orientation as unknown as { lock: (orient: string) => Promise<void> }).lock('landscape');
           } catch (err) {
             console.warn('Orientation lock failed:', err);
           }
@@ -2108,12 +2120,12 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         ))}
       </video>
 
-      {/* Channel Bug (Logo) */}
+      {/* Channel Bug (Logo Watermark) */}
       {channel.isAcmOwned && isPlaying && !mediaError && (
         <div className="absolute top-[24px] right-[24px] z-[100] w-[90px] sm:w-[120px] lg:w-[160px] opacity-85 pointer-events-none select-none drop-shadow-md">
           <img 
             src={channel.bugUrl || "/branding/acm-tv-bug.svg"} 
-            alt="Channel Logo" 
+            alt={`${channel.name} logo`}
             className="w-full h-auto object-contain"
           />
         </div>
@@ -2159,7 +2171,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
               Connection Lost
             </h3>
             <p className="text-sm text-gray-400 leading-relaxed mb-8">
-              We're having trouble reaching the stream. Please check your connection.
+              We&apos;re having trouble reaching the stream. Please check your connection.
             </p>
             <button
               onClick={handleReconnect}
@@ -2198,6 +2210,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         <div className="absolute inset-0 flex items-center justify-center pointer-events-auto" onClick={toggleControls}>
           <button 
             onClick={(e) => { e.stopPropagation(); handlePlayPause(); }}
+            aria-label={isPlaying ? 'Pause' : 'Play'}
             className={`w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-lg text-white border border-white/10 transition-all duration-300 hover:bg-white/20 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-white/30 shadow-2xl ${showControls && !mediaError ? 'opacity-100 scale-100' : 'opacity-0 scale-90 pointer-events-none'}`}
           >
             {isPlaying ? <Pause className="w-10 h-10 ml-0 fill-current" /> : <Play className="w-10 h-10 ml-2 fill-current" />}
@@ -2265,12 +2278,20 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
           <div className="flex items-center justify-between">
             {/* Left Controls */}
             <div className="flex items-center gap-4 sm:gap-6">
-               <button onClick={toggleControls} className="text-white hover:text-gray-300 hover:scale-110 transition-all">
+               <button
+                 onClick={(e) => { e.stopPropagation(); handlePlayPause(); }}
+                 aria-label={isPlaying ? 'Pause' : 'Play'}
+                 className="text-white hover:text-gray-300 hover:scale-110 transition-all"
+               >
                   {isPlaying ? <Pause className="w-6 h-6 sm:w-7 sm:h-7 fill-current" /> : <Play className="w-6 h-6 sm:w-7 sm:h-7 fill-current" />}
                </button>
                
                <div className="group/vol flex items-center gap-3">
-                 <button onClick={toggleMute} className="text-white hover:text-gray-300 hover:scale-110 transition-all">
+                 <button
+                   onClick={toggleMute}
+                   aria-label={isMuted ? 'Unmute' : 'Mute'}
+                   className="text-white hover:text-gray-300 hover:scale-110 transition-all"
+                 >
                    {isMuted ? <VolumeX className="w-6 h-6 sm:w-6 sm:h-6" /> : <Volume2 className="w-6 h-6 sm:w-6 sm:h-6" />}
                  </button>
                  <div className="w-0 overflow-hidden group-hover/vol:w-24 transition-all duration-300 ease-out hidden sm:block">
@@ -2284,7 +2305,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
                  </div>
                </div>
 
-               <div className="text-xs sm:text-sm font-medium text-white/90 tabular-nums tracking-wide drop-shadow-md">
+               <div className="text-xs sm:text-sm font-medium text-white/90 tabular-nums tracking-wide drop-shadow-md" aria-live="polite" aria-label="Playback time">
                  {new Date(Math.max(0, videoCurrentTime) * 1000).toISOString().substring(11, 19)}
                  <span className="text-white/40 mx-2">/</span>
                  <span className="text-white/60">
@@ -2305,7 +2326,11 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
                 subtitleTracks={subtitles}
                 onSelectSubtitleTrack={handleSelectSubtitleTrack}
               />
-              <button onClick={toggleFullscreen} className="text-white hover:text-gray-300 hover:scale-110 transition-all">
+              <button
+                onClick={toggleFullscreen}
+                aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+                className="text-white hover:text-gray-300 hover:scale-110 transition-all"
+              >
                 {isFullscreen ? <Minimize2 className="w-5 h-5 sm:w-6 sm:h-6" /> : <Maximize2 className="w-5 h-5 sm:w-6 sm:h-6" />}
               </button>
             </div>

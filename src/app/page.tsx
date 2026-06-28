@@ -7,10 +7,11 @@ import { Channel, BroadcastState } from '@/types';
 import { getBroadcastState, getRuntimeChannels } from '@/utils/scheduleEngine';
 import LiveNowCard from '@/components/LiveNowCard';
 
-const channels: Channel[] = getRuntimeChannels();
-const flagshipChannel = channels.find(c => c.id === 'acm-tv') || channels[0];
-
 export default function Home() {
+  // Computed inside the component — not at module level — for SSR safety
+  const channels: Channel[] = getRuntimeChannels();
+  const flagshipChannel = channels.find(c => c.id === 'acm-tv') || channels[0];
+
   const [flagshipState, setFlagshipState] = useState<BroadcastState | null>(null);
   const [networkStates, setNetworkStates] = useState<{ [key: string]: BroadcastState }>({});
   const [isMounted, setIsMounted] = useState(false);

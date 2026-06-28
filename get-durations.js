@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 const { execSync } = require('child_process');
+const fs = require('fs');
 
 const streams = {
   'the-family-star': 'https://d3sgzbosmwirao.cloudfront.net/video/f36f1d5c789e7104ff5b1785a117ffde4de9f9ef39f636b004adb7c6cd309bec/1/hls/h264_high.m3u8',

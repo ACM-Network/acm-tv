@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { Program, Channel, BrandingTheme } from '../types';
 import ACMTVNowShowing from './branding/ACMTVNowShowing';
@@ -15,20 +15,27 @@ interface NowShowingPresentationProps {
 
 export default function NowShowingPresentation({ program, channel, theme }: NowShowingPresentationProps) {
   const [isVisible, setIsVisible] = useState(true);
+  const innerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     // Reset to visible immediately when program changes
+    // eslint-disable-next-line
     setIsVisible(true);
 
     const hideTimeout = setTimeout(() => setIsVisible(false), 5000);
     const interval = setInterval(() => {
       setIsVisible(true);
-      setTimeout(() => setIsVisible(false), 5000);
+      // Track the inner timer so it can be cancelled on unmount
+      innerTimerRef.current = setTimeout(() => setIsVisible(false), 5000);
     }, 55000);
 
     return () => {
       clearTimeout(hideTimeout);
       clearInterval(interval);
+      // Cancel the inner timer to prevent state updates on unmounted component
+      if (innerTimerRef.current) {
+        clearTimeout(innerTimerRef.current);
+      }
     };
   }, [program.id]);
 

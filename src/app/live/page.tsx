@@ -83,7 +83,7 @@ function LiveTVClientContent() {
 
                 <div className="flex items-center gap-2">
                   <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-signal-black border border-signal-border text-xs font-mono text-signal-text-secondary">
-                    UTC {broadcastState.currentProgram.startTimeFormatted} - {broadcastState.currentProgram.endTimeFormatted}
+                    Local Time {broadcastState.currentProgram.startTimeFormatted} - {broadcastState.currentProgram.endTimeFormatted}
                   </span>
                 </div>
               </div>

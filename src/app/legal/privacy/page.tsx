@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import React from 'react';
 import { legalConfig } from '@/config/legal';
 import { ShieldCheck, Database, HardDrive, Info } from 'lucide-react';

@@ -15,6 +15,7 @@ export default function ProgramsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<string>('all');
 
+  // Computed inside the component for SSR safety and reactivity
   const channels: Channel[] = getRuntimeChannels();
 
   const allPrograms = useMemo(() => {
@@ -108,7 +109,7 @@ export default function ProgramsPage() {
         {filteredPrograms.map((prog) => (
           <div
             key={prog.id}
-            className="group flex flex-col justify-between bg-signal-surface border border-signal-border rounded-md p-3 hover:border-signal-border-active hover:bg-signal-surface-raised transition-all duration-150 h-[380px]"
+            className="group flex flex-col justify-between bg-signal-surface border border-signal-border rounded-md p-3 hover:border-signal-border-active hover:bg-signal-surface-raised transition-all duration-150 min-h-[340px]"
           >
             <div className="space-y-3">
               <div className="relative w-full aspect-video rounded-sm overflow-hidden bg-signal-black border border-signal-border">

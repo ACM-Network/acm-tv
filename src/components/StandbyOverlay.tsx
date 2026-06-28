@@ -23,6 +23,7 @@ export default function StandbyOverlay({
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line
     setMounted(true);
   }, []);
 
@@ -34,7 +35,7 @@ export default function StandbyOverlay({
         <div className="bg-yellow-400"></div>
         <div className="bg-cyan-400"></div>
         <div className="bg-green-500"></div>
-        <div className="bg-magenta-500"></div>
+        <div style={{ backgroundColor: '#d946ef' }}></div>
         <div className="bg-red-600"></div>
         <div className="bg-blue-600"></div>
       </div>

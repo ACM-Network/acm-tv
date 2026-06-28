@@ -26,6 +26,16 @@ export default function Navigation() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && mobileMenuOpen) {
+        setMobileMenuOpen(false);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [mobileMenuOpen]);
+
   // Hide navigation on /live page entirely for immersive experience
   if (pathname === '/live') return null;
 
@@ -87,6 +97,9 @@ export default function Navigation() {
           <button
             className="md:hidden p-2 rounded-sm bg-signal-surface border border-signal-border hover:bg-signal-surface-hover transition-colors text-signal-text-secondary"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-nav-menu"
           >
             {mobileMenuOpen ? (
               <X className="w-4 h-4" />
@@ -99,6 +112,8 @@ export default function Navigation() {
 
       {/* Mobile menu - Slide down with CSS */}
       <div 
+        id="mobile-nav-menu"
+        aria-hidden={!mobileMenuOpen}
         className={`md:hidden absolute top-16 left-0 right-0 bg-signal-surface border-b border-signal-border overflow-hidden transition-all duration-300 ease-in-out ${
           mobileMenuOpen ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0 border-transparent'
         }`}

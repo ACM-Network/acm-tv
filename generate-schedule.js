@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 const fs = require('fs');
 
 const channelsData = JSON.parse(fs.readFileSync('./src/config/channels.json', 'utf8'));

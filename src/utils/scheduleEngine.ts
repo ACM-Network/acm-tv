@@ -185,7 +185,10 @@ function shuffleArray<T>(array: T[], seedStr: string): T[] {
   h2 = Math.imul(h4 ^ (h2 >>> 22), 2869860233);
   h3 = Math.imul(h1 ^ (h3 >>> 17), 2716044179);
   h4 = Math.imul(h2 ^ (h4 >>> 19), 951274213);
-  h1 ^= (h2 ^ h3 ^ h4), h2 ^= h1, h3 ^= h1, h4 ^= h1;
+  h1 ^= (h2 ^ h3 ^ h4);
+  h2 ^= h1;
+  h3 ^= h1;
+  h4 ^= h1;
   let seed = h1 >>> 0;
   
   const rand = () => {
@@ -208,7 +211,7 @@ function shuffleArray<T>(array: T[], seedStr: string): T[] {
  */
 function getStitchedEntries(channel: Channel, localTimestampMs: number) {
   const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
-  const date = new Date(localTimestampMs);
+  
   
   const startOfToday = new Date(localTimestampMs);
   startOfToday.setHours(0, 0, 0, 0);
@@ -218,7 +221,7 @@ function getStitchedEntries(channel: Channel, localTimestampMs: number) {
     if (channel.id === 'acm-tv' || channel.id === 'acm-music') {
       return getDynamicScheduleForChannel(channel.id, channel);
     }
-    const typedSchedule = scheduleData as any;
+    // Use the module-level typedSchedule (properly typed) instead of a local as-any re-cast
     const channelSchedule = typedSchedule[channel.id] || {};
     return channelSchedule[dayName] || [];
   };
@@ -226,7 +229,6 @@ function getStitchedEntries(channel: Channel, localTimestampMs: number) {
   const stitched: { programId: string, subProgramId?: string, startMs: number, endMs: number, startTimeStr: string, isFallback?: boolean }[] = [];
   
   // We span dayOffset -1 (yesterday) to +7 (next week) to be absolutely safe for any lookaheads
-  let currentAbsoluteMs = 0;
   
   for (let dayOffset = -1; dayOffset <= 2; dayOffset++) {
     const targetDate = new Date(startOfTodayMs);
@@ -237,7 +239,7 @@ function getStitchedEntries(channel: Channel, localTimestampMs: number) {
     // Sort just in case
     const sorted = [...entries].sort((a, b) => timeStringToSeconds(a.startTime) - timeStringToSeconds(b.startTime));
     
-    sorted.forEach((entry, idx) => {
+    sorted.forEach((entry) => {
       const startSec = timeStringToSeconds(entry.startTime);
       const startMs = targetDate.getTime() + startSec * 1000;
       
