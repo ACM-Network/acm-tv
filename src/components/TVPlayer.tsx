@@ -2018,7 +2018,11 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         >
           {showNowShowing && (
             <NowShowingPresentation 
-              program={broadcastState.currentProgram.subProgram || broadcastState.currentProgram.program}
+              program={
+                broadcastState.currentProgram.program.title.toLowerCase().includes('trailer block') 
+                  ? broadcastState.currentProgram.program 
+                  : (broadcastState.currentProgram.subProgram || broadcastState.currentProgram.program)
+              }
               channel={channel}
               theme={broadcastState.currentTheme}
             />
@@ -2106,7 +2110,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
       {/* Channel Bug (Logo) */}
       {isPlaying && !mediaError && (
-        <div className="absolute top-[24px] right-[24px] z-[100] w-[75px] sm:w-[100px] lg:w-[130px] opacity-85 pointer-events-none select-none drop-shadow-md">
+        <div className="absolute top-[24px] right-[24px] z-[100] w-[90px] sm:w-[120px] lg:w-[160px] opacity-85 pointer-events-none select-none drop-shadow-md">
           <img 
             src={channel.bugUrl || "/branding/acm-tv-bug.svg"} 
             alt="Channel Logo" 

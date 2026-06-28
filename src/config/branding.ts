@@ -60,73 +60,31 @@ export const BrandingConfig: Record<string, ChannelBranding> = {
   "acm-tv": {
     id: "acm-tv",
     defaultTheme: {
-      primaryColor: "#000000",
-      accentColor: "#f59e0b", // Amber
+      primaryColor: "#0f172a", // Dark Charcoal
+      accentColor: "#f97316", // Orange
       logoAnimUrl: "/branding/acm-tv-logo-anim.mp4",
       fallbackImage: "/branding/acm-tv-fallback.jpg"
-    },
-    dayparts: [
-      {
-        id: "morning",
-        name: "Morning",
-        startHour: 6, // 6 AM
-        theme: {
-          primaryColor: "#0f172a", // Slate 900
-          accentColor: "#38bdf8", // Light Blue
-        }
-      },
-      {
-        id: "afternoon",
-        name: "Afternoon",
-        startHour: 12, // 12 PM
-        theme: {
-          primaryColor: "#171717", // Neutral 900
-          accentColor: "#f97316", // Orange
-        }
-      },
-      {
-        id: "evening",
-        name: "Prime Time",
-        startHour: 18, // 6 PM
-        theme: {
-          primaryColor: "#000000", // Black
-          accentColor: "#f59e0b", // Amber (Premium)
-        }
-      },
-      {
-        id: "late-night",
-        name: "Late Night",
-        startHour: 23, // 11 PM
-        theme: {
-          primaryColor: "#020617", // Slate 950
-          accentColor: "#818cf8", // Indigo
-        }
-      }
-    ]
+    }
   },
   "acm-movies": {
     id: "acm-movies",
     defaultTheme: {
-      primaryColor: "#000000",
-      accentColor: "#e11d48", // Rose Red
-    },
-    dayparts: [
-      {
-        id: "prime-time-movies",
-        name: "Prime Time Premiere",
-        startHour: 20, // 8 PM
-        theme: {
-          primaryColor: "#050505",
-          accentColor: "#fbbf24", // Gold
-        }
-      }
-    ]
+      primaryColor: "#1a1311", // Dark Brown / Black
+      accentColor: "#fbbf24", // Gold
+    }
   },
   "acm-music": {
     id: "acm-music",
     defaultTheme: {
-      primaryColor: "#09090b", // Zinc 950
-      accentColor: "#2dd4bf", // Teal
+      primaryColor: "#4c1d95", // Purple
+      accentColor: "#ec4899", // Pink
+    }
+  },
+  "acm-rcu": {
+    id: "acm-rcu",
+    defaultTheme: {
+      primaryColor: "#000000", // Black
+      accentColor: "#dc2626", // Deep Red
     }
   }
 };

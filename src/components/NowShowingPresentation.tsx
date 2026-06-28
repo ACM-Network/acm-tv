@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Program, Channel } from '../types';
-import { BrandingTheme } from '../types';
+import { AnimatePresence } from 'framer-motion';
+import { Program, Channel, BrandingTheme } from '../types';
+import ACMTVNowShowing from './branding/ACMTVNowShowing';
+import ACMMoviesNowShowing from './branding/ACMMoviesNowShowing';
+import ACMMusicNowShowing from './branding/ACMMusicNowShowing';
+import ACMRCUNowShowing from './branding/ACMRCUNowShowing';
+import DefaultNowShowing from './branding/DefaultNowShowing';
 
 interface NowShowingPresentationProps {
   program: Program;
@@ -16,28 +20,6 @@ export default function NowShowingPresentation({ program, channel, theme }: NowS
     // Reset to visible immediately when program changes
     setIsVisible(true);
 
-    const runCycle = () => {
-      // Stay visible for 5 seconds, then hide
-      const hideTimer = setTimeout(() => {
-        setIsVisible(false);
-        
-        // Stay hidden for 50 seconds, then show again
-        const showTimer = setTimeout(() => {
-          setIsVisible(true);
-        }, 50000);
-        
-        return () => clearTimeout(showTimer);
-      }, 5000);
-      
-      return () => clearTimeout(hideTimer);
-    };
-
-    // We need a robust interval that handles the full 55s cycle
-    // A simpler way:
-    // 0-5s: Visible
-    // 5-55s: Hidden
-    // Repeat every 55s
-    
     const hideTimeout = setTimeout(() => setIsVisible(false), 5000);
     const interval = setInterval(() => {
       setIsVisible(true);
@@ -50,31 +32,27 @@ export default function NowShowingPresentation({ program, channel, theme }: NowS
     };
   }, [program.id]);
 
+  // Router to determine which premium broadcast package to use
+  const renderBrandingPackage = () => {
+    const props = { program, theme, isVisible };
+    switch (channel.id) {
+      case 'acm-tv':
+        return <ACMTVNowShowing {...props} />;
+      case 'acm-movies':
+        return <ACMMoviesNowShowing {...props} />;
+      case 'acm-music':
+        return <ACMMusicNowShowing {...props} />;
+      case 'acm-rcu':
+        return <ACMRCUNowShowing {...props} />;
+      default:
+        return <DefaultNowShowing {...props} />;
+    }
+  };
+
   return (
     <div className="absolute top-[24px] left-[24px] z-[100] pointer-events-none">
       <AnimatePresence>
-        {isVisible && (
-          <motion.div
-            initial={{ opacity: 0, x: -20, scale: 0.98 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: -20, scale: 0.98 }}
-            transition={{ duration: 0.6, ease: [0.215, 0.610, 0.355, 1.000] }}
-            className="flex flex-col items-start gap-0.5 drop-shadow-md"
-          >
-            <span 
-              className="text-[11px] font-bold tracking-[0.15em] uppercase px-1.5 py-0.5 rounded-sm bg-black/60 backdrop-blur-sm border border-white/10"
-              style={{ color: theme.accentColor || '#fff' }}
-            >
-              NOW
-            </span>
-            <h2 
-              className="text-sm sm:text-base font-bold text-white uppercase tracking-wide px-1.5 py-0.5 rounded-sm bg-black/40 backdrop-blur-sm border border-transparent line-clamp-1 max-w-[200px] sm:max-w-[300px]"
-              style={{ textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}
-            >
-              {program.title}
-            </h2>
-          </motion.div>
-        )}
+        {renderBrandingPackage()}
       </AnimatePresence>
     </div>
   );
