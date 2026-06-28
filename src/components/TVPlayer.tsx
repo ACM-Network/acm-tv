@@ -2054,7 +2054,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
       {/* Background/Inactive Video for Preloading */}
       <video
-        ref={videoRefs[activeVideoIndex === 0 ? 1 : 0]}
+        ref={activeVideoIndex === 0 ? videoRef1 : videoRef0}
         className={`absolute inset-0 w-full h-full object-${autoFit} transition-opacity duration-300 opacity-0 z-0`}
         muted={true}
         onClick={toggleControls}
@@ -2088,7 +2088,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
       {/* Foreground/Active Video */}
       <video
-        ref={videoRefs[activeVideoIndex === 0 ? 0 : 1]}
+        ref={activeVideoIndex === 0 ? videoRef0 : videoRef1}
         className={`absolute inset-0 w-full h-full object-${autoFit} transition-opacity duration-300 opacity-100 z-10 cursor-pointer`}
         muted={isMuted}
         onClick={toggleControls}
