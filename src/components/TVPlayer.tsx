@@ -2021,7 +2021,6 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
               program={broadcastState.currentProgram.subProgram || broadcastState.currentProgram.program}
               channel={channel}
               theme={broadcastState.currentTheme}
-              onDismiss={() => setShowNowShowing(false)}
             />
           )}
 
@@ -2105,13 +2104,13 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         ))}
       </video>
 
-      {/* Subtle Watermark */}
+      {/* Channel Bug (Logo) */}
       {isPlaying && !mediaError && (
-        <div className="absolute top-[5%] right-[5%] z-20 w-[8vw] max-w-[100px] min-w-[60px] opacity-40 mix-blend-screen pointer-events-none select-none">
+        <div className="absolute top-[24px] right-[24px] z-[100] w-[60px] sm:w-[75px] lg:w-[100px] opacity-85 pointer-events-none select-none drop-shadow-md">
           <img 
             src={channel.bugUrl || "/branding/acm-tv-bug.svg"} 
-            alt="Channel Watermark" 
-            className="w-full h-auto object-contain filter drop-shadow-md"
+            alt="Channel Logo" 
+            className="w-full h-auto object-contain"
           />
         </div>
       )}
