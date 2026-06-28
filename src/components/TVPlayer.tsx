@@ -7,6 +7,8 @@ import { getBroadcastState, formatLocalTime } from '../utils/scheduleEngine';
 import { getDirectVideoUrl } from '../utils/videoParser';
 import StandbyOverlay from './StandbyOverlay';
 import { motion, AnimatePresence } from 'framer-motion';
+import NowShowingPresentation from './NowShowingPresentation';
+import ComingUpNextPresentation from './ComingUpNextPresentation';
 
 import PlayerSettings, { QualityLevel } from './PlayerSettings';
 import { AudioTrack } from './AudioTrackSelector';
@@ -161,6 +163,11 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
   // Movie Title Card Overlay
   const [showTitleCard, setShowTitleCard] = useState<boolean>(false);
+
+  // Branding Presentations
+  const [showNowShowing, setShowNowShowing] = useState<boolean>(false);
+  const [showComingUpNext, setShowComingUpNext] = useState<boolean>(false);
+  const [comingUpNextTimeRemaining, setComingUpNextTimeRemaining] = useState<number>(0);
 
   // Stability counters & safeguards
   const reloadTimestampsRef = useRef<number[]>([]);
@@ -1173,6 +1180,8 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       setVideoDuration(0);
       setBufferedPercent(0);
       setShowTitleCard(false);
+      setShowNowShowing(false);
+      setShowComingUpNext(false);
 
       // 5. Calculate and dispatch initial state for new channel to parent
       const initialState = getBroadcastState(channel, getUnixTimeMs());
@@ -1348,8 +1357,12 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         setSubtitles([]);
       }
 
-            // Trigger load on source transition
       if (activeInstanceIdRef.current !== currentInst.instanceId || videoSrc !== videoSource) {
+        
+        // Trigger Now Showing overlay
+        setShowNowShowing(true);
+        setShowComingUpNext(false); // reset just in case
+
         if (preloadedInstanceIdRef.current === currentInst.instanceId) {
           console.log(`[ACM TV][SWAP] Seamless transition to ${currentInst.instanceId}`);
           
@@ -1586,6 +1599,21 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       const now = Date.now();
       try {
         const state = getBroadcastState(channel, now);
+        
+        // Trigger Coming Up Next presentation logic
+        const currentDur = state.currentProgram.subProgram?.duration || state.currentProgram.program.duration;
+        if (currentDur && currentDur >= 900) { // Long-form (>15 mins)
+          const msRemaining = state.currentProgram.endTime - now;
+          if (msRemaining <= 15000 && msRemaining > 0 && !showComingUpNext) { // last 15s
+            setShowComingUpNext(true);
+          }
+          if (showComingUpNext) {
+            setComingUpNextTimeRemaining(msRemaining / 1000);
+          }
+        } else {
+           if (showComingUpNext) setShowComingUpNext(false);
+        }
+
         const msRemaining = state.currentProgram.endTime - now;
         if (msRemaining > 0) {
           handoverTimeout = setTimeout(() => {
@@ -1979,7 +2007,37 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         }}
       />
 
-            {/* Background/Inactive Video for Preloading */}
+      {/* Branding Layer */}
+      {broadcastState?.currentTheme && (
+        <div 
+          className="absolute inset-0 pointer-events-none z-50"
+          style={{ 
+            '--theme-primary': broadcastState.currentTheme.primaryColor, 
+            '--theme-accent': broadcastState.currentTheme.accentColor 
+          } as React.CSSProperties}
+        >
+          {showNowShowing && (
+            <NowShowingPresentation 
+              program={broadcastState.currentProgram.subProgram || broadcastState.currentProgram.program}
+              channel={channel}
+              theme={broadcastState.currentTheme}
+              onDismiss={() => setShowNowShowing(false)}
+            />
+          )}
+
+          {showComingUpNext && broadcastState.upNext && (
+             <ComingUpNextPresentation
+               upNext={broadcastState.upNext}
+               channel={channel}
+               theme={broadcastState.currentTheme}
+               timeRemaining={comingUpNextTimeRemaining}
+               onDismiss={() => setShowComingUpNext(false)}
+             />
+          )}
+        </div>
+      )}
+
+      {/* Background/Inactive Video for Preloading */}
       <video
         ref={videoRefs[activeVideoIndex === 0 ? 1 : 0]}
         className={`absolute inset-0 w-full h-full object-${autoFit} transition-opacity duration-300 opacity-0 z-0`}

@@ -56,6 +56,7 @@ export interface Channel {
   description?: string;
   channelNumber?: string | number;
   standbyArtwork?: string;
+  brandingId?: string; // Links to branding.ts config
 }
 
 export interface ProgramInstance {
@@ -68,6 +69,14 @@ export interface ProgramInstance {
   endTimeFormatted: string;
 }
 
+export interface BrandingTheme {
+  primaryColor: string;
+  accentColor: string;
+  logoAnimUrl?: string;
+  audioStingUrl?: string;
+  fallbackImage?: string;
+}
+
 export interface BroadcastState {
   channelId: string;
   currentProgram: ProgramInstance;
@@ -75,4 +84,5 @@ export interface BroadcastState {
   upNext: ProgramInstance | null;
   laterTonight: ProgramInstance[];
   serverTime: number; // UTC timestamp when state was calculated
+  currentTheme?: BrandingTheme; // The resolved theme for the current time/channel
 }

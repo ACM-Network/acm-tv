@@ -2,6 +2,7 @@ import { Channel, Program, ProgramInstance, BroadcastState } from '../types';
 import channelsData from '../config/channels.json';
 import scheduleData from '../config/schedule.json';
 import { PRODUCTION_SINGLE_CHANNEL_MODE } from '../config/mode';
+import { BrandingConfig, getActiveTheme } from '../config/branding';
 
 interface ScheduleEntry {
   startTime: string; // "HH:MM" format
@@ -305,6 +306,7 @@ export function getBroadcastState(channel: Channel, localTimestampMs: number): B
           startTimeFormatted: "12:00 AM",
           endTimeFormatted: "12:00 AM"
         };
+        const currentTheme = getActiveTheme(BrandingConfig[channel.id], localTimestampMs);
         return {
           channelId: channel.id,
           currentProgram: fallbackInst,
@@ -316,7 +318,8 @@ export function getBroadcastState(channel: Channel, localTimestampMs: number): B
             endTime: startOfTodayMs + 2 * 86400 * 1000
           },
           laterTonight: [],
-          serverTime: localTimestampMs
+          serverTime: localTimestampMs,
+          currentTheme
         };
       }
       throw new Error(`No scheduled programs for channel ${channel.name}`);
@@ -383,13 +386,16 @@ export function getBroadcastState(channel: Channel, localTimestampMs: number): B
     });
   }
 
+  const currentTheme = getActiveTheme(BrandingConfig[channel.id], localTimestampMs);
+
   return {
     channelId: channel.id,
     currentProgram,
     playbackPosition,
     upNext,
     laterTonight,
-    serverTime: localTimestampMs
+    serverTime: localTimestampMs,
+    currentTheme
   };
 }
 
