@@ -191,7 +191,8 @@
         }
       ],
       "idents": [],
-      "promos": []
+      "promos": [],
+      "isAcmOwned": true
     },
     {
       "id": "acm-movies",
@@ -484,7 +485,8 @@
         }
       ],
       "idents": [],
-      "promos": []
+      "promos": [],
+      "isAcmOwned": true
     },
     {
       "id": "acm-music",
@@ -566,7 +568,8 @@
           "category": "Promos",
           "thumbnail": "/branding/acm-music-logo.svg"
         }
-      ]
+      ],
+      "isAcmOwned": true
     },
     {
       "id": "acm-rcu",
@@ -638,7 +641,8 @@
           "category": "Promos",
           "thumbnail": "/branding/acm-rcu-logo.svg"
         }
-      ]
+      ],
+      "isAcmOwned": true
     },
     {
       "id": "ntv-telugu",
@@ -668,7 +672,8 @@
         }
       ],
       "idents": [],
-      "promos": []
+      "promos": [],
+      "isAcmOwned": false
     },
     {
       "id": "tv9-telugu",
@@ -698,7 +703,8 @@
         }
       ],
       "idents": [],
-      "promos": []
+      "promos": [],
+      "isAcmOwned": false
     },
     {
       "id": "10tv",
@@ -728,7 +734,8 @@
         }
       ],
       "idents": [],
-      "promos": []
+      "promos": [],
+      "isAcmOwned": false
     },
     {
       "id": "telugu-one",
@@ -758,7 +765,8 @@
         }
       ],
       "idents": [],
-      "promos": []
+      "promos": [],
+      "isAcmOwned": false
     },
     {
       "id": "mahaa-max",
@@ -788,7 +796,8 @@
         }
       ],
       "idents": [],
-      "promos": []
+      "promos": [],
+      "isAcmOwned": false
     },
     {
       "id": "studio-yuva",
@@ -818,7 +827,8 @@
         }
       ],
       "idents": [],
-      "promos": []
+      "promos": [],
+      "isAcmOwned": false
     },
     {
       "id": "tolly-tv",
@@ -848,7 +858,8 @@
         }
       ],
       "idents": [],
-      "promos": []
+      "promos": [],
+      "isAcmOwned": false
     }
   ]
 }

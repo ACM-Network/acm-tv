@@ -47,6 +47,7 @@ export interface Channel {
   tagline: string;
   logoUrl?: string; // Path to main channel logo (e.g. /branding/acm-tv-logo.png)
   bugUrl?: string;  // Path to channel bug/watermark (e.g. /branding/acm-tv-bug.png)
+  isAcmOwned?: boolean; // Ownership flag for branding system
   programs: Program[];
   idents: Program[];
   promos: Program[];

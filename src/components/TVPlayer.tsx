@@ -2008,7 +2008,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       />
 
       {/* Branding Layer */}
-      {broadcastState?.currentTheme && (
+      {channel.isAcmOwned && broadcastState?.currentTheme && (
         <div 
           className="absolute inset-0 pointer-events-none z-50"
           style={{ 
@@ -2109,7 +2109,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       </video>
 
       {/* Channel Bug (Logo) */}
-      {isPlaying && !mediaError && (
+      {channel.isAcmOwned && isPlaying && !mediaError && (
         <div className="absolute top-[24px] right-[24px] z-[100] w-[90px] sm:w-[120px] lg:w-[160px] opacity-85 pointer-events-none select-none drop-shadow-md">
           <img 
             src={channel.bugUrl || "/branding/acm-tv-bug.svg"} 
