@@ -55,10 +55,10 @@ export default function NowShowingPresentation({ program, channel, theme }: NowS
       <AnimatePresence>
         {isVisible && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: "easeInOut" }}
+            initial={{ opacity: 0, x: -20, scale: 0.98 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: -20, scale: 0.98 }}
+            transition={{ duration: 0.6, ease: [0.215, 0.610, 0.355, 1.000] }}
             className="flex flex-col items-start gap-0.5 drop-shadow-md"
           >
             <span 
