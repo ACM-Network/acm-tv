@@ -1,15 +1,17 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { Play, Radio, Calendar, Activity, Sparkles } from 'lucide-react';
-import { Channel, BroadcastState } from '@/types';
-import { getBroadcastState, getRuntimeChannels } from '@/utils/scheduleEngine';
+import { Play, Activity, Sparkles } from 'lucide-react';
+import { Channel, BroadcastState, Program } from '@/types';
+import { getBroadcastState, getRuntimeChannels, findProgramById } from '@/utils/scheduleEngine';
 import LiveNowCard from '@/components/LiveNowCard';
 import LiveHeroCarousel from '@/components/LiveHeroCarousel';
+import HorizontalCarousel from '@/components/HorizontalCarousel';
+import { useWatchHistory } from '@/hooks/useWatchHistory';
+import { useFavorites } from '@/hooks/useFavorites';
 
 export default function Home() {
-  // Computed inside the component — not at module level — for SSR safety
   const channels: Channel[] = getRuntimeChannels();
   const flagshipChannel = channels.find(c => c.id === 'acm-tv') || channels[0];
 
@@ -17,22 +19,19 @@ export default function Home() {
   const [networkStates, setNetworkStates] = useState<{ [key: string]: BroadcastState }>({});
   const [isMounted, setIsMounted] = useState(false);
 
+  const { history } = useWatchHistory();
+  const { favorites } = useFavorites();
+
   useEffect(() => {
     const updateAllStates = () => {
       const now = Date.now();
-      
       try {
-        const flagState = getBroadcastState(flagshipChannel, now);
-        setFlagshipState(flagState);
-      } catch (e) {
-        console.error("Flagship state error:", e);
-      }
+        setFlagshipState(getBroadcastState(flagshipChannel, now));
+      } catch (e) {}
 
       const states: { [key: string]: BroadcastState } = {};
       channels.forEach(ch => {
-        try {
-          states[ch.id] = getBroadcastState(ch, now);
-        } catch {}
+        try { states[ch.id] = getBroadcastState(ch, now); } catch {}
       });
       setNetworkStates(states);
     };
@@ -44,7 +43,66 @@ export default function Home() {
 
     const interval = setInterval(updateAllStates, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [channels, flagshipChannel]);
+
+  // Aggregate all programs for carousels
+  const allPrograms = useMemo(() => {
+    const list: (Program & { channelId: string; channelName: string })[] = [];
+    channels.forEach(ch => {
+      const addPrograms = (progs: Program[]) => {
+        progs.forEach(p => {
+          if (!list.some(existing => existing.id === p.id)) {
+            list.push({ ...p, channelId: ch.id, channelName: ch.name });
+          }
+        });
+      };
+      if (ch.programs) addPrograms(ch.programs);
+      if (ch.idents) addPrograms(ch.idents);
+      if (ch.promos) addPrograms(ch.promos);
+    });
+    return list;
+  }, [channels]);
+
+  // Build Carousel Data
+  const continueWatchingItems = useMemo(() => {
+    return history.map(h => {
+      const p = findProgramById(h.programId, flagshipChannel);
+      return { ...p, channelId: h.channelId, percentageWatched: h.percentageWatched };
+    });
+  }, [history, flagshipChannel]);
+
+  const favoriteItems = useMemo(() => {
+    return favorites.map(id => {
+      const p = findProgramById(id, flagshipChannel);
+      const chId = allPrograms.find(x => x.id === id)?.channelId || flagshipChannel.id;
+      return { ...p, channelId: chId };
+    });
+  }, [favorites, flagshipChannel, allPrograms]);
+
+  const currentlyLiveItems = useMemo(() => {
+    return Object.entries(networkStates)
+      .map(([chId, state]) => {
+        if (state.currentProgram) {
+          const ch = channels.find(c => c.id === chId);
+          return {
+            ...state.currentProgram.program,
+            channelId: chId,
+            channelName: ch?.name || chId
+          };
+        }
+        return null;
+      })
+      .filter(Boolean) as (Program & { channelId: string; channelName: string })[];
+  }, [networkStates, channels]);
+
+  const trendingItems = useMemo(() => {
+    // Just a slice for demonstration
+    return allPrograms.slice(0, 10);
+  }, [allPrograms]);
+
+  const recentlyAddedItems = useMemo(() => {
+    return allPrograms.slice(10, 20);
+  }, [allPrograms]);
 
   if (!isMounted) {
     return (
@@ -55,29 +113,32 @@ export default function Home() {
   }
 
   return (
-    <div className="pb-16 space-y-12 bg-signal-black min-h-screen">
+    <div className="pb-16 space-y-2 bg-signal-black min-h-screen">
       
       {/* 1. Live Hero Carousel */}
       <LiveHeroCarousel channels={channels} networkStates={networkStates} />
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 space-y-12">
+      <div className="max-w-[1600px] mx-auto space-y-4">
         
-        {/* 2. Flagship Channel Live Now */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between border-b border-signal-border pb-2">
-            <h2 className="text-lg font-bold text-signal-text-primary uppercase tracking-wider flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-signal-red animate-pulse"></span>
-              Primary Feed [LIVE]
-            </h2>
-            <span className="text-xs font-mono text-signal-text-tertiary">TX: FLAGSHIP_01</span>
-          </div>
+        {/* New Horizontal Carousels */}
+        {continueWatchingItems.length > 0 && (
+          <HorizontalCarousel title="Continue Watching" items={continueWatchingItems} />
+        )}
+        
+        {favoriteItems.length > 0 && (
+          <HorizontalCarousel title="Your Favorites" items={favoriteItems} showFavorites />
+        )}
 
-          <div className="bg-signal-surface border border-signal-border rounded-lg p-1">
-            <LiveNowCard channel={flagshipChannel} currentProgram={flagshipState?.currentProgram || null} />
-          </div>
-        </section>
+        <HorizontalCarousel title="Currently Live" items={currentlyLiveItems} showFavorites />
+        
+        <HorizontalCarousel title="Trending Now" items={trendingItems} showFavorites />
+        
+        <HorizontalCarousel title="Recently Added" items={recentlyAddedItems} showFavorites />
 
-        {/* 3. Live Across The Network Grid */}
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 space-y-12 mt-12">
+        {/* Legacy Grids */}
         <section className="space-y-4">
           <div className="border-b border-signal-border pb-2 flex items-center justify-between">
             <h2 className="text-lg font-bold text-signal-text-primary uppercase tracking-wider flex items-center gap-2">
@@ -127,52 +188,11 @@ export default function Home() {
                       </h4>
                     </div>
                   </div>
-
-                  <div className="flex items-center justify-between text-[10px] font-mono text-signal-text-tertiary mt-2">
-                    <span className="truncate max-w-[70%]">{ch.tagline}</span>
-                    <span className="text-signal-amber flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span>ENGAGE</span>
-                    </span>
-                  </div>
                 </Link>
               );
             })}
           </div>
         </section>
-
-        {/* 4. Telemetry Showcase */}
-        <section className="bg-signal-surface border border-signal-border rounded-lg p-8">
-          <div className="max-w-3xl space-y-6">
-            <div className="inline-flex items-center gap-1 px-2 py-1 rounded-sm bg-signal-amber-dim border border-signal-border text-signal-amber font-mono text-[10px] uppercase">
-              System Diagnostics
-            </div>
-            <h3 className="text-2xl font-bold text-signal-text-primary uppercase tracking-wide">
-              UTC Engine Synchronization
-            </h3>
-            <p className="text-sm text-signal-text-secondary font-mono leading-relaxed">
-              Playback positions are calculated mathematically using a global UTC offset. No buffering drift. Instant frame-accurate switching across all global nodes.
-            </p>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-signal-border">
-              <div className="space-y-1">
-                <span className="text-xl font-mono text-signal-text-primary block">{channels.length}</span>
-                <span className="text-[10px] text-signal-text-tertiary font-mono uppercase block">Active Streams</span>
-              </div>
-              <div className="space-y-1">
-                <span className="text-xl font-mono text-signal-text-primary block">&lt; 1s</span>
-                <span className="text-[10px] text-signal-text-tertiary font-mono uppercase block">Drift Sync</span>
-              </div>
-              <div className="space-y-1">
-                <span className="text-xl font-mono text-signal-text-primary block">UTC</span>
-                <span className="text-[10px] text-signal-text-tertiary font-mono uppercase block">Clock Ref</span>
-              </div>
-              <div className="space-y-1">
-                <span className="text-xl font-mono text-signal-text-primary block">OK</span>
-                <span className="text-[10px] text-signal-text-tertiary font-mono uppercase block">System Status</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Tv, Menu, X } from 'lucide-react';
+import GlobalSearch from './GlobalSearch';
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -80,8 +81,11 @@ export default function Navigation() {
             })}
           </div>
 
-          {/* Live indicator */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="flex items-center gap-4">
+            <GlobalSearch />
+
+            {/* Live indicator */}
+            <div className="hidden md:flex items-center gap-3">
             <Link
               href="/live"
               className="group flex items-center gap-2 px-4 py-2 rounded-sm bg-signal-surface hover:bg-signal-surface-hover border border-signal-border transition-all"
@@ -91,6 +95,7 @@ export default function Navigation() {
                 Watch Live
               </span>
             </Link>
+            </div>
           </div>
 
           {/* Mobile menu button */}

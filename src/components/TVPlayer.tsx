@@ -14,6 +14,7 @@ import PlayerSettings, { QualityLevel } from './PlayerSettings';
 import { AudioTrack } from './AudioTrackSelector';
 import { SubtitleTrack } from './SubtitleSelector';
 import Hls from 'hls.js';
+import { useWatchHistory } from '@/hooks/useWatchHistory';
 
 const getUnixTimeMs = () => Date.now();
 
@@ -111,6 +112,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
   // States
   const [broadcastState, setBroadcastState] = useState<BroadcastState | null>(null);
+  const { updateHistory } = useWatchHistory();
   const [hasAudioTrackSupport, setHasAudioTrackSupport] = useState(false);
   const [audioTracks, setAudioTracks] = useState<ExtendedAudioTrack[]>([]);
   const [subtitles, setSubtitles] = useState<SubtitleTrack[]>([]);
@@ -536,6 +538,18 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       };
 
       setBroadcastState(adjustedState);
+      
+      // Update watch history periodically
+      if (currentInst?.program?.id && currentInst?.program?.type !== 'ident' && currentInst?.program?.type !== 'promo') {
+        const percentage = Math.min(100, Math.max(0, (playbackPos / currentInst.program.duration) * 100));
+        updateHistory({
+          programId: currentInst.program.id,
+          channelId: channel.id,
+          lastViewed: Date.now(),
+          percentageWatched: percentage
+        });
+      }
+
       // Always use the stable ref to avoid stale closure on the callback prop
       onStateChangeRef.current?.(adjustedState);
 
