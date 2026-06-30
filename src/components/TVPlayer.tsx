@@ -15,6 +15,8 @@ import { AudioTrack } from './AudioTrackSelector';
 import { SubtitleTrack } from './SubtitleSelector';
 import Hls from 'hls.js';
 import { useWatchHistory } from '@/hooks/useWatchHistory';
+import { CommercialConfig } from '@/config/commercials';
+import CommercialBreakUI from './CommercialBreakUI';
 
 const getUnixTimeMs = () => Date.now();
 
@@ -190,6 +192,19 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
   // Clock state to prevent impure Date.now() during render
   const [localTimeMs, setLocalTimeMs] = useState<number>(0);
+
+  // Commercial Engine State
+  const [activeCommercialDuration, setActiveCommercialDuration] = useState<number | null>(null);
+  const commercialStateRef = useRef<{
+    isActive: boolean;
+    movieSuspendedTime: number;
+    commercialStartTime: number;
+    commercialEndTime: number;
+    assets: ProgramInstance[];
+    currentAssetIndex: number;
+  } | null>(null);
+  const commercialPlayheadOffsetMsRef = useRef<number>(0);
+  const lastCommercialCheckMsRef = useRef<number>(getUnixTimeMs());
 
   useEffect(() => {
     setTimeout(() => {
@@ -498,8 +513,37 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     }
   };
 
-  const updateBroadcastState = (nowMs: number) => {
+  const updateBroadcastState = (realNowMs: number) => {
     try {
+      let nowMs = realNowMs;
+      
+      // Commercial Engine State Machine
+      if (CommercialConfig.enabledChannels.includes(channel.id)) {
+        if (commercialStateRef.current?.isActive) {
+          const cState = commercialStateRef.current;
+          if (realNowMs >= cState.commercialEndTime) {
+            // Commercial break over
+            commercialPlayheadOffsetMsRef.current += (realNowMs - cState.commercialStartTime);
+            commercialStateRef.current = null;
+            setActiveCommercialDuration(null);
+            lastCommercialCheckMsRef.current = realNowMs;
+            console.log("[ACM TV] Commercial break ended, resuming movie.");
+            nowMs = realNowMs - commercialPlayheadOffsetMsRef.current;
+          } else {
+            // Freeze time for the movie schedule calculation
+            nowMs = cState.movieSuspendedTime;
+          }
+        } else {
+          // Normal playback, apply offset
+          nowMs = realNowMs - commercialPlayheadOffsetMsRef.current;
+        }
+      } else {
+        // Reset offset if tuning to non-enabled channel
+        commercialPlayheadOffsetMsRef.current = 0;
+        commercialStateRef.current = null;
+        setActiveCommercialDuration(null);
+      }
+
       const now = nowMs;
       const state = getBroadcastState(channel, now);
       
@@ -529,6 +573,58 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         console.error("[ACM TV][VALIDATION] All fallback programs failed validation! Triggering Standby.");
         setIsFallbackActive(true);
         return;
+      }
+
+      // Trigger new commercial break if eligible
+      if (CommercialConfig.enabledChannels.includes(channel.id) && !commercialStateRef.current) {
+        const timeSinceCheck = realNowMs - lastCommercialCheckMsRef.current;
+        if (timeSinceCheck > CommercialConfig.breakIntervalMs && currentInst.program.type === 'content' && (currentInst.program.duration * 1000) > CommercialConfig.minProgramDurationMs) {
+          const trailers = channel.promos || [];
+          if (trailers.length > 0) {
+            // Select up to maxCommercialsPerBreak trailers
+            const selectedTrailers = [...trailers].sort(() => 0.5 - Math.random()).slice(0, CommercialConfig.maxCommercialsPerBreak);
+            let totalBreakDuration = 0;
+            const assetInstances: ProgramInstance[] = selectedTrailers.map((t, idx) => {
+              const durMs = t.duration * 1000;
+              const start = realNowMs + totalBreakDuration;
+              totalBreakDuration += durMs;
+              return {
+                instanceId: `comm_${t.id}_${realNowMs}_${idx}`,
+                program: t,
+                startTime: start,
+                endTime: start + durMs,
+                startTimeFormatted: formatLocalTime(start),
+                endTimeFormatted: formatLocalTime(start + durMs)
+              };
+            });
+
+            if (totalBreakDuration > CommercialConfig.maxBreakDurationMs) {
+              totalBreakDuration = CommercialConfig.maxBreakDurationMs;
+            }
+
+            commercialStateRef.current = {
+              isActive: true,
+              movieSuspendedTime: nowMs,
+              commercialStartTime: realNowMs,
+              commercialEndTime: realNowMs + totalBreakDuration,
+              assets: assetInstances,
+              currentAssetIndex: 0
+            };
+            lastCommercialCheckMsRef.current = realNowMs;
+            setActiveCommercialDuration(totalBreakDuration);
+            console.log(`[ACM TV] Initiating Commercial Break: ${totalBreakDuration / 1000}s`);
+          }
+        }
+      }
+
+      // If commercial is active, overwrite currentInst with the commercial asset
+      if (commercialStateRef.current?.isActive) {
+        const cState = commercialStateRef.current;
+        const activeAsset = cState.assets.find(a => realNowMs >= a.startTime && realNowMs < a.endTime) || cState.assets[cState.assets.length - 1];
+        if (activeAsset) {
+          currentInst = activeAsset;
+          playbackPos = (realNowMs - activeAsset.startTime) / 1000;
+        }
       }
 
       const adjustedState = {
@@ -653,18 +749,8 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
           const skipDrift = video.seeking || isBuffering || video.readyState < 3 || video.paused;
           if (skipDrift) {
             driftExceededStartRef.current = null;
-          } else if (drift > 12.0) {
-            if (driftExceededStartRef.current === null) {
-              driftExceededStartRef.current = nowMs;
-            } else {
-              const elapsed = nowMs - driftExceededStartRef.current;
-              if (elapsed >= 5000) {
-                console.log(`[ACM TV][RECOVERY] Drift of ${drift.toFixed(1)}s exceeded 12s threshold continuously for 5s. Correcting time to target: ${targetPos.toFixed(1)}s.`);
-                video.currentTime = targetPos;
-                driftExceededStartRef.current = null;
-              }
-            }
           } else {
+            // Aggressive seeking disabled to prevent micro-stutters during continuous playback
             driftExceededStartRef.current = null;
           }
         }
@@ -2042,6 +2128,10 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
             '--theme-accent': broadcastState.currentTheme.accentColor 
           } as React.CSSProperties}
         >
+          {commercialStateRef.current?.isActive && activeCommercialDuration && (
+            <CommercialBreakUI countdownDuration={CommercialConfig.countdownDurationSeconds} />
+          )}
+
           {showNowShowing && (
             <NowShowingPresentation 
               program={
