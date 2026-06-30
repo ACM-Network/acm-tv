@@ -6,6 +6,7 @@ import { Play, Radio, Calendar, Activity, Sparkles } from 'lucide-react';
 import { Channel, BroadcastState } from '@/types';
 import { getBroadcastState, getRuntimeChannels } from '@/utils/scheduleEngine';
 import LiveNowCard from '@/components/LiveNowCard';
+import LiveHeroCarousel from '@/components/LiveHeroCarousel';
 
 export default function Home() {
   // Computed inside the component — not at module level — for SSR safety
@@ -56,54 +57,8 @@ export default function Home() {
   return (
     <div className="pb-16 space-y-12 bg-signal-black min-h-screen">
       
-      {/* 1. Control Room Hero Billboard */}
-      <section className="relative flex flex-col justify-end h-[60vh] min-h-[450px] border-b border-signal-border bg-signal-surface overflow-hidden">
-        <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]"></div>
-        
-        <div className="absolute inset-0 bg-signal-black/80">
-          <img 
-            src="/media/artwork/spiderman_trailer_1.png" 
-            alt="ACM Feed"
-            className="w-full h-full object-cover opacity-20 object-center mix-blend-luminosity"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-signal-black via-signal-black/80 to-transparent"></div>
-        </div>
-
-        <div className="relative max-w-7xl mx-auto px-6 lg:px-8 w-full z-10 pb-12 space-y-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm bg-signal-amber-dim border border-signal-border text-signal-amber text-xs font-mono uppercase tracking-widest">
-            <Radio className="w-3.5 h-3.5 animate-pulse" />
-            <span>Master Control Room</span>
-          </div>
-
-          <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-signal-text-primary leading-[1.1]">
-            ACM TV<br />
-            <span className="text-signal-text-secondary font-medium text-3xl sm:text-5xl">
-              Global Sync Feed
-            </span>
-          </h1>
-
-          <p className="text-base text-signal-text-tertiary max-w-2xl font-mono leading-relaxed">
-            SYSTEM STATUS: ONLINE. Syncing all channels to global UTC reference. Everyone watches the same frame, at the same millisecond. No navigation required.
-          </p>
-
-          <div className="flex flex-wrap items-center gap-4 pt-4">
-            <Link 
-              href="/live" 
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-sm bg-signal-surface-raised border border-signal-border-active text-signal-text-primary font-bold text-sm transition-all hover:bg-signal-surface"
-            >
-              <Play className="w-4 h-4 fill-current text-signal-amber" />
-              <span>TUNE IN MASTER</span>
-            </Link>
-            <Link 
-              href="/schedule" 
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-sm bg-signal-surface border border-signal-border hover:border-signal-border-active text-signal-text-secondary font-bold text-sm transition-all"
-            >
-              <Calendar className="w-4 h-4" />
-              <span>SYSTEM SCHEDULE</span>
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* 1. Live Hero Carousel */}
+      <LiveHeroCarousel channels={channels} networkStates={networkStates} />
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8 space-y-12">
         

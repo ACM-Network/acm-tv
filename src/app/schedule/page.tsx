@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { Calendar, Clock } from 'lucide-react';
 import { getRuntimeChannels } from '@/utils/scheduleEngine';
 import { Channel } from '@/types';
-import TimelineGuide from '@/components/TimelineGuide';
+import EPG from '@/components/EPG';
 
 function ScheduleClientContent() {
   const searchParams = useSearchParams();
@@ -36,47 +36,9 @@ function ScheduleClientContent() {
         </p>
       </div>
 
-      {/* Channel Nodes */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-        {channels.map((ch) => {
-          const isActive = activeChannel.id === ch.id;
-          return (
-            <button
-              key={ch.id}
-              onClick={() => handleChannelSwitch(ch.id)}
-              className={`flex flex-col items-center text-center p-2 rounded-sm border transition-all ${
-                isActive
-                  ? 'border-signal-border-active bg-signal-amber-dim text-signal-amber'
-                  : 'bg-signal-surface border-signal-border hover:bg-signal-surface-raised hover:border-signal-border-active text-signal-text-secondary'
-              }`}
-            >
-              <span className={`text-[10px] font-mono uppercase tracking-wider block ${isActive ? 'text-signal-amber font-bold' : 'text-signal-text-secondary'}`}>
-                {ch.name}
-              </span>
-              <span className="text-[8px] text-signal-text-tertiary font-mono mt-1 uppercase block truncate max-w-full">
-                {ch.tagline}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Timeline Panel */}
-      <div className="bg-signal-surface border border-signal-border rounded-md p-6">
-        <div className="flex items-center justify-between border-b border-signal-border pb-3 mb-5">
-          <div className="space-y-1">
-            <h3 className="text-lg font-bold text-signal-text-primary uppercase tracking-wide">
-              TX_NODE: {activeChannel.name}
-            </h3>
-            <p className="text-[10px] text-signal-text-tertiary font-mono uppercase">{activeChannel.tagline}</p>
-          </div>
-          <div className="flex items-center gap-1.5 text-[10px] text-signal-text-secondary font-mono bg-signal-black border border-signal-border px-2 py-1 rounded-sm">
-            <Clock className="w-3.5 h-3.5 text-signal-amber" />
-            <span>CYL: 24H_LOOP</span>
-          </div>
-        </div>
-
-        <TimelineGuide channel={activeChannel} />
+      {/* Full Electronic Program Guide */}
+      <div className="mt-8">
+        <EPG channels={channels} />
       </div>
 
     </div>

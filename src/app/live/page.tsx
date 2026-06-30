@@ -7,6 +7,7 @@ import { getRuntimeChannels, getBroadcastState } from '@/utils/scheduleEngine';
 import { Channel, BroadcastState } from '@/types';
 import TVPlayer from '@/components/TVPlayer';
 import ProgramGuide from '@/components/ProgramGuide';
+import ChannelSwitcher from '@/components/ChannelSwitcher';
 
 const getUnixTimeMs = () => Date.now();
 
@@ -98,28 +99,7 @@ function LiveTVClientContent() {
         {/* Right Column / Bottom on Mobile: EPG Panel & Channel Router */}
         <div className="lg:col-span-1 flex flex-col gap-4 p-4 md:p-0">
           {/* Channel Routing Selector */}
-          <div className="flex flex-wrap items-center gap-2 bg-signal-surface border border-signal-border rounded-md p-4">
-            <span className="text-xs font-mono text-signal-text-tertiary uppercase tracking-widest w-full mb-2 flex items-center gap-2">
-              <Tv className="w-4 h-4 text-signal-amber" />
-              <span>NETWORK ROUTER:</span>
-            </span>
-            {channels.map((ch) => {
-              const isActive = activeChannel.id === ch.id;
-              return (
-                <button
-                  key={ch.id}
-                  onClick={() => handleChannelSwitch(ch.id)}
-                  className={`px-3 py-2 md:py-1.5 rounded-sm text-xs font-mono uppercase tracking-wider transition-all border w-full sm:w-auto text-left sm:text-center ${
-                    isActive
-                      ? 'bg-signal-amber-dim border-signal-border-active text-signal-amber'
-                      : 'bg-signal-surface text-signal-text-secondary border-signal-border hover:text-signal-text-primary hover:border-signal-border-active'
-                  }`}
-                >
-                  {ch.name}
-                </button>
-              );
-            })}
-          </div>
+          <ChannelSwitcher channels={channels} activeChannelId={activeChannel.id} />
 
           <div className="bg-signal-surface border border-signal-border rounded-md p-4 min-h-[400px] md:min-h-[600px]">
             <ProgramGuide broadcastState={isStateMatching ? broadcastState : null} />
