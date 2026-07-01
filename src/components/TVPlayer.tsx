@@ -780,6 +780,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         startPosition: 0,
         enableWorker: true,
         lowLatencyMode: true,
+        autoStartLoad: false,
       });
       setInactiveHls(hls);
       hls.attachMedia(video);
@@ -818,7 +819,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
       if (Hls.isSupported()) {
         console.log(`[ACM TV] Initializing hls.js for source: ${src}`);
-        const hlsConfig: any = {
+        const hls = new Hls({
           startPosition: seekOffset,
           enableWorker: true,
           lowLatencyMode: true,
@@ -831,18 +832,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
           fragLoadingMaxRetry: 5,
           fragLoadingRetryDelay: 1000,
           fragLoadingMaxRetryTimeout: 20000
-        };
-
-        if (channel.isAcmOwned) {
-          // Optimized playback for ACM Channels
-          hlsConfig.maxBufferLength = 30;
-          hlsConfig.maxMaxBufferLength = 60;
-          hlsConfig.liveSyncDurationCount = 3;
-          hlsConfig.liveMaxLatencyDurationCount = 10;
-          hlsConfig.liveDurationIntersection = true;
-        }
-
-        const hls = new Hls(hlsConfig);
+        });
 
         setActiveHls(hls);
 
@@ -1546,6 +1536,11 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
             newVideo.volume = volume;
             newVideo.currentTime = broadcastState?.playbackPosition || 0;
             newVideo.play().catch(() => {});
+          }
+
+          const newActiveHls = getActiveHls();
+          if (newActiveHls) {
+            newActiveHls.startLoad();
           }
 
           activeInstanceIdRef.current = currentInst.instanceId;
@@ -2361,11 +2356,11 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         <div className="absolute inset-x-0 bottom-0 h-3/5 bg-gradient-to-t from-black via-black/50 to-transparent pointer-events-none transition-opacity duration-500" />
         
         {/* Center Play/Pause Overlay */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-auto" onClick={toggleControls}>
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <button 
             onClick={(e) => { e.stopPropagation(); handlePlayPause(); }}
             aria-label={isPlaying ? 'Pause' : 'Play'}
-            className={`w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-lg text-white border border-white/10 transition-all duration-300 hover:bg-white/20 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-white/30 shadow-2xl ${showControls && !mediaError ? 'opacity-100 scale-100' : 'opacity-0 scale-90 pointer-events-none'}`}
+            className={`w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-lg text-white border border-white/10 transition-all duration-300 hover:bg-white/20 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-white/30 shadow-2xl ${showControls && !mediaError ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-90 pointer-events-none'}`}
           >
             {isPlaying ? <Pause className="w-10 h-10 ml-0 fill-current" /> : <Play className="w-10 h-10 ml-2 fill-current" />}
           </button>
