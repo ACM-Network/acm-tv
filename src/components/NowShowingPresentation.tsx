@@ -13,7 +13,7 @@ interface NowShowingPresentationProps {
   theme: BrandingTheme;
 }
 
-export default function NowShowingPresentation({ program, channel, theme }: NowShowingPresentationProps) {
+const NowShowingPresentation = React.memo(({ program, channel, theme }: NowShowingPresentationProps) => {
   const [isVisible, setIsVisible] = useState(true);
   const innerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -63,4 +63,10 @@ export default function NowShowingPresentation({ program, channel, theme }: NowS
       </AnimatePresence>
     </div>
   );
-}
+}, (prevProps, nextProps) => {
+  return prevProps.program.id === nextProps.program.id &&
+         prevProps.channel.id === nextProps.channel.id &&
+         prevProps.theme.primaryColor === nextProps.theme.primaryColor;
+});
+
+export default NowShowingPresentation;

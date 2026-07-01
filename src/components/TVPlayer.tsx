@@ -180,7 +180,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   const [showTitleCard, setShowTitleCard] = useState<boolean>(false);
 
   // Branding Presentations
-  const [showNowShowing, setShowNowShowing] = useState<boolean>(false);
+
   const [showComingUpNext, setShowComingUpNext] = useState<boolean>(false);
   const [comingUpNextTimeRemaining, setComingUpNextTimeRemaining] = useState<number>(0);
 
@@ -818,7 +818,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
       if (Hls.isSupported()) {
         console.log(`[ACM TV] Initializing hls.js for source: ${src}`);
-        const hls = new Hls({
+        const hlsConfig: any = {
           startPosition: seekOffset,
           enableWorker: true,
           lowLatencyMode: true,
@@ -831,7 +831,18 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
           fragLoadingMaxRetry: 5,
           fragLoadingRetryDelay: 1000,
           fragLoadingMaxRetryTimeout: 20000
-        });
+        };
+
+        if (channel.isAcmOwned) {
+          // Optimized playback for ACM Channels
+          hlsConfig.maxBufferLength = 30;
+          hlsConfig.maxMaxBufferLength = 60;
+          hlsConfig.liveSyncDurationCount = 3;
+          hlsConfig.liveMaxLatencyDurationCount = 10;
+          hlsConfig.liveDurationIntersection = true;
+        }
+
+        const hls = new Hls(hlsConfig);
 
         setActiveHls(hls);
 
@@ -846,6 +857,26 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
           const parsedQualities = hls.levels.map((l, idx) => ({ id: idx, height: l.height, bitrate: l.bitrate }));
           setAvailableQualities(parsedQualities);
           setActiveQuality('auto');
+
+          // Initialize Audio Tracks if present
+          if (hls.audioTracks && hls.audioTracks.length > 0) {
+            const mappedTracks = hls.audioTracks.map((t, i) => {
+              const lang = (t as any).lang || (t as any).language || 'und';
+              return {
+                id: t.id || `hls-audio-${i}`,
+                label: t.name || lang || `Audio ${i + 1}`,
+                language: lang,
+                enabled: hls.audioTrack === i
+              };
+            });
+            
+            // Only overwrite if we don't already have metadata tracks
+            setAudioTracks((prev) => {
+              if (prev.length > 0 && prev[0].url) return prev;
+              return mappedTracks;
+            });
+            setHasAudioTrackSupport(true);
+          }
 
 
           // Always start and lock to highest available quality level
@@ -887,6 +918,25 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
                 handlePlaybackError('Hls play call rejected', err);
               }
             });
+        });
+
+        hls.on(Hls.Events.AUDIO_TRACK_LOADED, () => {
+          if (hls.audioTracks && hls.audioTracks.length > 0) {
+            const mappedTracks = hls.audioTracks.map((t, i) => {
+              const lang = (t as any).lang || (t as any).language || 'und';
+              return {
+                id: t.id || `hls-audio-${i}`,
+                label: t.name || lang || `Audio ${i + 1}`,
+                language: lang,
+                enabled: hls.audioTrack === i
+              };
+            });
+            setAudioTracks((prev) => {
+              if (prev.length > 0 && prev[0].url) return prev;
+              return mappedTracks;
+            });
+            setHasAudioTrackSupport(true);
+          }
         });
 
 
@@ -1292,7 +1342,6 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
       setVideoDuration(0);
       setBufferedPercent(0);
       setShowTitleCard(false);
-      setShowNowShowing(false);
       setShowComingUpNext(false);
 
       // 5. Calculate and dispatch initial state for new channel to parent
@@ -1471,8 +1520,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
 
       if (activeInstanceIdRef.current !== currentInst.instanceId || videoSrc !== videoSource) {
         
-        // Trigger Now Showing overlay
-        setShowNowShowing(true);
+        // Reset Coming Up Next
         setShowComingUpNext(false); // reset just in case
 
         if (preloadedInstanceIdRef.current === currentInst.instanceId) {
@@ -1552,13 +1600,21 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     // Bypass companion audio logic for remote programs
     const isRemote = videoSrc.startsWith('http://') || videoSrc.startsWith('https://');
     if (isRemote) {
-      const nativeTracks = (video as HTMLVideoElementWithAudioTracks).audioTracks;
-      if (nativeTracks) {
-        for (let i = 0; i < nativeTracks.length; i++) {
-          const track = nativeTracks[i];
-          track.enabled = (track.id === trackId || `track-${i}` === trackId);
+      const activeHls = getActiveHls();
+      if (activeHls && activeHls.audioTracks && activeHls.audioTracks.length > 0) {
+        const selectedIndex = activeHls.audioTracks.findIndex((t, i) => (t.id || `hls-audio-${i}`) === trackId);
+        if (selectedIndex !== -1) {
+          activeHls.audioTrack = selectedIndex;
         }
-        detectNativeAudioTracks();
+      } else {
+        const nativeTracks = (video as HTMLVideoElementWithAudioTracks).audioTracks;
+        if (nativeTracks) {
+          for (let i = 0; i < nativeTracks.length; i++) {
+            const track = nativeTracks[i];
+            track.enabled = (track.id === trackId || `track-${i}` === trackId);
+          }
+          detectNativeAudioTracks();
+        }
       }
       return;
     }
@@ -1936,6 +1992,9 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
   };
 
   const handleProgressBarClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Seeking disabled for live TV. Retaining architecture for future DVR support.
+    return;
+    /*
     const rect = progressBarRef.current?.getBoundingClientRect();
     if (!rect || !getActiveVideo() || !broadcastState?.currentProgram) return;
     const clickX = e.clientX - rect.left;
@@ -1948,21 +2007,12 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     const seekTarget = percentage * duration;
     vid.currentTime = seekTarget;
     setVideoCurrentTime(seekTarget);
+    */
   };
 
   const handleProgressBarMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = progressBarRef.current?.getBoundingClientRect();
-    if (!rect || !broadcastState?.currentProgram) return;
-    const moveX = e.clientX - rect.left;
-    const width = rect.width;
-    const percentage = Math.max(0, Math.min(1, moveX / width));
-    setHoverPosition(percentage * 100);
-
-    const duration = getActiveVideo()?.duration || broadcastState.currentProgram.program.duration || 0;
-    const hoverTime = percentage * duration;
-    const mins = Math.floor(hoverTime / 60);
-    const secs = Math.floor(hoverTime % 60);
-    setHoverTimeStr(`${mins}:${secs.toString().padStart(2, '0')}`);
+    // Tooltips and hover states disabled for live timeline
+    return;
   };
 
   const handleProgressBarMouseLeave = () => {
@@ -2132,7 +2182,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
             <CommercialBreakUI countdownDuration={CommercialConfig.countdownDurationSeconds} />
           )}
 
-          {showNowShowing && (
+          {broadcastState?.currentProgram && (
             <NowShowingPresentation 
               program={
                 broadcastState.currentProgram.program.title.toLowerCase().includes('trailer block') 
@@ -2322,7 +2372,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
         </div>
 
         {/* Bottom Bar Content */}
-        <div className="relative px-4 sm:px-8 pb-6 sm:pb-8 pointer-events-auto w-full max-w-[1800px] mx-auto flex flex-col gap-5 sm:gap-6">
+        <div className="relative px-4 sm:px-8 pb-6 sm:pb-8 pointer-events-none w-full max-w-[1800px] mx-auto flex flex-col gap-5 sm:gap-6">
           
           {/* Metadata / Live Status */}
           <div className="flex items-end justify-between px-2">
@@ -2335,7 +2385,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
              </div>
              
              {/* Live / Sync Status (Minimal) */}
-             <div className="flex items-center gap-2">
+             <div className="flex items-center gap-2 pointer-events-auto">
                {isBehindLive ? (
                   <button onClick={handleGoLive} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 transition-all shadow-lg hover:scale-105">
                      <span className="w-2 h-2 rounded-full bg-gray-400"></span>
@@ -2350,36 +2400,10 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
              </div>
           </div>
 
-          {/* Scrubber / Progress Bar */}
-          <div className="group relative w-full h-8 flex items-center cursor-pointer"
-               ref={progressBarRef}
-               onClick={handleProgressBarClick}
-               onMouseMove={handleProgressBarMouseMove}
-               onMouseLeave={handleProgressBarMouseLeave}>
-            
-            {/* The line itself */}
-            <div className="relative w-full h-1.5 sm:h-1 bg-white/20 rounded-full overflow-hidden transition-all duration-300 group-hover:h-2 sm:group-hover:h-1.5 shadow-sm">
-              <div className="absolute inset-y-0 left-0 bg-white/40" style={{ width: `${bufferedPercent}%` }} />
-              <div className="absolute inset-y-0 left-0 bg-red-600" style={{ width: `${progressPercent}%` }} />
-            </div>
-            
-            {/* Scrubber Thumb */}
-            <div className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-red-600 shadow-lg opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 pointer-events-none"
-                 style={{ left: `calc(${progressPercent}% - 8px)` }} />
-            
-            {/* Hover Tooltip */}
-            {hoverPosition !== null && (
-              <div className="absolute bottom-full mb-4 -translate-x-1/2 pointer-events-none" style={{ left: `${hoverPosition}%` }}>
-                <div className="px-3 py-1.5 bg-black/80 backdrop-blur-md text-white text-xs font-medium rounded-lg border border-white/10 shadow-xl">
-                  {hoverTimeStr}
-                </div>
-                <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-black/80" />
-              </div>
-            )}
-          </div>
+          {/* Scrubber / Progress Bar is moved to absolute bottom */}
 
           {/* Controls Row */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between pointer-events-auto">
             {/* Left Controls */}
             <div className="flex items-center gap-4 sm:gap-6">
                <button
@@ -2408,14 +2432,6 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
                    />
                  </div>
                </div>
-
-               <div className="text-xs sm:text-sm font-medium text-white/90 tabular-nums tracking-wide drop-shadow-md" aria-live="polite" aria-label="Playback time">
-                 {new Date(Math.max(0, videoCurrentTime) * 1000).toISOString().substring(11, 19)}
-                 <span className="text-white/40 mx-2">/</span>
-                 <span className="text-white/60">
-                   {broadcastState?.currentProgram ? new Date(broadcastState.currentProgram.program.duration * 1000).toISOString().substring(11, 19) : "00:00:00"}
-                 </span>
-               </div>
             </div>
 
             {/* Right Controls */}
@@ -2441,6 +2457,20 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
           </div>
 
         </div>
+
+        {/* Live Television Scrubber (Absolute Bottom Edge) */}
+        <div className="absolute bottom-0 inset-x-0 w-full h-2 flex items-end cursor-pointer pointer-events-auto"
+             ref={progressBarRef}
+             onClick={handleProgressBarClick}
+             onMouseMove={handleProgressBarMouseMove}
+             onMouseLeave={handleProgressBarMouseLeave}>
+          {/* The thin line */}
+          <div className="relative w-full h-[2px] bg-white/20 overflow-hidden shadow-sm">
+            <div className="absolute inset-y-0 left-0 bg-white/40" style={{ width: `${bufferedPercent}%` }} />
+            <div className="absolute inset-y-0 left-0 bg-red-600" style={{ width: `${progressPercent}%` }} />
+          </div>
+        </div>
+
       </div>
     </div>
   );
