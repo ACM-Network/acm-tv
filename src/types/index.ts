@@ -1,4 +1,4 @@
-export type ProgramType = 'content' | 'promo' | 'ident' | 'trailer' | 'song' | 'block';
+export type ProgramType = 'content' | 'promo' | 'ident' | 'trailer' | 'song' | 'block' | 'audio' | 'music';
 
 export interface MetadataAudioTrack {
   language: string;
@@ -21,7 +21,7 @@ export interface Program {
   title: string;
   description: string;
   duration: number; // in seconds
-  videoUrl: string;
+  videoUrl?: string;
   type: ProgramType;
   category: string; // e.g. "RCU Promos", "Teaser", "Song", "Branding"
   thumbnail?: string;
@@ -34,6 +34,14 @@ export interface Program {
   backdrop?: string;
   contentIds?: string[]; // Used for blocks to reference inner program IDs
   blockShuffle?: boolean; // Whether the block should shuffle its contents
+  
+  // Audio specific fields
+  audioUrl?: string;
+  artwork?: string;
+  artist?: string;
+  album?: string;
+  genre?: string;
+  lyrics?: string;
 }
 
 export interface WeavingConfig {

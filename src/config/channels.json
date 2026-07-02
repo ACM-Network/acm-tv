@@ -588,6 +588,20 @@
       },
       "programs": [
         {
+          "id": "neelo-nenu-theme",
+          "title": "Neelo Nenu Theme",
+          "description": "Neelo Nenu (Original Soundtrack)",
+          "duration": 179,
+          "audioUrl": "/media/acm-rcu/audio/neelo-nenu-theme.mp3",
+          "artwork": "/media/acm-rcu/artwork/neelo-nenu-theme.png",
+          "type": "audio",
+          "category": "Original Soundtrack",
+          "artist": "ACM Studios",
+          "album": "Neelo Nenu (Original Soundtrack)",
+          "genre": "Original Soundtrack",
+          "year": 2026
+        },
+        {
           "id": "prog-rcu-blazes",
           "title": "Realm Core: The Blazes Threat",
           "description": "A cinematic breakdown of the upcoming primary threat in the Realm Cinematic Universe phase 5.",

@@ -303,283 +303,283 @@
     "sunday": [
       {
         "startTime": "00:00:00",
-        "programId": "narappa"
+        "programId": "hit-first-case"
       },
       {
-        "startTime": "02:33:24",
-        "programId": "paagal"
+        "startTime": "02:08:08",
+        "programId": "radhe-shyam"
       },
       {
-        "startTime": "04:48:56",
+        "startTime": "04:26:08",
         "programId": "sita-ramam"
       },
       {
-        "startTime": "07:31:56",
-        "programId": "ek-mini-katha"
+        "startTime": "07:09:08",
+        "programId": "whistle"
       },
       {
-        "startTime": "09:46:10",
+        "startTime": "10:06:41",
         "programId": "middle-class-melodies"
       },
       {
-        "startTime": "12:01:48",
+        "startTime": "12:22:19",
+        "programId": "acharya"
+      },
+      {
+        "startTime": "14:56:19",
+        "programId": "narappa"
+      },
+      {
+        "startTime": "17:29:43",
         "programId": "the-family-star"
       },
       {
-        "startTime": "14:37:33",
-        "programId": "vakeel-saab"
-      },
-      {
-        "startTime": "17:10:49",
+        "startTime": "20:05:28",
         "programId": "varasudu"
       },
       {
-        "startTime": "19:59:54",
-        "programId": "train-to-busan"
-      },
-      {
-        "startTime": "21:52:55",
-        "programId": "yashoda"
+        "startTime": "22:54:33",
+        "programId": "jailer"
       }
     ],
     "monday": [
       {
-        "startTime": "00:05:09",
-        "programId": "narappa"
+        "startTime": "01:42:33",
+        "programId": "train-to-busan"
       },
       {
-        "startTime": "02:38:33",
+        "startTime": "03:35:34",
+        "programId": "paagal"
+      },
+      {
+        "startTime": "05:51:06",
         "programId": "radhe-shyam"
       },
       {
-        "startTime": "04:56:33",
-        "programId": "ek-mini-katha"
-      },
-      {
-        "startTime": "07:10:47",
-        "programId": "sarkaru-vaari-paata"
-      },
-      {
-        "startTime": "09:51:47",
+        "startTime": "08:09:06",
         "programId": "whistle"
       },
       {
-        "startTime": "12:49:20",
-        "programId": "maharshi"
+        "startTime": "11:06:39",
+        "programId": "middle-class-melodies"
       },
       {
-        "startTime": "15:46:26",
-        "programId": "narappa"
+        "startTime": "13:22:17",
+        "programId": "the-family-star"
       },
       {
-        "startTime": "18:19:50",
+        "startTime": "15:58:02",
+        "programId": "acharya"
+      },
+      {
+        "startTime": "18:32:02",
+        "programId": "yashoda"
+      },
+      {
+        "startTime": "20:44:16",
         "programId": "jailer"
       },
       {
-        "startTime": "21:07:50",
-        "programId": "adipurush"
+        "startTime": "23:32:16",
+        "programId": "narappa"
       }
     ],
     "tuesday": [
       {
-        "startTime": "00:06:19",
-        "programId": "yashoda"
-      },
-      {
-        "startTime": "02:18:33",
+        "startTime": "02:05:40",
         "programId": "sita-ramam"
       },
       {
-        "startTime": "05:01:33",
-        "programId": "radhe-shyam"
+        "startTime": "04:48:40",
+        "programId": "ek-mini-katha"
       },
       {
-        "startTime": "07:19:33",
+        "startTime": "07:02:54",
         "programId": "whistle"
       },
       {
-        "startTime": "10:17:06",
-        "programId": "middle-class-melodies"
+        "startTime": "10:00:27",
+        "programId": "jathi-ratnalu"
       },
       {
-        "startTime": "12:32:44",
-        "programId": "varasudu"
-      },
-      {
-        "startTime": "15:21:49",
-        "programId": "acharya"
-      },
-      {
-        "startTime": "17:55:49",
+        "startTime": "12:23:54",
         "programId": "maharshi"
       },
       {
-        "startTime": "20:52:55",
-        "programId": "jailer"
+        "startTime": "15:21:00",
+        "programId": "varasudu"
       },
       {
-        "startTime": "23:40:55",
-        "programId": "narappa"
+        "startTime": "18:10:05",
+        "programId": "adipurush"
+      },
+      {
+        "startTime": "21:08:34",
+        "programId": "operation-valentine"
+      },
+      {
+        "startTime": "23:19:25",
+        "programId": "yashoda"
       }
     ],
     "wednesday": [
       {
-        "startTime": "02:14:19",
-        "programId": "radhe-shyam"
+        "startTime": "01:31:39",
+        "programId": "drushyam-2"
       },
       {
-        "startTime": "04:32:19",
-        "programId": "middle-class-melodies"
+        "startTime": "04:06:25",
+        "programId": "sita-ramam"
       },
       {
-        "startTime": "06:47:57",
-        "programId": "sarkaru-vaari-paata"
-      },
-      {
-        "startTime": "09:28:57",
+        "startTime": "06:49:25",
         "programId": "whistle"
       },
       {
-        "startTime": "12:26:30",
-        "programId": "acharya"
+        "startTime": "09:46:58",
+        "programId": "middle-class-melodies"
       },
       {
-        "startTime": "15:00:30",
+        "startTime": "12:02:36",
+        "programId": "the-family-star"
+      },
+      {
+        "startTime": "14:38:21",
         "programId": "varasudu"
       },
       {
-        "startTime": "17:49:35",
+        "startTime": "17:27:26",
         "programId": "narappa"
       },
       {
-        "startTime": "20:22:59",
+        "startTime": "20:00:50",
         "programId": "operation-valentine"
       },
       {
-        "startTime": "22:33:50",
-        "programId": "adipurush"
+        "startTime": "22:11:41",
+        "programId": "jailer"
       }
     ],
     "thursday": [
       {
-        "startTime": "01:32:19",
+        "startTime": "00:59:41",
         "programId": "hit-first-case"
       },
       {
-        "startTime": "03:40:27",
-        "programId": "radhe-shyam"
+        "startTime": "03:07:49",
+        "programId": "middle-class-melodies"
       },
       {
-        "startTime": "05:58:27",
-        "programId": "paagal"
-      },
-      {
-        "startTime": "08:13:59",
-        "programId": "whistle"
-      },
-      {
-        "startTime": "11:11:32",
-        "programId": "ek-mini-katha"
-      },
-      {
-        "startTime": "13:25:46",
-        "programId": "vakeel-saab"
-      },
-      {
-        "startTime": "15:59:02",
-        "programId": "maharshi"
-      },
-      {
-        "startTime": "18:56:08",
+        "startTime": "05:23:27",
         "programId": "sita-ramam"
       },
       {
-        "startTime": "21:39:08",
+        "startTime": "08:06:27",
+        "programId": "ek-mini-katha"
+      },
+      {
+        "startTime": "10:20:41",
+        "programId": "jathi-ratnalu"
+      },
+      {
+        "startTime": "12:44:08",
+        "programId": "vakeel-saab"
+      },
+      {
+        "startTime": "15:17:24",
+        "programId": "narappa"
+      },
+      {
+        "startTime": "17:50:48",
+        "programId": "acharya"
+      },
+      {
+        "startTime": "20:24:48",
         "programId": "varasudu"
+      },
+      {
+        "startTime": "23:13:53",
+        "programId": "drushyam-2"
       }
     ],
     "friday": [
       {
-        "startTime": "00:28:13",
-        "programId": "train-to-busan"
+        "startTime": "01:48:39",
+        "programId": "hit-first-case"
       },
       {
-        "startTime": "02:21:14",
-        "programId": "ek-mini-katha"
-      },
-      {
-        "startTime": "04:35:28",
+        "startTime": "03:56:47",
         "programId": "paagal"
       },
       {
-        "startTime": "06:51:00",
-        "programId": "sarkaru-vaari-paata"
+        "startTime": "06:12:19",
+        "programId": "ek-mini-katha"
       },
       {
-        "startTime": "09:32:00",
-        "programId": "whistle"
+        "startTime": "08:26:33",
+        "programId": "jathi-ratnalu"
       },
       {
-        "startTime": "12:29:33",
-        "programId": "vakeel-saab"
+        "startTime": "10:50:00",
+        "programId": "middle-class-melodies"
       },
       {
-        "startTime": "15:02:49",
-        "programId": "varasudu"
-      },
-      {
-        "startTime": "17:51:54",
+        "startTime": "13:05:38",
         "programId": "acharya"
       },
       {
-        "startTime": "20:25:54",
-        "programId": "sita-ramam"
+        "startTime": "15:39:38",
+        "programId": "narappa"
       },
       {
-        "startTime": "23:08:54",
+        "startTime": "18:13:02",
+        "programId": "adipurush"
+      },
+      {
+        "startTime": "21:11:31",
+        "programId": "jailer"
+      },
+      {
+        "startTime": "23:59:31",
         "programId": "hit-first-case"
       }
     ],
     "saturday": [
       {
-        "startTime": "01:17:02",
-        "programId": "yashoda"
-      },
-      {
-        "startTime": "03:29:16",
+        "startTime": "02:07:39",
         "programId": "middle-class-melodies"
       },
       {
-        "startTime": "05:44:54",
-        "programId": "radhe-shyam"
+        "startTime": "04:23:17",
+        "programId": "ek-mini-katha"
       },
       {
-        "startTime": "08:02:54",
+        "startTime": "06:37:31",
+        "programId": "whistle"
+      },
+      {
+        "startTime": "09:35:04",
         "programId": "jathi-ratnalu"
       },
       {
-        "startTime": "10:26:21",
+        "startTime": "11:58:31",
         "programId": "sarkaru-vaari-paata"
       },
       {
-        "startTime": "13:07:21",
-        "programId": "narappa"
+        "startTime": "14:39:31",
+        "programId": "varasudu"
       },
       {
-        "startTime": "15:40:45",
-        "programId": "acharya"
-      },
-      {
-        "startTime": "18:14:45",
+        "startTime": "17:28:36",
         "programId": "maharshi"
       },
       {
-        "startTime": "21:11:51",
-        "programId": "yashoda"
+        "startTime": "20:25:42",
+        "programId": "adipurush"
       },
       {
-        "startTime": "23:24:05",
-        "programId": "train-to-busan"
+        "startTime": "23:24:11",
+        "programId": "narappa"
       }
     ]
   },
