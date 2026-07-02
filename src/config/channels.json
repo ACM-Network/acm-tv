@@ -583,8 +583,8 @@
       "channelNumber": 5,
       "standbyArtwork": "/branding/acm-rcu-logo.svg",
       "weaving": {
-        "insertIdentEveryNPrograms": 1,
-        "insertPromoEveryNPrograms": 1
+        "insertIdentEveryNPrograms": 0,
+        "insertPromoEveryNPrograms": 0
       },
       "programs": [
         {
@@ -600,62 +600,10 @@
           "album": "Neelo Nenu (Original Soundtrack)",
           "genre": "Original Soundtrack",
           "year": 2026
-        },
-        {
-          "id": "prog-rcu-blazes",
-          "title": "Realm Core: The Blazes Threat",
-          "description": "A cinematic breakdown of the upcoming primary threat in the Realm Cinematic Universe phase 5.",
-          "duration": 15,
-          "videoUrl": "/media/acm-rcu/rcu-blazes.mp4",
-          "type": "promo",
-          "category": "RCU Promos",
-          "thumbnail": "/branding/acm-rcu-logo.svg"
-        },
-        {
-          "id": "prog-rcu-escapes",
-          "title": "Realm Chronicles: Cosmic Escapes",
-          "description": "Promotional featurette exploring the cosmic dimensions and spatial gateways of the Realm.",
-          "duration": 15,
-          "videoUrl": "/media/acm-rcu/rcu-escapes.mp4",
-          "type": "promo",
-          "category": "RCU Promos",
-          "thumbnail": "/branding/acm-rcu-logo.svg"
-        },
-        {
-          "id": "prog-rcu-meltdown",
-          "title": "Realm Ultimatum: Dark Melt",
-          "description": "First teaser trailer for Realm Ultimatum, the epic conclusion of the multiverse saga.",
-          "duration": 15,
-          "videoUrl": "/media/acm-rcu/rcu-meltdown.mp4",
-          "type": "trailer",
-          "category": "RCU Trailiers",
-          "thumbnail": "/branding/acm-rcu-logo.svg"
         }
       ],
-      "idents": [
-        {
-          "id": "ident-rcu-logo",
-          "title": "ACM RCU Marvel-style Logo Ident",
-          "description": "Pulsing red cosmic logo reveal for the Realm Cinematic Universe network.",
-          "duration": 15,
-          "videoUrl": "/media/acm-rcu/ident-rcu-logo.mp4",
-          "type": "ident",
-          "category": "Idents",
-          "thumbnail": "/branding/acm-rcu-logo.svg"
-        }
-      ],
-      "promos": [
-        {
-          "id": "promo-rcu-phase5",
-          "title": "Phase 5 Launch Special Bumper",
-          "description": "Realm Cinematic Universe Phase 5 launch event bumper.",
-          "duration": 15,
-          "videoUrl": "/media/acm-rcu/promo-rcu-phase5.mp4",
-          "type": "promo",
-          "category": "Promos",
-          "thumbnail": "/branding/acm-rcu-logo.svg"
-        }
-      ],
+      "idents": [],
+      "promos": [],
       "isAcmOwned": true
     },
     {
