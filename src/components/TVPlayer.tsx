@@ -17,7 +17,6 @@ import Hls from 'hls.js';
 import { useWatchHistory } from '@/hooks/useWatchHistory';
 import { CommercialConfig } from '@/config/commercials';
 import CommercialBreakUI from './CommercialBreakUI';
-import { BroadcastArtworkMode } from './BroadcastArtworkMode';
 
 const getUnixTimeMs = () => Date.now();
 
@@ -670,7 +669,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
               console.log(`[ACM TV][PRELOAD] Initiating adaptive preload for ${upNext.instanceId} (Window: ${adaptivePreloadWindow}s)`);
               preloadedInstanceIdRef.current = upNext.instanceId;
               
-              const nextUrl = upNext.subProgram?.audioUrl || upNext.subProgram?.videoUrl || upNext.program.audioUrl || upNext.program.videoUrl;
+              const nextUrl = upNext.subProgram?.videoUrl || upNext.program.videoUrl;
               if (nextUrl) preloadSource(nextUrl, upNext.instanceId);
             }
           }
@@ -1390,7 +1389,7 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
     }
 
     const loadMetadataAndSetup = async () => {
-      const videoUrl = currentInst.subProgram?.audioUrl || currentInst.subProgram?.videoUrl || currentInst.program.audioUrl || currentInst.program.videoUrl;
+      const videoUrl = currentInst.subProgram?.videoUrl || currentInst.program.videoUrl;
       if (!videoUrl) {
         setIsFallbackActive(true);
         setIsLoading(false);
@@ -2269,16 +2268,6 @@ export default function TVPlayer({ channel, onStateChange }: TVPlayerProps) {
           />
         ))}
       </video>
-
-      {/* Audio Program Artwork Mode */}
-      {broadcastState?.currentProgram && (broadcastState.currentProgram.program.type === 'audio' || broadcastState.currentProgram.program.type === 'music') && !mediaError && (
-        <BroadcastArtworkMode 
-          program={broadcastState.currentProgram.subProgram || broadcastState.currentProgram.program}
-          isPlaying={isPlaying}
-          currentTime={videoCurrentTime}
-          duration={currentDuration}
-        />
-      )}
 
       {/* Channel Bug (Logo Watermark) */}
       {channel.isAcmOwned && isPlaying && !mediaError && (
