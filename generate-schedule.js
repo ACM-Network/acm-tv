@@ -92,5 +92,29 @@ while (currentTime < endTime) {
   currentTime += movie.duration * 1000;
 }
 
+// ACM RCU Schedule Generation
+newSchedule['acm-rcu'] = {
+  sunday: [], monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: []
+};
+const rcuChannel = channelsData.channels.find(c => c.id === 'acm-rcu');
+const rcuPrograms = rcuChannel.programs;
+let rcuTime = new Date('1970-01-04T00:00:00Z').getTime();
+
+let programIndex = 0;
+while (rcuTime < endTime) {
+  const currentDate = new Date(rcuTime);
+  const dayIndex = currentDate.getUTCDay();
+  const dayName = daysOfWeek[dayIndex];
+  
+  const prog = rcuPrograms[programIndex];
+  newSchedule['acm-rcu'][dayName].push({
+    startTime: formatTime(currentDate),
+    programId: prog.id
+  });
+  
+  rcuTime += prog.duration * 1000;
+  programIndex = (programIndex + 1) % rcuPrograms.length;
+}
+
 fs.writeFileSync('./src/config/schedule.json', JSON.stringify(newSchedule, null, 2));
 console.log('Schedule generated successfully.');
